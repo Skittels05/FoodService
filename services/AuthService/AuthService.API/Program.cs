@@ -20,9 +20,6 @@ namespace AuthService.API
 
             app.UseAuthorization();
 
-
-            app.MapControllers();
-
             app.Run();
         }
     }
