@@ -2,9 +2,8 @@
 
 namespace AuthService.Domain.Entities;
 
-public class Courier
+public class Courier: EntityBase
 {
-    public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
     public string Name { get; private set; }
     public string Phone { get; private set; }
@@ -12,8 +11,6 @@ public class Courier
     public string DocumentsPath { get; private set; }
     public string PhotoVerificationPath { get; private set; }
     public bool IsVerified { get; private set; }
-    public DateTime CreatedAt { get; private set; }
-    public DateTime UpdatedAt { get; private set; }
 
     protected Courier() { }
 
@@ -25,7 +22,6 @@ public class Courier
         string documentsPath,
         string photoVerificationPath)
     {
-        Id = userId;
         UserId = userId;
         Name = name;
         Phone = phone;
@@ -33,14 +29,11 @@ public class Courier
         DocumentsPath = documentsPath;
         PhotoVerificationPath = photoVerificationPath;
         IsVerified = false;
-        CreatedAt = DateTime.UtcNow;
-        UpdatedAt = DateTime.UtcNow;
     }
 
     public void Verify()
     {
         IsVerified = true;
-        UpdatedAt = DateTime.UtcNow;
     }
 }
 

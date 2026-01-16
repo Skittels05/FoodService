@@ -6,9 +6,10 @@ namespace AuthService.Domain.Enums
 {
     public enum UserRole
     {
+        None = 0,
         Customer = 1,
         Courier = 2,
-        RestaurantManager = 3,
+        RestaurantManager = 3
         Admin = 4
     }
 }
