@@ -1,25 +1,18 @@
 ﻿namespace AuthService.Domain.Entities;
 
-public class Customer: EntityBase
+public class Customer : IEntityBase
 {
+    public Guid Id { get; private set; }
     public Guid UserId { get; private set; }
     public string Name { get; private set; }
-    public string Phone { get; private set; }
-    public string? Address { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
 
     protected Customer() { }
 
-    public Customer(Guid userId, string name, string phone, string? address = null)
+    public Customer(Guid userId, string name)
     {
-        Id = userId;
         UserId = userId;
         Name = name;
-        Phone = phone;
-        Address = address;
-    }
-    public void UpdateAddress(string? address)
-    {
-        Address = address;
     }
 }
-

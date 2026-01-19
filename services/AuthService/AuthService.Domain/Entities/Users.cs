@@ -1,19 +1,20 @@
 ﻿using AuthService.Domain.Enums;
-using AuthService.Domain.ValueObjects;
+using Microsoft.AspNetCore.Identity;
 
 namespace AuthService.Domain.Entities;
 
-public class User: EntityBase
+public class User : IdentityUser<Guid>, IEntityBase
 {
-    public string Email { get; private set; }
+    public DateTime CreatedAt { get; private set; }
+    public DateTime UpdatedAt { get; private set; }
     public UserRole Role { get; private set; }
 
     protected User() { }
 
-    public User(string email, UserRole role)
+    public User(string email, string userName, UserRole role)
     {
         Email = email;
+        UserName = userName;
         Role = role;
     }
 }
-
