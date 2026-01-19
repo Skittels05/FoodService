@@ -1,8 +1,8 @@
-namespace AuthService.Domain.Entities;
+namespace AuthService.Domain.Interfaces;
 
 public interface IEntityBase
 {
     Guid Id { get; }
     DateTime CreatedAt { get; }
-    DateTime UpdatedAt { get; }
+    DateTime? UpdatedAt { get; }
 }
