@@ -1,33 +1,27 @@
-﻿using AuthService.Application.CQRS.Users.Queries;
+﻿using AutoMapper;
+using AuthService.Application.CQRS.Users.Queries;
 using AuthService.Application.DTO.Users;
 using AuthService.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthService.Application.CQRS.Users.Handlers
+namespace AuthService.Application.CQRS.Users.Handlers;
+
+public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserAccountDto?>
 {
-    public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserAccountDto?>
+    private readonly UserManager<User> _userManager;
+    private readonly IMapper _mapper;
+
+    public GetUserByIdHandler(UserManager<User> userManager, IMapper mapper)
     {
-        private readonly UserManager<User> _userManager;
+        _userManager = userManager;
+        _mapper = mapper;
+    }
 
-        public GetUserByIdHandler(UserManager<User> userManager)
-        {
-            _userManager = userManager;
-        }
-
-        public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken ct)
-        {
-            var user = await _userManager.FindByIdAsync(request.Id.ToString());
-            if (user == null) return null;
-            return new UserAccountDto(
-                user.Id,
-                user.Email,
-                user.UserName,
-                user.Role,
-                user.PhoneNumber,
-                user.PhoneNumberConfirmed,
-                user.TwoFactorEnabled
-            );
-        }
+    public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken ct)
+    {
+        var user = await _userManager.FindByIdAsync(request.Id.ToString());
+        if (user == null) return null;
+        return _mapper.Map<UserAccountDto>(user);
     }
 }
