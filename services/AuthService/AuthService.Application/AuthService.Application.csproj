@@ -6,4 +6,14 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="CQRS\Users\Commands\" />
+    <Folder Include="CQRS\Users\Handlers\" />
+    <Folder Include="CQRS\Users\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AuthService.Domain\AuthService.Domain.csproj" />
+  </ItemGroup>
+
 </Project>

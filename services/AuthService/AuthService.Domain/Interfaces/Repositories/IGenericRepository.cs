@@ -9,7 +9,6 @@ namespace AuthService.Domain.Interfaces.Repositories
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity> AddAsync(TEntity entity);
         Task UpdateAsync(TEntity entity);
-        Task DeleteAsync(TEntity entity);
-
+        Task DeleteAsync(Guid id);
     }
 }
