@@ -7,7 +7,6 @@ namespace AuthService.Application.CQRS.Users.Commands
     Guid Id,
     string Email,
     string UserName,
-    string? PhoneNumber,
-    UserRole Role
+    string? PhoneNumber
 ) : IRequest;
 }

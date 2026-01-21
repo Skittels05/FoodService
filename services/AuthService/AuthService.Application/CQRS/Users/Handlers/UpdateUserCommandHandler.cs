@@ -20,8 +20,6 @@ namespace AuthService.Application.CQRS.Users.Handlers
             user.UserName = request.UserName;
             user.PhoneNumber = request.PhoneNumber;
 
-            typeof(User).GetProperty(nameof(User.Role))?.SetValue(user, request.Role);
-
             var result = await _userManager.UpdateAsync(user);
 
             if (!result.Succeeded)
