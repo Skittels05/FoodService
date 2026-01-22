@@ -1,4 +1,5 @@
-﻿using AuthService.Application.DTO.Users;
+﻿using AuthService.Application.DTO.Customers;
+using AuthService.Application.DTO.Users;
 using AuthService.Domain.Entities;
 using AutoMapper;
 using System;
@@ -12,6 +13,7 @@ namespace AuthService.Application.Mappings
         public MappingProfile()
         {
             CreateMap<User, UserAccountDto>();
+            CreateMap<Customer, CustomerDto>();
         }
     }
 }
