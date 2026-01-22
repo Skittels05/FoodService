@@ -14,12 +14,8 @@ namespace AuthService.Application.CQRS.Users.Handlers
 
         public async Task<IdentityResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
         {
-            var user = await _userManager.FindByIdAsync(request.Id.ToString());
-
-            if (user is null)
-            {
-                throw new NotFoundException(nameof(User), request.Id);
-            }
+            var user = await _userManager.FindByIdAsync(request.Id.ToString())
+                ?? throw new NotFoundException(nameof(User), request.Id);
 
             user.Email = request.Email;
             user.UserName = request.UserName;
