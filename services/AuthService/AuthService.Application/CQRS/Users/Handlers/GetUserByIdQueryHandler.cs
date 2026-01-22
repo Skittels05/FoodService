@@ -18,7 +18,7 @@ public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserAccountD
         _mapper = mapper;
     }
 
-    public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken ct)
+    public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken cancelationToken)
     {
         var user = await _userManager.FindByIdAsync(request.Id.ToString());
         if (user == null) return null;

@@ -14,12 +14,12 @@ namespace AuthService.Application.CQRS.Users.Handlers
             _userManager = userManager;
         }
 
-        public async Task<Guid> Handle(CreateUserCommand request, CancellationToken ct)
+        public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancelationToken)
         {
             var user = new User(request.Email, request.UserName, request.Role);
             var result = await _userManager.CreateAsync(user, request.Password);
 
-            if (!result.Succeeded)
+            if (result is { Succeeded: false })
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception($"Failed to create user: {errors}");
