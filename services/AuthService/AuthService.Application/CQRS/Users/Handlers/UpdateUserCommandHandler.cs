@@ -24,8 +24,7 @@ namespace AuthService.Application.CQRS.Users.Handlers
             user.Email = request.Email;
             user.UserName = request.UserName;
             user.PhoneNumber = request.PhoneNumber;
-            var result = await _userManager.UpdateAsync(user);
-            return result;
+            return await _userManager.UpdateAsync(user);
         }
     }
 }
