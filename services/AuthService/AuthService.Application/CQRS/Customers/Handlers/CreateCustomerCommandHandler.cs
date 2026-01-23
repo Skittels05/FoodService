@@ -14,7 +14,7 @@ public class CreateCustomerCommandHandler(
     public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
         var customer = mapper.Map<Customer>(request);
-        var createdCustomer = await customerRepository.AddAsync(customer);
+        var createdCustomer = await customerRepository.AddAsync(customer, cancellationToken);
         return createdCustomer.Id;
     }
 }

@@ -9,11 +9,11 @@ namespace AuthService.Application.CQRS.Couriers.Handlers;
 public class VerifyCourierCommandHandler(IGenericRepository<Courier> courierRepository)
     : IRequestHandler<VerifyCourierCommand>
 {
-    public async Task Handle(VerifyCourierCommand request, CancellationToken cancelationToken)
+    public async Task Handle(VerifyCourierCommand request, CancellationToken cancellationToken)
     {
-        var courier = await courierRepository.GetByIdAsync(request.Id)
+        var courier = await courierRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Courier), request.Id);
         courier.Verify();
-        await courierRepository.UpdateAsync(courier);
+        await courierRepository.UpdateAsync(courier, cancellationToken);
     }
 }

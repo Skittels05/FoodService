@@ -12,7 +12,7 @@ public class CreateCourierCommandHandler(IGenericRepository<Courier> courierRepo
     public async Task<Guid> Handle(CreateCourierCommand request, CancellationToken cancellationToken)
     {
         var courier = mapper.Map<Courier>(request);
-        await courierRepository.AddAsync(courier);
+        await courierRepository.AddAsync(courier, cancellationToken);
         return courier.Id;
     }
 }

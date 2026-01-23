@@ -10,6 +10,6 @@ public class DeleteCustomerCommandHandler(IGenericRepository<Customer> customerR
 {
     public async Task Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
     {
-        await customerRepository.DeleteAsync(request.Id);
+        await customerRepository.DeleteAsync(request.Id, cancellationToken);
     }
 }

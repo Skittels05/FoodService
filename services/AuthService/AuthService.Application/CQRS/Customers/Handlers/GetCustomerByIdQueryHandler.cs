@@ -15,7 +15,7 @@ public class GetCustomerByIdQueryHandler(
 {
     public async Task<CustomerDto?> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
     {
-        var customer = await customerRepository.GetByIdAsync(request.Id)
+        var customer = await customerRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(User), request.Id);
         return mapper.Map<CustomerDto>(customer);
     }

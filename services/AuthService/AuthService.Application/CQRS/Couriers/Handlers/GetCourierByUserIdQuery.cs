@@ -15,7 +15,7 @@ public class GetCourierByUserIdHandler(
 {
     public async Task<CourierDto?> Handle(GetCourierByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var couriers = await courierRepository.FindAsync(c => c.UserId == request.UserId);
+        var couriers = await courierRepository.FindAsync(c => c.UserId == request.UserId, cancellationToken);
         var courier = couriers.FirstOrDefault()
             ?? throw new NotFoundByUserException(nameof(Courier), request.UserId);
         return mapper.Map<CourierDto>(courier);

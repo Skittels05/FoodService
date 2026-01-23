@@ -9,12 +9,12 @@ namespace AuthService.Application.CQRS.Couriers.Handlers;
 public class UpdateCourierCommandHandler(IGenericRepository<Courier> courierRepository)
     : IRequestHandler<UpdateCourierCommand>
 {
-    public async Task Handle(UpdateCourierCommand request, CancellationToken cancelationToken)
+    public async Task Handle(UpdateCourierCommand request, CancellationToken cancellationToken)
     {
-        var courier = await courierRepository.GetByIdAsync(request.Id)
+        var courier = await courierRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Courier), request.Id);
         courier.ChangeVehicle(request.VehicleType);
         courier.ChangeName(request.Name);
-        await courierRepository.UpdateAsync(courier);
+        await courierRepository.UpdateAsync(courier, cancellationToken);
     }
 }

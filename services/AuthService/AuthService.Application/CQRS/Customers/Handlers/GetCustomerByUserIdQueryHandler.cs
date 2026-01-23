@@ -18,7 +18,7 @@ public class GetCustomerByUserIdQueryHandler(
     {
         Expression<Func<Customer, bool>> predicate = c => c.UserId == request.UserId;
 
-        var customers = await customerRepository.FindAsync(predicate);
+        var customers = await customerRepository.FindAsync(predicate, cancellationToken);
         var customer = customers.FirstOrDefault()
             ?? throw new NotFoundByUserException(nameof(Customer), request.UserId);
         return mapper.Map<CustomerDto>(customer);

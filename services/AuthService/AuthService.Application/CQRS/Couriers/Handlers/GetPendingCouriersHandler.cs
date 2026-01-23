@@ -14,7 +14,7 @@ public class GetPendingCouriersHandler(
 {
     public async Task<IEnumerable<CourierDto>> Handle(GetPendingCouriersQuery request, CancellationToken cancellationToken)
     {
-        var couriers = await courierRepository.FindAsync(c => c.IsVerified == false);
+        var couriers = await courierRepository.FindAsync(c => c.IsVerified == false, cancellationToken);
         return mapper.Map<IEnumerable<CourierDto>>(couriers);
     }
 }

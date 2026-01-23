@@ -15,7 +15,7 @@ public class GetCourierByIdHandler(
 {
     public async Task<CourierDto?> Handle(GetCourierByIdQuery request, CancellationToken cancellationToken)
     {
-        var courier = await courierRepository.GetByIdAsync(request.Id)
+        var courier = await courierRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Courier), request.Id);
         return mapper.Map<CourierDto>(courier);
     }

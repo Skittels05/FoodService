@@ -10,6 +10,6 @@ public class DeleteCourierCommandHadler(IGenericRepository<Courier> courierRepos
 {
     public async Task Handle(DeleteCourierCommand request, CancellationToken cancellationToken)
     {
-        await courierRepository.DeleteAsync(request.Id);
+        await courierRepository.DeleteAsync(request.Id, cancellationToken);
     }
 }
