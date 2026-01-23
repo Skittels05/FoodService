@@ -18,7 +18,7 @@ namespace AuthService.Application.CQRS.Customers.Handlers
         public async Task<Guid> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
             var customer = await _customerRepository.GetByIdAsync(request.Id)
-                ?? throw new NotFoundException(nameof(User), request.Id);
+                ?? throw new NotFoundException(nameof(Customer), request.Id);
             
             customer.ChangeName(request.Name);
             var updatedCustomer = await _customerRepository.UpdateAsync(customer);

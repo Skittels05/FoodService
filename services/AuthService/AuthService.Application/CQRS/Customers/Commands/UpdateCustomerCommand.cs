@@ -1,5 +1,4 @@
-﻿using AuthService.Application.DTO.Customers;
-using MediatR;
+﻿using MediatR;
 
 namespace AuthService.Application.CQRS.Customers.Commands
 {

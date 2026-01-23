@@ -32,4 +32,12 @@ public class Courier : EntityBase
     {
         IsVerified = true;
     }
+    public void ChangeVehicle(VehicleType vehicleType)
+    {
+        VehicleType = vehicleType;
+    }
+    public void ChangeName(string name)
+    {
+        Name = name;
+    }
 }

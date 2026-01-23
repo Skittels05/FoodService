@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.CQRS.Customers.Queries;
 using AuthService.Application.DTO.Customers;
+using AuthService.Application.Exceptions;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces.Repositories;
 using AutoMapper;
@@ -25,7 +26,7 @@ namespace AuthService.Application.CQRS.Customers.Handlers
 
             var customers = await _customerRepository.FindAsync(predicate);
             var customer = customers.FirstOrDefault()
-                ?? throw new KeyNotFoundException($"Customer with user id {request.UserId} not found");//temp
+                ?? throw new NotFoundByUserException(nameof(Customer), request.UserId);
 
             return _mapper.Map<CustomerDto>(customer);
         }
