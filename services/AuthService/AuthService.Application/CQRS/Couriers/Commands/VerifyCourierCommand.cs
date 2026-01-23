@@ -1,6 +1,5 @@
 ﻿using MediatR;
 
-namespace AuthService.Application.CQRS.Customer.Commands
-{
-    public record VerifyCourierCommand(Guid Id) : IRequest;
-}
+namespace AuthService.Application.CQRS.Couriers.Commands;
+
+public record VerifyCourierCommand(Guid Id) : IRequest;

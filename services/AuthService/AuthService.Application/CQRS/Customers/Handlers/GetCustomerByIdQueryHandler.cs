@@ -6,25 +6,24 @@ using AuthService.Domain.Interfaces.Repositories;
 using AutoMapper;
 using MediatR;
 
-namespace AuthService.Application.CQRS.Customers.Handlers
+namespace AuthService.Application.CQRS.Customers.Handlers;
+
+public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
 {
-    public class GetCustomerByIdQueryHandler : IRequestHandler<GetCustomerByIdQuery, CustomerDto>
+    private readonly IGenericRepository<Customer> _customerRepository;
+    private readonly IMapper _mapper;
+
+    public GetCustomerByIdQueryHandler(IGenericRepository<Customer> customerRepository, IMapper mapper)
     {
-        private readonly IGenericRepository<Customer> _customerRepository;
-        private readonly IMapper _mapper;
+        _customerRepository = customerRepository;
+        _mapper = mapper;
+    }
 
-        public GetCustomerByIdQueryHandler(IGenericRepository<Customer> customerRepository, IMapper mapper)
-        {
-            _customerRepository = customerRepository;
-            _mapper = mapper;
-        }
+    public async Task<CustomerDto> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
+    {
+        var customer = await _customerRepository.GetByIdAsync(request.Id)
+            ?? throw new NotFoundException(nameof(User), request.Id);
 
-        public async Task<CustomerDto> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
-        {
-            var customer = await _customerRepository.GetByIdAsync(request.Id)
-                ?? throw new NotFoundException(nameof(User), request.Id);
-
-            return _mapper.Map<CustomerDto>(customer);
-        }
+        return _mapper.Map<CustomerDto>(customer);
     }
 }

@@ -7,28 +7,27 @@ using AutoMapper;
 using MediatR;
 using System.Linq.Expressions;
 
-namespace AuthService.Application.CQRS.Customers.Handlers
+namespace AuthService.Application.CQRS.Customers.Handlers;
+
+public class GetCustomerByUserIdQueryHandler : IRequestHandler<GetCustomerByUserIdQuery, CustomerDto>
 {
-    public class GetCustomerByUserIdQueryHandler : IRequestHandler<GetCustomerByUserIdQuery, CustomerDto>
+    private readonly IGenericRepository<Customer> _customerRepository;
+    private readonly IMapper _mapper;
+
+    public GetCustomerByUserIdQueryHandler(IGenericRepository<Customer> customerRepository, IMapper mapper)
     {
-        private readonly IGenericRepository<Customer> _customerRepository;
-        private readonly IMapper _mapper;
+        _customerRepository = customerRepository;
+        _mapper = mapper;
+    }
 
-        public GetCustomerByUserIdQueryHandler(IGenericRepository<Customer> customerRepository, IMapper mapper)
-        {
-            _customerRepository = customerRepository;
-            _mapper = mapper;
-        }
+    public async Task<CustomerDto> Handle(GetCustomerByUserIdQuery request, CancellationToken cancellationToken)
+    {
+        Expression<Func<Customer, bool>> predicate = c => c.UserId == request.UserId;
 
-        public async Task<CustomerDto> Handle(GetCustomerByUserIdQuery request, CancellationToken cancellationToken)
-        {
-            Expression<Func<Customer, bool>> predicate = c => c.UserId == request.UserId;
+        var customers = await _customerRepository.FindAsync(predicate);
+        var customer = customers.FirstOrDefault()
+            ?? throw new NotFoundByUserException(nameof(Customer), request.UserId);
 
-            var customers = await _customerRepository.FindAsync(predicate);
-            var customer = customers.FirstOrDefault()
-                ?? throw new NotFoundByUserException(nameof(Customer), request.UserId);
-
-            return _mapper.Map<CustomerDto>(customer);
-        }
+        return _mapper.Map<CustomerDto>(customer);
     }
 }

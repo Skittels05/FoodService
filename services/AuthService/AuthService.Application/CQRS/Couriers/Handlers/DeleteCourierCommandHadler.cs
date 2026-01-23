@@ -3,20 +3,19 @@ using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces.Repositories;
 using MediatR;
 
-namespace AuthService.Application.CQRS.Couriers.Handlers
+namespace AuthService.Application.CQRS.Couriers.Handlers;
+
+public class DeleteCourierCommandHadler : IRequestHandler<DeleteCourierCommand>
 {
-    public class DeleteCourierCommandHadler : IRequestHandler<DeleteCourierCommand>
+    private readonly IGenericRepository<Courier> _courierRepository;
+
+    public DeleteCourierCommandHadler(IGenericRepository<Courier> courierRepository)
     {
-        private readonly IGenericRepository<Courier> _courierRepository;
+        _courierRepository = courierRepository;
+    }
 
-        public DeleteCourierCommandHadler(IGenericRepository<Courier> courierRepository)
-        {
-            _courierRepository = courierRepository;
-        }
-
-        public async Task Handle(DeleteCourierCommand request, CancellationToken cancellationToken)
-        {
-            await _courierRepository.DeleteAsync(request.Id);
-        }
+    public async Task Handle(DeleteCourierCommand request, CancellationToken cancellationToken)
+    {
+        await _courierRepository.DeleteAsync(request.Id);
     }
 }

@@ -3,14 +3,13 @@ using AuthService.Application.DTO.Users;
 using AuthService.Domain.Entities;
 using AutoMapper;
 
-namespace AuthService.Application.Mappings
+namespace AuthService.Application.Mappings;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            CreateMap<User, UserAccountDto>();
-            CreateMap<Customer, CustomerDto>();
-        }
+        CreateMap<User, UserAccountDto>();
+        CreateMap<Customer, CustomerDto>();
     }
 }
