@@ -1,29 +1,18 @@
 ﻿using AuthService.Application.CQRS.Couriers.Commands;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces.Repositories;
+using AutoMapper;
 using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class CreateCourierCommandHandler : IRequestHandler<CreateCourierCommand, Guid>
+public class CreateCourierCommandHandler(IGenericRepository<Courier> courierRepository, IMapper mapper)
+    : IRequestHandler<CreateCourierCommand, Guid>
 {
-    private readonly IGenericRepository<Courier> _courierRepository;
-
-    public CreateCourierCommandHandler(IGenericRepository<Courier> courierRepository)
+    public async Task<Guid> Handle(CreateCourierCommand request, CancellationToken cancellationToken)
     {
-        _courierRepository = courierRepository;
-    }
-
-    public async Task<Guid> Handle(CreateCourierCommand request, CancellationToken cancelaFtionToken)
-    {
-        var courier = new Courier(
-            request.UserId,
-            request.Name,
-            request.VehicleType,
-            request.DocumentsPath,
-            request.PhotoVerificationPath);
-
-        await _courierRepository.AddAsync(courier);
+        var courier = mapper.Map<Courier>(request);
+        await courierRepository.AddAsync(courier);
         return courier.Id;
     }
 }

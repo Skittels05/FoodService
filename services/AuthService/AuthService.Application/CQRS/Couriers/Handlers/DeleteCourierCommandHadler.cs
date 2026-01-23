@@ -5,17 +5,11 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class DeleteCourierCommandHadler : IRequestHandler<DeleteCourierCommand>
+public class DeleteCourierCommandHadler(IGenericRepository<Courier> courierRepository)
+    : IRequestHandler<DeleteCourierCommand>
 {
-    private readonly IGenericRepository<Courier> _courierRepository;
-
-    public DeleteCourierCommandHadler(IGenericRepository<Courier> courierRepository)
-    {
-        _courierRepository = courierRepository;
-    }
-
     public async Task Handle(DeleteCourierCommand request, CancellationToken cancellationToken)
     {
-        await _courierRepository.DeleteAsync(request.Id);
+        await courierRepository.DeleteAsync(request.Id);
     }
 }
