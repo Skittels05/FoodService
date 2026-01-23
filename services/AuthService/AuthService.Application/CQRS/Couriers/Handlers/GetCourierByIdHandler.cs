@@ -8,9 +8,7 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class GetCourierByIdHandler(
-    IGenericRepository<Courier> courierRepository,
-    IMapper mapper)
+public class GetCourierByIdHandler(ICourierRepository courierRepository, IMapper mapper)
     : IRequestHandler<GetCourierByIdQuery, CourierDto?>
 {
     public async Task<CourierDto?> Handle(GetCourierByIdQuery request, CancellationToken cancellationToken)

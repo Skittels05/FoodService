@@ -8,9 +8,7 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Customers.Handlers;
 
-public class GetCustomerByIdQueryHandler(
-    IGenericRepository<Customer> customerRepository,
-    IMapper mapper)
+public class GetCustomerByIdQueryHandler(ICustomerRepository customerRepository, IMapper mapper)
     : IRequestHandler<GetCustomerByIdQuery, CustomerDto?>
 {
     public async Task<CustomerDto?> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)

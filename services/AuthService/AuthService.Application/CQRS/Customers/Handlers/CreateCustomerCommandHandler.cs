@@ -6,9 +6,7 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Customers.Handlers;
 
-public class CreateCustomerCommandHandler(
-    IGenericRepository<Customer> customerRepository,
-    IMapper mapper)
+public class CreateCustomerCommandHandler(ICustomerRepository customerRepository, IMapper mapper)
     : IRequestHandler<CreateCustomerCommand, Guid>
 {
     public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)

@@ -8,15 +8,12 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class GetCourierByUserIdHandler(
-    IGenericRepository<Courier> courierRepository,
-    IMapper mapper)
+public class GetCourierByUserIdHandler(ICourierRepository courierRepository, IMapper mapper)
     : IRequestHandler<GetCourierByUserIdQuery, CourierDto?>
 {
     public async Task<CourierDto?> Handle(GetCourierByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var couriers = await courierRepository.FindAsync(c => c.UserId == request.UserId, cancellationToken);
-        var courier = couriers.FirstOrDefault()
+        var courier = await courierRepository.GetByUserIdAsync(request.UserId, cancellationToken)
             ?? throw new NotFoundByUserException(nameof(Courier), request.UserId);
         return mapper.Map<CourierDto>(courier);
     }

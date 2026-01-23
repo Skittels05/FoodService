@@ -6,7 +6,7 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class UpdateCourierCommandHandler(IGenericRepository<Courier> courierRepository)
+public class UpdateCourierCommandHandler(ICourierRepository courierRepository)
     : IRequestHandler<UpdateCourierCommand>
 {
     public async Task Handle(UpdateCourierCommand request, CancellationToken cancellationToken)

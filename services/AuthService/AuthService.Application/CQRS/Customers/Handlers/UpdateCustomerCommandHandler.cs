@@ -6,14 +6,13 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Customers.Handlers;
 
-public class UpdateCustomerCommandHandler(IGenericRepository<Customer> customerRepository)
+public class UpdateCustomerCommandHandler(ICustomerRepository customerRepository)
     : IRequestHandler<UpdateCustomerCommand, Guid>
 {
     public async Task<Guid> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
         var customer = await customerRepository.GetByIdAsync(request.Id, cancellationToken)
             ?? throw new NotFoundException(nameof(Customer), request.Id);
-
         customer.ChangeName(request.Name);
         var updatedCustomer = await customerRepository.UpdateAsync(customer, cancellationToken);
         return updatedCustomer.Id;

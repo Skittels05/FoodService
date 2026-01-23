@@ -6,7 +6,7 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class VerifyCourierCommandHandler(IGenericRepository<Courier> courierRepository)
+public class VerifyCourierCommandHandler(ICourierRepository courierRepository)
     : IRequestHandler<VerifyCourierCommand>
 {
     public async Task Handle(VerifyCourierCommand request, CancellationToken cancellationToken)
