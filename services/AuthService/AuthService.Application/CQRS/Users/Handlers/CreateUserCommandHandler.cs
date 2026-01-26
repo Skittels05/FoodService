@@ -1,31 +1,33 @@
-﻿using AuthService.Application.CQRS.Users.Commands;
+﻿using AutoMapper;
+using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Domain.Entities;
+using AuthService.Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
-namespace AuthService.Application.CQRS.Users.Handlers
+namespace AuthService.Application.CQRS.Users.Handlers;
+
+public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    : IRequestHandler<CreateUserCommand, Guid>
 {
-    public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Guid>
+    public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        private readonly UserManager<User> _userManager;
-
-        public CreateUserCommandHandler(UserManager<User> userManager)
+        await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-            _userManager = userManager;
-        }
-
-        public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancelationToken)
-        {
-            var user = new User(request.Email, request.UserName, request.Role);
-            var result = await _userManager.CreateAsync(user, request.Password);
-
+            var user = mapper.Map<User>(request);
+            var result = await unitOfWork.UserManager.CreateAsync(user, request.Password);
             if (result is { Succeeded: false })
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception($"Failed to create user: {errors}");
             }
-
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
             return user.Id;
+        }
+        catch (Exception)
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            throw;
         }
     }
 }

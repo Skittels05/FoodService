@@ -1,27 +1,18 @@
 ﻿using AutoMapper;
 using AuthService.Application.CQRS.Users.Queries;
 using AuthService.Application.DTO.Users;
-using AuthService.Domain.Entities;
+using AuthService.Domain.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
 namespace AuthService.Application.CQRS.Users.Handlers;
 
-public class GetUserByIdHandler : IRequestHandler<GetUserByIdQuery, UserAccountDto?>
+public class GetUserByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    : IRequestHandler<GetUserByIdQuery, UserAccountDto?>
 {
-    private readonly UserManager<User> _userManager;
-    private readonly IMapper _mapper;
-
-    public GetUserByIdHandler(UserManager<User> userManager, IMapper mapper)
+    public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        _userManager = userManager;
-        _mapper = mapper;
-    }
-
-    public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken cancelationToken)
-    {
-        var user = await _userManager.FindByIdAsync(request.Id.ToString());
+        var user = await unitOfWork.UserManager.FindByIdAsync(request.Id.ToString());
         if (user is null) return null;
-        return _mapper.Map<UserAccountDto>(user);
+        return mapper.Map<UserAccountDto>(user);
     }
 }

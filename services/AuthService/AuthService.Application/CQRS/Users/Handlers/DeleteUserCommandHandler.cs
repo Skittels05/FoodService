@@ -1,24 +1,34 @@
 ﻿using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Application.Exceptions;
 using AuthService.Domain.Entities;
+using AuthService.Domain.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
-namespace AuthService.Application.CQRS.Users.Handlers
+namespace AuthService.Application.CQRS.Users.Handlers;
+
+public class DeleteUserCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteUserCommand, IdentityResult>
 {
-    public class DeleteUserCommandHandler : IRequestHandler<DeleteUserCommand, IdentityResult>
+    public async Task<IdentityResult> Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
-        private readonly UserManager<User> _userManager;
-
-        public DeleteUserCommandHandler(UserManager<User> userManager) => _userManager = userManager;
-
-        public async Task<IdentityResult> Handle(DeleteUserCommand request, CancellationToken cancelationToken)
+        await unitOfWork.BeginTransactionAsync(cancellationToken);
+        try
         {
-
-            var user = await _userManager.FindByIdAsync(request.Id.ToString())
+            var user = await unitOfWork.UserManager.FindByIdAsync(request.Id.ToString())
                   ?? throw new NotFoundException(nameof(User), request.Id);
-
-            return await _userManager.DeleteAsync(user);
+            var result = await unitOfWork.UserManager.DeleteAsync(user);
+            if (result is { Succeeded: false })
+            {
+                var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
+                throw new Exception($"Failed to delete user: {errorMsg}");
+            }
+            await unitOfWork.CommitTransactionAsync(cancellationToken);
+            return result;
+        }
+        catch (Exception)
+        {
+            await unitOfWork.RollbackTransactionAsync();
+            throw;
         }
     }
 }
