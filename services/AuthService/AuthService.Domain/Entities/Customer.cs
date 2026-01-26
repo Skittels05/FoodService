@@ -12,4 +12,8 @@ public class Customer : EntityBase
         UserId = userId;
         Name = name;
     }
+    public void ChangeName(string name)
+    {
+        Name = name;
+    }
 }

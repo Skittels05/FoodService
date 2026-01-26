@@ -1,17 +1,23 @@
-﻿using AuthService.Application.DTO.Users;
+﻿using AuthService.Application.CQRS.Couriers.Commands;
+using AuthService.Application.CQRS.Customers.Commands;
+using AuthService.Application.DTO.Courier;
+using AuthService.Application.DTO.Customers;
+using AuthService.Application.DTO.Users;
 using AuthService.Domain.Entities;
 using AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace AuthService.Application.Mappings
+namespace AuthService.Application.Mappings;
+
+public class MappingProfile : Profile
 {
-    public class MappingProfile : Profile
+    public MappingProfile()
     {
-        public MappingProfile()
-        {
-            CreateMap<User, UserAccountDto>();
-        }
+        CreateMap<User, UserAccountDto>();
+
+        CreateMap<Customer, CustomerDto>();
+        CreateMap<CreateCustomerCommand, Customer>();
+
+        CreateMap<Courier, CourierDto>();
+        CreateMap<CreateCourierCommand, Courier>();
     }
 }
