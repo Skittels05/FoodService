@@ -1,6 +1,6 @@
 ﻿using AuthService.Application.CQRS.Couriers.Queries;
 using AuthService.Application.DTO.Courier;
-using AuthService.Domain.Common; // Подключаем PagedList
+using AuthService.Domain.Common;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -14,11 +14,6 @@ public class GetPendingCouriersHandler(IUnitOfWork unitOfWork, IMapper mapper)
     {
         var pagedCouriers = await unitOfWork.CourierRepository
             .GetPendingCouriersAsync(request.Page, request.PageSize, cancellationToken);
-        var courierDtos = mapper.Map<List<CourierDto>>(pagedCouriers.Items);
-        return new PagedList<CourierDto>(
-            courierDtos,
-            pagedCouriers.TotalCount,
-            pagedCouriers.PageNumber,
-            pagedCouriers.PageSize);
+        return mapper.Map<PagedList<CourierDto>>(pagedCouriers);
     }
 }
