@@ -7,13 +7,13 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
-public class GetPendingCouriersHandler(IUnitOfWork unitOfWork, IMapper mapper)
-    : IRequestHandler<GetPendingCouriersQuery, PagedList<CourierDto>>
+public class GetAllCouriersHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    : IRequestHandler<GetAllCouriersQuery, PagedList<CourierDto>>
 {
-    public async Task<PagedList<CourierDto>> Handle(GetPendingCouriersQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<CourierDto>> Handle(GetAllCouriersQuery request, CancellationToken cancellationToken)
     {
         var pagedCouriers = await unitOfWork.CourierRepository
-            .GetPendingCouriersAsync(request.Page, request.PageSize, cancellationToken);
+            .GetAllAsync(request.Page, request.PageSize, cancellationToken);
         return mapper.Map<PagedList<CourierDto>>(pagedCouriers);
     }
 }
