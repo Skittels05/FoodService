@@ -16,11 +16,13 @@ public class UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var user = await unitOfWork.UserManager.FindByIdAsync(request.Id.ToString())
+            var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new NotFoundException(nameof(User), request.Id);
             mapper.Map(request, user);
-            var result = await unitOfWork.UserManager.UpdateAsync(user);
-            if (result is { Succeeded: false })
+
+            var result = await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+
+            if (!result.Succeeded)
             {
                 var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception($"Failed to update user: {errorMsg}");
@@ -30,7 +32,7 @@ public class UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         }
         catch (Exception)
         {
-            await unitOfWork.RollbackTransactionAsync();
+            await unitOfWork.RollbackTransactionAsync(CancellationToken.None);
             throw;
         }
     }

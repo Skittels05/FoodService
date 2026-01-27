@@ -11,7 +11,7 @@ public class GetUserByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.UserManager.FindByIdAsync(request.Id.ToString());
+        var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken);
         if (user is null) return null;
         return mapper.Map<UserAccountDto>(user);
     }

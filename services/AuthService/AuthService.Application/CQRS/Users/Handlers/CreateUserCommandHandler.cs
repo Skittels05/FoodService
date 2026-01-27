@@ -15,8 +15,9 @@ public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         try
         {
             var user = mapper.Map<User>(request);
-            var result = await unitOfWork.UserManager.CreateAsync(user, request.Password);
-            if (result is { Succeeded: false })
+            var result = await unitOfWork.UserRepository.CreateAsync(user, request.Password, cancellationToken);
+
+            if (!result.Succeeded)
             {
                 var errors = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception($"Failed to create user: {errors}");
@@ -26,7 +27,7 @@ public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         }
         catch (Exception)
         {
-            await unitOfWork.RollbackTransactionAsync();
+            await unitOfWork.RollbackTransactionAsync(CancellationToken.None);
             throw;
         }
     }
