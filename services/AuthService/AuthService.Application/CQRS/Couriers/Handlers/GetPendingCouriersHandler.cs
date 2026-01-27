@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.CQRS.Couriers.Queries;
 using AuthService.Application.DTO.Courier;
+using AuthService.Domain.Common; // Подключаем PagedList
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -7,11 +8,17 @@ using MediatR;
 namespace AuthService.Application.CQRS.Couriers.Handlers;
 
 public class GetPendingCouriersHandler(IUnitOfWork unitOfWork, IMapper mapper)
-    : IRequestHandler<GetPendingCouriersQuery, IEnumerable<CourierDto>>
+    : IRequestHandler<GetPendingCouriersQuery, PagedList<CourierDto>>
 {
-    public async Task<IEnumerable<CourierDto>> Handle(GetPendingCouriersQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<CourierDto>> Handle(GetPendingCouriersQuery request, CancellationToken cancellationToken)
     {
-        var couriers = await unitOfWork.CourierRepository.GetPendingCouriersAsync(cancellationToken);
-        return mapper.Map<IEnumerable<CourierDto>>(couriers);
+        var pagedCouriers = await unitOfWork.CourierRepository
+            .GetPendingCouriersAsync(request.Page, request.PageSize, cancellationToken);
+        var courierDtos = mapper.Map<List<CourierDto>>(pagedCouriers.Items);
+        return new PagedList<CourierDto>(
+            courierDtos,
+            pagedCouriers.TotalCount,
+            pagedCouriers.PageNumber,
+            pagedCouriers.PageSize);
     }
 }

@@ -3,6 +3,7 @@ using AuthService.Application.CQRS.Customers.Commands;
 using AuthService.Application.DTO.Courier;
 using AuthService.Application.DTO.Customers;
 using AuthService.Application.DTO.Users;
+using AuthService.Domain.Common;
 using AuthService.Domain.Entities;
 using AutoMapper;
 
@@ -18,6 +19,7 @@ public class MappingProfile : Profile
         CreateMap<CreateCustomerCommand, Customer>();
 
         CreateMap<Courier, CourierDto>();
+        CreateMap(typeof(PagedList<>), typeof(PagedList<>)).ConvertUsing(typeof(PagedListConverter<,>));
         CreateMap<CreateCourierCommand, Courier>();
     }
 }
