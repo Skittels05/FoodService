@@ -1,8 +1,10 @@
 ﻿using AuthService.Application.CQRS.Couriers.Commands;
 using AuthService.Application.CQRS.Customers.Commands;
+using AuthService.Application.CQRS.RestaurantManagers.Commands;
 using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Application.DTO.Courier;
 using AuthService.Application.DTO.Customers;
+using AuthService.Application.DTO.RestaurantManager;
 using AuthService.Application.DTO.Users;
 using AuthService.Domain.Common;
 using AuthService.Domain.Entities;
@@ -37,5 +39,13 @@ public class MappingProfile : Profile
         CreateMap<Customer, CustomerDto>();
         CreateMap<CreateCustomerCommand, Customer>()
             .ConstructUsing(src => new Customer(src.UserId, src.Name));
+
+        CreateMap<RestaurantManager, RestaurantManagerDto>();
+        CreateMap<CreateRestaurantManagerCommand, RestaurantManager>()
+            .ConstructUsing(src => new RestaurantManager(
+                src.UserId,
+                src.ManagedRestaurantId,
+                src.Name
+            ));
     }
 }

@@ -17,4 +17,14 @@ public class RestaurantManager : EntityBase
         ManagedRestaurantId = restaurantId;
         Name = name;
     }
+
+    public void ChangeName(string newName)
+    {
+        Name = newName;
+    }
+
+    public void ChangeRestaurantId(Guid restaurantId)
+    {
+        ManagedRestaurantId = restaurantId;
+    }
 }
