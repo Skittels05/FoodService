@@ -2,7 +2,7 @@ namespace AuthService.Domain.Interfaces;
 
 public interface IEntityBase
 {
-    Guid Id { get; }
-    DateTime CreatedAt { get; }
-    DateTime? UpdatedAt { get; }
+    Guid Id { get; set; }
+    DateTime CreatedAt { get; set; }
+    DateTime? UpdatedAt { get; set; }
 }
