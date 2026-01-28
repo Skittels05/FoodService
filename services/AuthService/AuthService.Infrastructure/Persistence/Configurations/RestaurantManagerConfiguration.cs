@@ -15,7 +15,6 @@ public class RestaurantManagerConfiguration : IEntityTypeConfiguration<Restauran
                .HasForeignKey<RestaurantManager>(rm => rm.UserId)
                .OnDelete(DeleteBehavior.Cascade);
         builder.Property(rm => rm.Name)
-            .IsRequired()
-            .HasMaxLength(100);
+            .IsRequired();
     }
 }

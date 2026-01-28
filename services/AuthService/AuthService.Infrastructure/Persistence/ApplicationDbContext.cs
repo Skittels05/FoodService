@@ -19,6 +19,9 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
 
         base.OnModelCreating(builder);
+        builder.Ignore<IdentityRole<Guid>>();
+        builder.Ignore<IdentityUserRole<Guid>>();
+        builder.Ignore<IdentityRoleClaim<Guid>>();
         builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
     }
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

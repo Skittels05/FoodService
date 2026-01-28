@@ -1,3 +1,5 @@
+using AuthService.Application;
+using AuthService.Infrastructure;
 
 namespace AuthService.API
 {
@@ -6,6 +8,8 @@ namespace AuthService.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddApplication();
+            builder.Services.AddInfrastructure(builder.Configuration);
 
             builder.Services.AddOpenApi();
 

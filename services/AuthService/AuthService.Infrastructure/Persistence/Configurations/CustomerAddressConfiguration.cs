@@ -10,8 +10,7 @@ public class CustomerAddressConfiguration : IEntityTypeConfiguration<CustomerAdd
     {
         builder.HasKey(a => a.Id);
         builder.Property(a => a.Address)
-            .IsRequired()
-            .HasMaxLength(250);
+            .IsRequired();
         builder.HasIndex(a => a.CustomerId);
     }
 }

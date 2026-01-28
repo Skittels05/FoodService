@@ -1,9 +1,12 @@
-﻿namespace AuthService.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuthService.Domain.Entities;
 
 public class RestaurantManager : EntityBase
 {
     public Guid UserId { get; private set; }
     public Guid ManagedRestaurantId { get; private set; }
+    [MaxLength(50)]
     public string Name { get; private set; }
 
     protected RestaurantManager() { }
