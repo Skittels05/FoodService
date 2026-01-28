@@ -27,7 +27,7 @@ public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         }
         catch (Exception)
         {
-            await unitOfWork.RollbackTransactionAsync(CancellationToken.None);
+            await unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }

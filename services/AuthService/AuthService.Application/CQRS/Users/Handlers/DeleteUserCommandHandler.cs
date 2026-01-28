@@ -27,7 +27,7 @@ public class DeleteUserCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         }
         catch (Exception)
         {
-            await unitOfWork.RollbackTransactionAsync(CancellationToken.None);
+            await unitOfWork.RollbackTransactionAsync();
             throw;
         }
     }
