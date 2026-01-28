@@ -14,10 +14,10 @@ public class DeleteUserCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var user = await unitOfWork.UserManager.FindByIdAsync(request.Id.ToString())
+            var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
                   ?? throw new NotFoundException(nameof(User), request.Id);
-            var result = await unitOfWork.UserManager.DeleteAsync(user);
-            if (result is { Succeeded: false })
+            var result = await unitOfWork.UserRepository.DeleteAsync(user, cancellationToken);
+            if (!result.Succeeded)
             {
                 var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
                 throw new Exception($"Failed to delete user: {errorMsg}");
