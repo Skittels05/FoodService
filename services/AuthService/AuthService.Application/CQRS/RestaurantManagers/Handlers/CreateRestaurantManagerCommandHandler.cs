@@ -1,5 +1,4 @@
 ﻿using AuthService.Application.CQRS.RestaurantManagers.Commands;
-using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -14,7 +13,7 @@ public class CreateRestaurantManagerCommandHandler(IUnitOfWork unitOfWork, IMapp
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var manager = mapper.Map<RestaurantManager>(request);
+            var manager = mapper.Map<Domain.Entities.RestaurantManager>(request);
 
             await unitOfWork.RestaurantManagerRepository.AddAsync(manager, cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);
