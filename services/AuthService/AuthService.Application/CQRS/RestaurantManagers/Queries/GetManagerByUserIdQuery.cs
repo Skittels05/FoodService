@@ -1,4 +1,4 @@
-﻿using AuthService.Application.DTO.RestaurantManager;
+﻿using AuthService.Application.DTO.RestaurantManagers;
 using MediatR;
 
 namespace AuthService.Application.CQRS.RestaurantManager.Queries;

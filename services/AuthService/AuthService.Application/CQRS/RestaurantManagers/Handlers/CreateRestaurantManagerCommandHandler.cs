@@ -3,7 +3,6 @@ using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
-using System.Threading;
 
 namespace AuthService.Application.CQRS.RestaurantManagers.Handlers;
 

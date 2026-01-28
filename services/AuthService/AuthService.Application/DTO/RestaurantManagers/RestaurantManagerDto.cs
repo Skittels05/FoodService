@@ -1,4 +1,4 @@
-﻿namespace AuthService.Application.DTO.RestaurantManager;
+﻿namespace AuthService.Application.DTO.RestaurantManagers;
 
 public record RestaurantManagerDto(
     Guid Id,

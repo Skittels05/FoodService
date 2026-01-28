@@ -1,5 +1,5 @@
-﻿using AuthService.Application.CQRS.RestaurantManager.Queries;
-using AuthService.Application.DTO.RestaurantManager;
+﻿using AuthService.Application.CQRS.RestaurantManagers.Queries;
+using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;

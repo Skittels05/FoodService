@@ -1,4 +1,4 @@
-﻿using AuthService.Application.DTO.RestaurantManager;
+﻿using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Domain.Common;
 using AuthService.Domain.Constants;
 using MediatR;
