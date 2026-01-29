@@ -34,7 +34,7 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
-        if (_currentTransaction != null) return;
+        if (_currentTransaction is not null) return;
         _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
     }
 
@@ -44,7 +44,7 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
         {
             await _context.SaveChangesAsync(cancellationToken);
 
-            if (_currentTransaction != null)
+            if (_currentTransaction is not null)
             {
                 await _currentTransaction.CommitAsync(cancellationToken);
             }
@@ -56,7 +56,7 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
         }
         finally
         {
-            if (_currentTransaction != null)
+            if (_currentTransaction is not null)
             {
                 await _currentTransaction.DisposeAsync();
                 _currentTransaction = null;
@@ -66,7 +66,7 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
 
     public async Task RollbackTransactionAsync()
     {
-        if (_currentTransaction != null)
+        if (_currentTransaction is not null)
         {
             await _currentTransaction.RollbackAsync();
             await _currentTransaction.DisposeAsync();
