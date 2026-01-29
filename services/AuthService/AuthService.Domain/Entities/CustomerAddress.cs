@@ -1,8 +1,11 @@
-﻿namespace AuthService.Domain.Entities;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuthService.Domain.Entities;
 
 public class CustomerAddress : EntityBase
 {
     public Guid CustomerId { get; private set; }
+    [MaxLength(250)]
     public string Address { get; private set; }
     public DateTime? LastUsedAt { get; private set; }
 

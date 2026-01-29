@@ -6,8 +6,8 @@ namespace AuthService.Domain.Entities;
 
 public class User : IdentityUser<Guid>, IEntityBase
 {
-    public DateTime CreatedAt { get; private set; }
-    public DateTime? UpdatedAt { get; private set; }
+    public DateTime CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
     public UserRole Role { get; private set; }
 
     protected User() { }
