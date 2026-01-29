@@ -7,7 +7,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
-        var assembly = Assembly.GetExecutingAssembly();
+        return services
+            .AddMappings();
+    }
+
+    private static IServiceCollection AddMappings(this IServiceCollection services)
+    {
         services.AddAutoMapper(cfg =>
             cfg.AddMaps(Assembly.GetExecutingAssembly()));
         return services;
