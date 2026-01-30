@@ -16,7 +16,7 @@ public class UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
+            var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, true, cancellationToken)
                 ?? throw new NotFoundException(nameof(User), request.Id);
             mapper.Map(request, user);
 

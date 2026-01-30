@@ -4,5 +4,5 @@ namespace AuthService.Domain.Interfaces.Repositories;
 
 public interface ICustomerRepository: IGenericRepository<Customer>
 {
-    Task<Customer> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    Task<Customer> GetByUserIdAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken);
 }

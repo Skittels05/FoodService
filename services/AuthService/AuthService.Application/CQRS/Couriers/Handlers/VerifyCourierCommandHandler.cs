@@ -14,7 +14,7 @@ public class VerifyCourierCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, true,  cancellationToken)
                 ?? throw new NotFoundException(nameof(Courier), request.Id);
             courier.Verify();
 

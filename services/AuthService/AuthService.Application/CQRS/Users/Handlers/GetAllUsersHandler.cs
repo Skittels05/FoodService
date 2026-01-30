@@ -13,7 +13,7 @@ public class GetAllUsersHandler(IUnitOfWork unitOfWork, IMapper mapper)
     public async Task<PagedList<UserAccountDto>> Handle(GetAllUsersQuery request, CancellationToken cancellationToken)
     {
         var pagedUsers = await unitOfWork.UserRepository
-            .GetAllAsync(request.Page, request.PageSize, cancellationToken);
+            .GetAllAsync(request.Page, request.PageSize, false, cancellationToken);
         return mapper.Map<PagedList<UserAccountDto>>(pagedUsers);
     }
 }

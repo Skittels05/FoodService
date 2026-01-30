@@ -13,7 +13,7 @@ public class GetUserByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<UserAccountDto?> Handle(GetUserByIdQuery request, CancellationToken cancellationToken)
     {
-        var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
+        var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, false, cancellationToken)
             ?? throw new NotFoundException(nameof(User), request.Id);
         return mapper.Map<UserAccountDto>(user);
     }

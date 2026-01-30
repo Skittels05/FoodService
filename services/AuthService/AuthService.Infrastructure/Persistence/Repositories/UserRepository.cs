@@ -11,18 +11,20 @@ public class UserRepository(UserManager<User> userManager) : IUserRepository
 {
     private readonly UserManager<User> _userManager = userManager;
 
-    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<User?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
+        var query = trackChanges ? _userManager.Users : _userManager.Users.AsNoTracking();
+        return await query.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
-    public async Task<PagedList<User>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<PagedList<User>> GetAllAsync(int page, int pageSize, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await _userManager.Users
+        var query = trackChanges ? _userManager.Users : _userManager.Users.AsNoTracking();
+
+        return await query
             .OrderBy(u => u.Email)
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }
-
     public async Task<IdentityResult> CreateAsync(User user, string password, CancellationToken cancellationToken)
     {
         return await _userManager.CreateAsync(user, password);

@@ -9,15 +9,16 @@ namespace AuthService.Infrastructure.Persistence.Repositories;
 public class CourierRepository(ApplicationDbContext context)
     : GenericRepository<Courier>(context), ICourierRepository
 {
-    public async Task<Courier> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    public async Task<Courier?> GetByUserIdAsync(Guid userId, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await _dbSet.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
+        return await (trackChanges ? _dbSet : _dbSet.AsNoTracking())
+            .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
     }
 
-    public async Task<PagedList<Courier>> GetPendingCouriersAsync(int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<PagedList<Courier>> GetPendingCouriersAsync(int page, int pageSize, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await _dbSet
-            .Where(c => c.IsVerified == false) 
+        return await (trackChanges ? _dbSet : _dbSet.AsNoTracking())
+            .Where(c => c.IsVerified == false)
             .OrderBy(c => c.CreatedAt)
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }

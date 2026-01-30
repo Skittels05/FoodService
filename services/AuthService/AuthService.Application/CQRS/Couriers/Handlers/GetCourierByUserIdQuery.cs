@@ -13,7 +13,7 @@ public class GetCourierByUserIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<CourierDto?> Handle(GetCourierByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var courier = await unitOfWork.CourierRepository.GetByUserIdAsync(request.UserId, cancellationToken)
+        var courier = await unitOfWork.CourierRepository.GetByUserIdAsync(request.UserId, false, cancellationToken)
             ?? throw new NotFoundByUserException(nameof(Courier), request.UserId);
         return mapper.Map<CourierDto>(courier);
     }
