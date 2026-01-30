@@ -33,7 +33,6 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
 
     public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        _dbSet.Update(entity);
         return Task.FromResult(entity);
     }
 
