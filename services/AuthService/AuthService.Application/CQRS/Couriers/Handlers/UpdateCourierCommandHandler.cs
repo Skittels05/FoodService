@@ -15,7 +15,7 @@ public class UpdateCourierCommandHandler(IUnitOfWork unitOfWork)
 
         try
         {
-            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, true, cancellationToken)
                 ?? throw new NotFoundException(nameof(Courier), request.Id);
             courier.ChangeVehicle(request.VehicleType);
             courier.ChangeName(request.Name);

@@ -13,7 +13,7 @@ namespace AuthService.Application.CQRS.CustomerAddresses.Handlers
             await unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
-                var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, cancellationToken)
+                var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, true, cancellationToken)
                     ?? throw new NotFoundException(nameof(CustomerAddresses), request.Id);
                 await unitOfWork.CustomerAddressRepository.DeleteAsync(address, cancellationToken);
                 await unitOfWork.CommitTransactionAsync(cancellationToken);

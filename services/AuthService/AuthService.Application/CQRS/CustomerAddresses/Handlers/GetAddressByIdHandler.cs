@@ -12,7 +12,7 @@ public class GetAddressByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<CustomerAddressDto?> Handle(GetAddressByIdQuery request, CancellationToken cancellationToken)
     {
-        var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, cancellationToken)
+        var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, false, cancellationToken)
             ?? throw new NotFoundException(nameof(CustomerAddresses), request.Id);
         return mapper.Map<CustomerAddressDto>(address);
     }

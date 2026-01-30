@@ -13,7 +13,7 @@ public class UpdateRestaurantManagerCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.Id, cancellationToken)
+            var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.Id, true, cancellationToken)
                 ?? throw new NotFoundException(nameof(RestaurantManager), request.Id);
             manager.ChangeName(request.Name);
             manager.ChangeRestaurantId(request.ManagedRestaurantId);

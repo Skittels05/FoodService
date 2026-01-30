@@ -14,7 +14,7 @@ public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.Id, cancellationToken)
+            var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.Id, true, cancellationToken)
                 ?? throw new NotFoundException(nameof(Customer), request.Id);
             customer.ChangeName(request.Name);
             var updatedCustomer = await unitOfWork.CustomerRepository.UpdateAsync(customer, cancellationToken);

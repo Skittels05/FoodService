@@ -13,7 +13,7 @@ public class GetRestaurantManagerByIdHandler(IUnitOfWork unitOfWork, IMapper map
 {
     public async Task<RestaurantManagerDto?> Handle(GetRestaurantManagerByIdQuery request, CancellationToken cancellationToken)
     {
-        var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.Id, cancellationToken)
+        var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.Id, false, cancellationToken)
             ?? throw new NotFoundException(nameof(RestaurantManager), request.Id);
         return mapper.Map<RestaurantManagerDto>(manager);
     }

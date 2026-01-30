@@ -12,15 +12,20 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
     protected readonly ApplicationDbContext _context = context;
     protected readonly DbSet<TEntity> _dbSet = context.Set<TEntity>();
 
-    public virtual async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public virtual async Task<TEntity?> GetByIdAsync(Guid id, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await _dbSet.FindAsync([id], cancellationToken);
+        return trackChanges
+            ? await _dbSet.FindAsync([id], cancellationToken)
+            : await _dbSet.AsNoTracking().FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
-    public virtual async Task<PagedList<TEntity>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken)
+    public virtual async Task<PagedList<TEntity>> GetAllAsync(int page, int pageSize, bool trackChanges, CancellationToken cancellationToken)
     {
-        return await _dbSet
-            .AsNoTracking()
+        IQueryable<TEntity> query = trackChanges
+            ? _dbSet
+            : _dbSet.AsNoTracking();
+
+        return await query
             .OrderByDescending(x => x.CreatedAt)
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }
@@ -36,8 +41,9 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
         return Task.FromResult(entity);
     }
 
-    public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken)
+    public virtual Task DeleteAsync(TEntity entity, CancellationToken cancellationToken)
     {
         _dbSet.Remove(entity);
+        return Task.CompletedTask;
     }
 }

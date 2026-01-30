@@ -14,7 +14,7 @@ public class DeleteCourierCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id,true, cancellationToken)
                 ?? throw new NotFoundException(nameof(Courier), request.Id);
             await unitOfWork.CourierRepository.DeleteAsync(courier, cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);

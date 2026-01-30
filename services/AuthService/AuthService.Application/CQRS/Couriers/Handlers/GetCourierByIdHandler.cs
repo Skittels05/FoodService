@@ -13,7 +13,7 @@ public class GetCourierByIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<CourierDto?> Handle(GetCourierByIdQuery request, CancellationToken cancellationToken)
     {
-        var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+        var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, false, cancellationToken)
             ?? throw new NotFoundException(nameof(Courier), request.Id);
         return mapper.Map<CourierDto>(courier);
     }

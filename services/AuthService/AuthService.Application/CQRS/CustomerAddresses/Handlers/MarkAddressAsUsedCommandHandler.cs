@@ -14,7 +14,7 @@ public class MarkAddressAsUsedCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, cancellationToken)
+            var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, true, cancellationToken)
                 ?? throw new NotFoundException(nameof(CustomerAddress), request.Id);
 
             address.MarkAsUsed();
