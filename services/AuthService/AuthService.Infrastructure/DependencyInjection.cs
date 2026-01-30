@@ -1,6 +1,8 @@
 ﻿using AuthService.Domain.Entities;
+using AuthService.Domain.Interfaces;
 using AuthService.Infrastructure.Persistence;
 using AuthService.Infrastructure.Persistence.Interceptors;
+using AuthService.Infrastructure.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -23,10 +25,11 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             var auditableInterceptor = sp.GetRequiredService<EntityInterceptor>();
-
             options.UseNpgsql(connectionString)
                    .AddInterceptors(auditableInterceptor);
         });
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
         return services;
     }
 
