@@ -1,4 +1,6 @@
 ﻿using AuthService.Application.CQRS.Couriers.Commands;
+using AuthService.Application.Exceptions;
+using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using MediatR;
 
@@ -12,7 +14,9 @@ public class DeleteCourierCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            await unitOfWork.CourierRepository.DeleteAsync(request.Id, cancellationToken);
+            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+                ?? throw new NotFoundException(nameof(Courier), request.Id);
+            await unitOfWork.CourierRepository.DeleteAsync(courier, cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);
         }
         catch (Exception)

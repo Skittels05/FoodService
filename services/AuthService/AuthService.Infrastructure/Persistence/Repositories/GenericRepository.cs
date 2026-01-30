@@ -36,12 +36,8 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
         return Task.FromResult(entity);
     }
 
-    public virtual async Task DeleteAsync(Guid id, CancellationToken cancellationToken)
+    public virtual async Task DeleteAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        var entity = await GetByIdAsync(id, cancellationToken);
-        if (entity is not null)
-        {
-            _dbSet.Remove(entity);
-        }
+        _dbSet.Remove(entity);
     }
 }

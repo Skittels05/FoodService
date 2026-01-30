@@ -1,4 +1,5 @@
 ﻿using AuthService.Application.CQRS.RestaurantManagers.Commands;
+using AuthService.Application.Exceptions;
 using AuthService.Domain.Interfaces;
 using MediatR;
 
@@ -12,7 +13,9 @@ public class DeleteRestaurantManagerCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.BeginTransactionAsync(cancellationToken);
         try
         {
-            await unitOfWork.RestaurantManagerRepository.DeleteAsync(request.Id, cancellationToken);
+            var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.Id, cancellationToken)
+            ?? throw new NotFoundException(nameof(RestaurantManager), request.Id);
+            await unitOfWork.RestaurantManagerRepository.DeleteAsync(manager, cancellationToken);
             await unitOfWork.CommitTransactionAsync(cancellationToken);
         }
         catch
