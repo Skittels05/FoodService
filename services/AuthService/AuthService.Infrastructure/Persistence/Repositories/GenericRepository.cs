@@ -25,10 +25,10 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }
 
-    public virtual async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
+    public virtual Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
     {
-        await _dbSet.AddAsync(entity, cancellationToken);
-        return entity;
+        _dbSet.Add(entity);
+        return Task.FromResult(entity);
     }
 
     public virtual Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken)

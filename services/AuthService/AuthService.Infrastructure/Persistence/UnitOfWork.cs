@@ -11,26 +11,12 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
     private readonly ApplicationDbContext _context = context;
     private readonly UserManager<User> _userManager = userManager;
     private IDbContextTransaction? _currentTransaction;
-    private IUserRepository? _userRepository;
-    private ICourierRepository? _courierRepository;
-    private ICustomerRepository? _customerRepository;
-    private IRestaurantManagerRepository? _restaurantManagerRepository;
-    private ICustomerAddressRepository? _customerAddressRepository;
 
-    public IUserRepository UserRepository =>
-        _userRepository ??= new UserRepository(_userManager);
-
-    public ICourierRepository CourierRepository =>
-        _courierRepository ??= new CourierRepository(_context);
-
-    public ICustomerRepository CustomerRepository =>
-        _customerRepository ??= new CustomerRepository(_context);
-
-    public IRestaurantManagerRepository RestaurantManagerRepository =>
-        _restaurantManagerRepository ??= new RestaurantManagerRepository(_context);
-
-    public ICustomerAddressRepository CustomerAddressRepository =>
-        _customerAddressRepository ??= new CustomerAddressRepository(_context);
+    public IUserRepository UserRepository { get; } = new UserRepository(userManager);
+    public ICourierRepository CourierRepository { get; } = new CourierRepository(context);
+    public ICustomerRepository CustomerRepository { get; } = new CustomerRepository(context);
+    public IRestaurantManagerRepository RestaurantManagerRepository { get; } = new RestaurantManagerRepository(context);
+    public ICustomerAddressRepository CustomerAddressRepository { get; } = new CustomerAddressRepository(context);
 
     public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
     {
@@ -76,13 +62,16 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
 
     public void Dispose()
     {
-        _context.Dispose();
+        _currentTransaction?.Dispose();
         GC.SuppressFinalize(this);
     }
 
     public async ValueTask DisposeAsync()
     {
-        await _context.DisposeAsync();
+        if (_currentTransaction is not null)
+        {
+            await _currentTransaction.DisposeAsync();
+        }
         GC.SuppressFinalize(this);
     }
 }
