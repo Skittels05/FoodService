@@ -9,6 +9,6 @@ namespace AuthService.Domain.Interfaces.Repositories
         Task<PagedList<TEntity>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken);
         Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken);
         Task<TEntity> UpdateAsync(TEntity entity, CancellationToken cancellationToken);
-        Task DeleteAsync(TEntity entity, CancellationToken cancellationToken);
+        Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken);
     }
 }

@@ -10,18 +10,10 @@ namespace AuthService.Application.CQRS.CustomerAddresses.Handlers
     {
         public async Task Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.BeginTransactionAsync(cancellationToken);
-            try
+            var isDeleted = await unitOfWork.CustomerAddressRepository.DeleteAsync(request.Id, cancellationToken);
+            if (isDeleted is false)
             {
-                var address = await unitOfWork.CustomerAddressRepository.GetByIdAsync(request.Id, cancellationToken)
-                    ?? throw new NotFoundException(nameof(CustomerAddresses), request.Id);
-                await unitOfWork.CustomerAddressRepository.DeleteAsync(address, cancellationToken);
-                await unitOfWork.CommitTransactionAsync(cancellationToken);
-            }
-            catch
-            {
-                await unitOfWork.RollbackTransactionAsync();
-                throw;
+                throw new NotFoundException(nameof(CustomerAddresses), request.Id);
             }
         }
     }

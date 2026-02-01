@@ -11,18 +11,10 @@ public class DeleteCustomerCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
+        var isDeleted = await unitOfWork.CustomerRepository.DeleteAsync(request.Id, cancellationToken);
+        if (isDeleted is false)
         {
-            var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.Id, cancellationToken)
-                ?? throw new NotFoundException(nameof(Customer), request.Id);
-            await unitOfWork.CustomerRepository.DeleteAsync(customer, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
+            throw new NotFoundException(nameof(Customer), request.Id);
         }
     }
 }

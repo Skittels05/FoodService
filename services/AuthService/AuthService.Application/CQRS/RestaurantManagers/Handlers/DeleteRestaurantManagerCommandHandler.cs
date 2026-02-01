@@ -10,18 +10,10 @@ public class DeleteRestaurantManagerCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(DeleteRestaurantManagerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.Id, cancellationToken)
-            ?? throw new NotFoundException(nameof(RestaurantManager), request.Id);
-            await unitOfWork.RestaurantManagerRepository.DeleteAsync(manager, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-        }
-        catch
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+            var isDeleted =  await unitOfWork.RestaurantManagerRepository.DeleteAsync(request.Id, cancellationToken);
+            if (isDeleted is false)
+            {
+                throw new NotFoundException(nameof(RestaurantManager), request.Id);
+            }
     }
 }
