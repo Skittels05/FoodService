@@ -16,10 +16,11 @@ public class UserRepository(UserManager<User> userManager) : IUserRepository
         return await _userManager.Users.FirstOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
-    public async Task<PagedList<User>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<PagedList<User>> GetAllAsync(
+    int page, int pageSize, string? sortBy, string? sortOrder, CancellationToken cancellationToken)
     {
         return await _userManager.Users
-            .OrderBy(u => u.Email)
+            .ApplySorting(sortBy, sortOrder)
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }
 

@@ -8,11 +8,12 @@ namespace AuthService.Infrastructure.Persistence.Repositories;
 public class CustomerAddressRepository(ApplicationDbContext context)
     : GenericRepository<CustomerAddress>(context), ICustomerAddressRepository
 {
-    public async Task<PagedList<CustomerAddress>> GetByCustomerIdAsync(Guid customerId, int page, int pageSize, CancellationToken cancellationToken)
+    public async Task<PagedList<CustomerAddress>> GetByCustomerIdAsync(
+    Guid customerId, int page, int pageSize, string? sortBy, string? sortOrder, CancellationToken cancellationToken)
     {
         return await _dbSet
             .Where(a => a.CustomerId == customerId)
-            .OrderByDescending(a => a.CreatedAt)
+            .ApplySorting(sortBy, sortOrder)
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }
 }

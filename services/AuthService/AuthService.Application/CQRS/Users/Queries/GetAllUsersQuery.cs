@@ -7,5 +7,7 @@ namespace AuthService.Application.CQRS.Users.Queries;
 
 public record GetAllUsersQuery(
     int Page = PaginationConstants.DefaultPageNumber,
-    int PageSize = PaginationConstants.DefaultPageSize
-) : IRequest<PagedList<UserAccountDto>>;
+    int PageSize = PaginationConstants.DefaultPageSize,
+    string? SortBy = null, 
+    string? SortOrder = null) 
+    : IRequest<PagedList<UserAccountDto>>;

@@ -5,5 +5,9 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Customers.Queries;
 
-public record GetAllCustomersQuery(int Page = PaginationConstants.DefaultPageNumber, int PageSize = PaginationConstants.DefaultPageSize)
-    : IRequest<PagedList<CustomerDto>>;
+public record GetAllCustomersQuery(
+    int Page = PaginationConstants.DefaultPageNumber,
+    int PageSize = PaginationConstants.DefaultPageSize,
+    string? SortBy = null,
+    string? SortOrder = null
+) : IRequest<PagedList<CustomerDto>>;

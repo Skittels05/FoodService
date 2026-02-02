@@ -17,11 +17,16 @@ public class GenericRepository<TEntity>(ApplicationDbContext context) : IGeneric
         return await _dbSet.FindAsync([id], cancellationToken);
     }
 
-    public virtual async Task<PagedList<TEntity>> GetAllAsync(int page, int pageSize, CancellationToken cancellationToken)
+    public virtual async Task<PagedList<TEntity>> GetAllAsync(
+        int page,
+        int pageSize,
+        string? sortBy,
+        string? sortOrder,
+        CancellationToken cancellationToken)
     {
         return await _dbSet
             .AsNoTracking()
-            .OrderByDescending(x => x.CreatedAt)
+            .ApplySorting(sortBy, sortOrder)
             .ToPagedListAsync(page, pageSize, cancellationToken);
     }
 

@@ -5,5 +5,9 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Queries;
 
-public record GetAllCouriersQuery(int Page = PaginationConstants.DefaultPageNumber, int PageSize = PaginationConstants.DefaultPageSize)
+public record GetAllCouriersQuery(
+    int Page = PaginationConstants.DefaultPageNumber,
+    int PageSize = PaginationConstants.DefaultPageSize,
+    string? SortBy = null,
+    string? SortOrder = null)
     : IRequest<PagedList<CourierDto>>;
