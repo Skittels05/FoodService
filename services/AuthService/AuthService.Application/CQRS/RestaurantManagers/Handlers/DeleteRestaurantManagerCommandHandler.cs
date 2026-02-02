@@ -10,10 +10,10 @@ public class DeleteRestaurantManagerCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(DeleteRestaurantManagerCommand request, CancellationToken cancellationToken)
     {
-            var isDeleted =  await unitOfWork.RestaurantManagerRepository.DeleteAsync(request.Id, cancellationToken);
-            if (isDeleted is false)
-            {
-                throw new NotFoundException(nameof(RestaurantManager), request.Id);
-            }
+        var isDeleted = await unitOfWork.RestaurantManagerRepository.DeleteAsync(request.Id, cancellationToken);
+        if (isDeleted is false)
+        {
+            throw new NotFoundException(nameof(RestaurantManager), request.Id);
+        }
     }
 }
