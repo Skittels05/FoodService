@@ -1,4 +1,6 @@
 ﻿using AuthService.Application.CQRS.Customers.Commands;
+using AuthService.Application.Exceptions;
+using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using MediatR;
 
@@ -9,16 +11,10 @@ public class DeleteCustomerCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
+        var isDeleted = await unitOfWork.CustomerRepository.DeleteAsync(request.Id, cancellationToken);
+        if (isDeleted is false)
         {
-            await unitOfWork.CustomerRepository.DeleteAsync(request.Id, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
+            throw new NotFoundException(nameof(Customer), request.Id);
         }
     }
 }

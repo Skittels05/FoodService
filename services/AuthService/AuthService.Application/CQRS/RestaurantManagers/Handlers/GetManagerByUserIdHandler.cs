@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.CQRS.RestaurantManager.Queries;
 using AuthService.Application.DTO.RestaurantManagers;
+using AuthService.Application.Exceptions;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -11,7 +12,8 @@ public class GetManagerByUserIdHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<RestaurantManagerDto?> Handle(GetManagerByUserIdQuery request, CancellationToken cancellationToken)
     {
-        var manager = await unitOfWork.RestaurantManagerRepository.GetByUserIdAsync(request.UserId, cancellationToken);
-        return manager is null ? null : mapper.Map<RestaurantManagerDto>(manager);
+        var manager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.UserId, cancellationToken)
+            ?? throw new NotFoundByUserException(nameof(RestaurantManager), request.UserId);
+        return mapper.Map<RestaurantManagerDto>(manager);
     }
 }

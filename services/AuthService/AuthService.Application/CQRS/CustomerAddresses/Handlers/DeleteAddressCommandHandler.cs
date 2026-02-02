@@ -1,4 +1,5 @@
 ﻿using AuthService.Application.CQRS.CustomerAddresses.Commands;
+using AuthService.Application.Exceptions;
 using AuthService.Domain.Interfaces;
 using MediatR;
 
@@ -9,16 +10,10 @@ namespace AuthService.Application.CQRS.CustomerAddresses.Handlers
     {
         public async Task Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
         {
-            await unitOfWork.BeginTransactionAsync(cancellationToken);
-            try
+            var isDeleted = await unitOfWork.CustomerAddressRepository.DeleteAsync(request.Id, cancellationToken);
+            if (isDeleted is false)
             {
-                await unitOfWork.CustomerAddressRepository.DeleteAsync(request.Id, cancellationToken);
-                await unitOfWork.CommitTransactionAsync(cancellationToken);
-            }
-            catch
-            {
-                await unitOfWork.RollbackTransactionAsync();
-                throw;
+                throw new NotFoundException(nameof(CustomerAddresses), request.Id);
             }
         }
     }
