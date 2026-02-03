@@ -48,7 +48,13 @@ public class MappingProfile : Profile
                 src.DocumentsPath,
                 src.PhotoVerificationPath
             ));
-        
+        CreateMap<UpdateCourierDto, UpdateCourierCommand>()
+            .ConstructUsing(src => new UpdateCourierCommand(
+                Guid.Empty,
+                src.Name,
+                src.VehicleType
+            ));
+
         CreateMap<Customer, CustomerDto>();
         CreateMap<CreateCustomerCommand, Customer>()
             .ConstructUsing(src => new Customer(src.UserId, src.Name));
