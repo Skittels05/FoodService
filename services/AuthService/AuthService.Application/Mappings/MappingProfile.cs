@@ -48,10 +48,12 @@ public class MappingProfile : Profile
                 src.DocumentsPath,
                 src.PhotoVerificationPath
             ));
-
+        
         CreateMap<Customer, CustomerDto>();
         CreateMap<CreateCustomerCommand, Customer>()
             .ConstructUsing(src => new Customer(src.UserId, src.Name));
+        CreateMap<UpdateCustomerDto, UpdateCustomerCommand>()
+            .ConstructUsing(src => new UpdateCustomerCommand(Guid.Empty, src.Name));
 
         CreateMap<RestaurantManager, RestaurantManagerDto>();
         CreateMap<CreateRestaurantManagerCommand, RestaurantManager>()
