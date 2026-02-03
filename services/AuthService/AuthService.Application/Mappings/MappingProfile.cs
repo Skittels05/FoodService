@@ -1,11 +1,11 @@
 ﻿using AuthService.Application.CQRS.Couriers.Commands;
 using AuthService.Application.CQRS.CustomerAddresses.Commands;
 using AuthService.Application.CQRS.Customers.Commands;
+using AuthService.Application.CQRS.RestaurantManagers.Commands;
 using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Application.DTO.Courier;
 using AuthService.Application.DTO.Customers;
 using AuthService.Application.DTO.RestaurantManagers;
-using AuthService.Application.CQRS.RestaurantManagers.Commands;
 using AuthService.Application.DTO.Users;
 using AuthService.Domain.Common;
 using AuthService.Domain.Entities;
@@ -21,11 +21,23 @@ public class MappingProfile : Profile
         CreateMap(typeof(PagedList<>), typeof(PagedList<>))
             .ConvertUsing(typeof(PagedListConverter<,>));
 
-        CreateMap<User, UserAccountDto>();
+        CreateMap<User, UserAccountDto>()
+            .ForCtorParam(nameof(UserAccountDto.IsPhoneNumberConfirmed),
+            opt => opt.MapFrom(src => src.PhoneNumberConfirmed))
+            .ForCtorParam(nameof(UserAccountDto.IsTwoFactorEnabled),
+            opt => opt.MapFrom(src => src.TwoFactorEnabled));
+
         CreateMap<CreateUserCommand, User>()
-            .ConstructUsing(src => new User(src.Email, src.UserName, src.Role));
+        .ConstructUsing(src => new User(src.Email, src.UserName, src.Role));
         CreateMap<UpdateUserCommand, User>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
+        .ForMember(dest => dest.Id, opt => opt.Ignore());
+        CreateMap<UpdateUserDto, UpdateUserCommand>()
+            .ConstructUsing(src => new UpdateUserCommand(
+                Guid.Empty,
+                src.Email,
+                src.UserName,
+                src.PhoneNumber
+            ));
 
         CreateMap<Courier, CourierDto>();
         CreateMap<CreateCourierCommand, Courier>()
