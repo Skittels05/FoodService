@@ -68,6 +68,12 @@ public class MappingProfile : Profile
                 src.ManagedRestaurantId,
                 src.Name
             ));
+        CreateMap<UpdateRestaurantManagerDto, UpdateRestaurantManagerCommand>()
+            .ConstructUsing(src => new UpdateRestaurantManagerCommand(
+            Guid.Empty,
+            src.ManagedRestaurantId,
+            src.Name
+             ));
 
         CreateMap<CustomerAddress, CustomerAddressDto>();
         CreateMap<CreateAddressCommand, CustomerAddress>()

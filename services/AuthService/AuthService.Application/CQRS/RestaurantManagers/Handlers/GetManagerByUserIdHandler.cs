@@ -1,4 +1,4 @@
-﻿using AuthService.Application.CQRS.RestaurantManager.Queries;
+﻿using AuthService.Application.CQRS.RestaurantManagers.Queries;
 using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Application.Exceptions;
 using AuthService.Domain.Interfaces;
