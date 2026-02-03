@@ -14,12 +14,11 @@ public class CourierRepository(ApplicationDbContext context)
         return await _dbSet.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
     }
 
-    public async Task<PagedList<Courier>> GetPendingCouriersAsync(
-    int page, int pageSize, string? sortBy, string? sortOrder, CancellationToken cancellationToken)
+    public async Task<PagedList<Courier>> GetPendingCouriersAsync(PageRequest request, CancellationToken cancellationToken)
     {
         return await _dbSet
             .Where(c => c.IsVerified == false)
-            .ApplySorting(sortBy, sortOrder)
-            .ToPagedListAsync(page, pageSize, cancellationToken);
+            .ApplySorting(request.SortBy, request.SortOrder)
+            .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 }

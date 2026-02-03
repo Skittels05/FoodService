@@ -5,10 +5,4 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.RestaurantManagers.Queries;
 
-public record GetManagersByRestaurantQuery(
-    Guid RestaurantId,
-    int Page = PaginationConstants.DefaultPageNumber,
-    int PageSize = PaginationConstants.DefaultPageSize,
-    string? SortBy = null, 
-    string? SortOrder = null) : 
-    IRequest<PagedList<RestaurantManagerDto>>;
+public record GetManagersByRestaurantQuery(Guid RestaurantId) : PageRequest, IRequest<PagedList<RestaurantManagerDto>>;

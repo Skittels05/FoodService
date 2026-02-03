@@ -13,7 +13,7 @@ public class GetPendingCouriersHandler(IUnitOfWork unitOfWork, IMapper mapper)
     public async Task<PagedList<CourierDto>> Handle(GetPendingCouriersQuery request, CancellationToken cancellationToken)
     {
         var pagedCouriers = await unitOfWork.CourierRepository
-            .GetPendingCouriersAsync(request.Page, request.PageSize, request.SortBy, request.SortOrder, cancellationToken);
+            .GetPendingCouriersAsync(request, cancellationToken);
         return mapper.Map<PagedList<CourierDto>>(pagedCouriers);
     }
 }
