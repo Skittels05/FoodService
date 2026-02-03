@@ -13,7 +13,8 @@ public class GetAllCouriersHandler(IUnitOfWork unitOfWork, IMapper mapper)
     public async Task<PagedList<CourierDto>> Handle(GetAllCouriersQuery request, CancellationToken cancellationToken)
     {
         var pagedCouriers = await unitOfWork.CourierRepository
-            .GetAllAsync(request.Page, request.PageSize, cancellationToken);
+            .GetAllAsync(request, cancellationToken);
+
         return mapper.Map<PagedList<CourierDto>>(pagedCouriers);
     }
 }

@@ -3,9 +3,4 @@ using AuthService.Domain.Common;
 using AuthService.Domain.Constants;
 using MediatR;
 
-namespace AuthService.Application.CQRS.CustomerAddresses.Queries;
-
-public record GetAllAddressesQuery(
-    int Page = PaginationConstants.DefaultPageNumber,
-    int PageSize = PaginationConstants.DefaultPageSize
-) : IRequest<PagedList<CustomerAddressDto>>;
+public record GetAllAddressesQuery : PageRequest, IRequest<PagedList<CustomerAddressDto>>;

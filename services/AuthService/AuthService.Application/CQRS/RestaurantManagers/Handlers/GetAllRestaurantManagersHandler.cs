@@ -13,7 +13,7 @@ public class GetAllRestaurantManagersHandler(IUnitOfWork unitOfWork, IMapper map
     public async Task<PagedList<RestaurantManagerDto>> Handle(GetAllRestaurantManagersQuery request, CancellationToken cancellationToken)
     {
         var pagedManagers = await unitOfWork.RestaurantManagerRepository
-            .GetAllAsync(request.Page, request.PageSize, cancellationToken);
+            .GetAllAsync(request, cancellationToken);
 
         return mapper.Map<PagedList<RestaurantManagerDto>>(pagedManagers);
     }

@@ -13,8 +13,7 @@ public class GetCustomerAddressesHandler(IUnitOfWork unitOfWork, IMapper mapper)
     public async Task<PagedList<CustomerAddressDto>> Handle(GetCustomerAddressesQuery request, CancellationToken cancellationToken)
     {
         var pagedAddresses = await unitOfWork.CustomerAddressRepository
-            .GetByCustomerIdAsync(request.CustomerId, request.Page, request.PageSize, cancellationToken);
-
+            .GetByCustomerIdAsync(request.CustomerId, request, cancellationToken);
         return mapper.Map<PagedList<CustomerAddressDto>>(pagedAddresses);
     }
 }
