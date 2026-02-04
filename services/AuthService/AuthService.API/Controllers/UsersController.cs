@@ -4,6 +4,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using AuthService.Application.DTO.Users;
+using AuthService.Domain.Common;
 
 namespace AuthService.API.Controllers;
 
@@ -12,31 +13,29 @@ namespace AuthService.API.Controllers;
 public class UsersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAll([FromQuery] GetAllUsersQuery query, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<UserAccountDto>>> GetAll([FromQuery] GetAllUsersQuery query, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserAccountDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
-        var query = new GetUserByIdQuery(id);
-        var result = await mediator.Send(query, cancellationToken);
+        var result = await mediator.Send(new GetUserByIdQuery(id), cancellationToken);
         return Ok(result);
     }
 
     [HttpPost]
-    public async Task<IActionResult> Create([FromBody] CreateUserCommand command, CancellationToken cancellationToken)
+    public async Task<ActionResult<Guid>> Create([FromBody] CreateUserCommand command, CancellationToken cancellationToken)
     {
         var userId = await mediator.Send(command, cancellationToken);
         return CreatedAtAction(nameof(GetById), new { id = userId }, userId);
     }
 
-    [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateUserDto request, CancellationToken cancellationToken)
+    [HttpPut]
+    public async Task<ActionResult> Update([FromBody] UpdateUserCommand command, CancellationToken cancellationToken)
     {
-        var command = mapper.Map<UpdateUserCommand>(request) with { Id = id };
         await mediator.Send(command, cancellationToken);
         return NoContent();
     }
@@ -44,8 +43,7 @@ public class UsersController(IMediator mediator, IMapper mapper) : ControllerBas
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var command = new DeleteUserCommand(id);
-        await mediator.Send(command, cancellationToken);
+        await mediator.Send(new DeleteUserCommand(id), cancellationToken);
         return NoContent();
     }
 }

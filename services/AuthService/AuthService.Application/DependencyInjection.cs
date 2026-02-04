@@ -17,7 +17,7 @@ public static class DependencyInjection
     {
         services.AddAutoMapper(cfg =>
             cfg.AddMaps(Assembly.GetExecutingAssembly()));
-        services.AddTransient(typeof(PagedListConverter<,>));
+        services.AddScoped(typeof(PagedListConverter<,>));
         return services;
     }
 

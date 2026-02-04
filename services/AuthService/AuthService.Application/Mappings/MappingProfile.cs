@@ -31,13 +31,6 @@ public class MappingProfile : Profile
         .ConstructUsing(src => new User(src.Email, src.UserName, src.Role));
         CreateMap<UpdateUserCommand, User>()
         .ForMember(dest => dest.Id, opt => opt.Ignore());
-        CreateMap<UpdateUserDto, UpdateUserCommand>()
-            .ConstructUsing(src => new UpdateUserCommand(
-                Guid.Empty,
-                src.Email,
-                src.UserName,
-                src.PhoneNumber
-            ));
 
         CreateMap<Courier, CourierDto>();
         CreateMap<CreateCourierCommand, Courier>()
@@ -48,18 +41,10 @@ public class MappingProfile : Profile
                 src.DocumentsPath,
                 src.PhotoVerificationPath
             ));
-        CreateMap<UpdateCourierDto, UpdateCourierCommand>()
-            .ConstructUsing(src => new UpdateCourierCommand(
-                Guid.Empty,
-                src.Name,
-                src.VehicleType
-            ));
 
         CreateMap<Customer, CustomerDto>();
         CreateMap<CreateCustomerCommand, Customer>()
             .ConstructUsing(src => new Customer(src.UserId, src.Name));
-        CreateMap<UpdateCustomerDto, UpdateCustomerCommand>()
-            .ConstructUsing(src => new UpdateCustomerCommand(Guid.Empty, src.Name));
 
         CreateMap<RestaurantManager, RestaurantManagerDto>();
         CreateMap<CreateRestaurantManagerCommand, RestaurantManager>()
@@ -68,12 +53,6 @@ public class MappingProfile : Profile
                 src.ManagedRestaurantId,
                 src.Name
             ));
-        CreateMap<UpdateRestaurantManagerDto, UpdateRestaurantManagerCommand>()
-            .ConstructUsing(src => new UpdateRestaurantManagerCommand(
-            Guid.Empty,
-            src.ManagedRestaurantId,
-            src.Name
-             ));
 
         CreateMap<CustomerAddress, CustomerAddressDto>();
         CreateMap<CreateAddressCommand, CustomerAddress>()
