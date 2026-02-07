@@ -1,5 +1,6 @@
-﻿using System.Reflection;
+﻿using AuthService.Application.Mappings;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace AuthService.Application;
 
@@ -16,6 +17,7 @@ public static class DependencyInjection
     {
         services.AddAutoMapper(cfg =>
             cfg.AddMaps(Assembly.GetExecutingAssembly()));
+        services.AddScoped(typeof(PagedListConverter<,>));
         return services;
     }
 
