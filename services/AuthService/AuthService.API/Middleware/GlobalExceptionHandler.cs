@@ -16,7 +16,7 @@ public class GlobalExceptionHandler(
         Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "An unhandled exception occurred: {Message}", exception.Message);
+        logger.LogError(exception, "An unhandled exception occurred");
         var (statusCode, title, detail, errors) = MapException(exception);
 
         var problemDetails = new ProblemDetails
