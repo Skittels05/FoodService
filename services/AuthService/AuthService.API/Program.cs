@@ -1,3 +1,4 @@
+using AuthService.API.Infrastructure;
 using AuthService.Application;
 using AuthService.Infrastructure;
 using Scalar.AspNetCore;
@@ -11,11 +12,12 @@ namespace AuthService.API
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
+            builder.Services.AddProblemDetails();
+            builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
             builder.Services.AddControllers();
             builder.Services.AddOpenApi();
 
             var app = builder.Build();
-
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
@@ -27,6 +29,7 @@ namespace AuthService.API
                 });
             }
 
+            app.UseExceptionHandler();
             app.UseHttpsRedirection();
             app.UseAuthorization();
             app.MapControllers();
