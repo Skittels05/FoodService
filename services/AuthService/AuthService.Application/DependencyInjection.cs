@@ -1,4 +1,7 @@
-﻿using AuthService.Application.Mappings;
+﻿using AuthService.Application.Behaviors;
+using AuthService.Application.Mappings;
+using FluentValidation;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 
@@ -9,8 +12,15 @@ public static class DependencyInjection
     public static IServiceCollection AddApplication(this IServiceCollection services)
     {
         return services
+            .AddValidators()
             .AddMappings()
             .AddMediator();
+    }
+
+    private static IServiceCollection AddValidators(this IServiceCollection services)
+    {
+        services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+        return services;
     }
 
     private static IServiceCollection AddMappings(this IServiceCollection services)
@@ -26,6 +36,7 @@ public static class DependencyInjection
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            cfg.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
         return services;
     }
