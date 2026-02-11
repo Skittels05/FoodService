@@ -1,4 +1,5 @@
-﻿using AuthService.Domain.Enums;
+﻿using AuthService.Application.Common.Interfaces;
+using AuthService.Domain.Enums;
 using MediatR;
 
 namespace AuthService.Application.CQRS.Couriers.Commands;
@@ -9,4 +10,4 @@ string Name,
 VehicleType VehicleType,
 string DocumentsPath,
 string PhotoVerificationPath
-) : IRequest<Guid>;
+) : IRequest<Guid>, ITransactionalCommand;

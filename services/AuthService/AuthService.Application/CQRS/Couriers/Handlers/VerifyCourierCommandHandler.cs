@@ -11,21 +11,10 @@ public class VerifyCourierCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(VerifyCourierCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+        var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new NotFoundException(nameof(Courier), request.Id);
-            courier.Verify();
-
-            await unitOfWork.CourierRepository.UpdateAsync(courier, cancellationToken);
-
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        courier.Verify();
+        await unitOfWork.CourierRepository.UpdateAsync(courier, cancellationToken);
+        await unitOfWork.CommitTransactionAsync(cancellationToken);
     }
 }

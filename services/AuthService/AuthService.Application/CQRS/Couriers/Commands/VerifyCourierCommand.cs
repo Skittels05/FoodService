@@ -2,4 +2,4 @@
 
 namespace AuthService.Application.CQRS.Couriers.Commands;
 
-public record VerifyCourierCommand(Guid Id) : IRequest;
+public record VerifyCourierCommand(Guid Id) : IRequest, ITransactionalCommand;

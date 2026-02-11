@@ -11,23 +11,10 @@ public class UpdateCourierCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task Handle(UpdateCourierCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
+        var courier = await unitOfWork.CourierRepository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new NotFoundException(nameof(Courier), request.Id);
-            courier.ChangeVehicle(request.VehicleType);
-            courier.ChangeName(request.Name);
-
-            await unitOfWork.CourierRepository.UpdateAsync(courier, cancellationToken);
-
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        courier.ChangeVehicle(request.VehicleType);
+        courier.ChangeName(request.Name);
+        await unitOfWork.CourierRepository.UpdateAsync(courier, cancellationToken);
     }
 }
