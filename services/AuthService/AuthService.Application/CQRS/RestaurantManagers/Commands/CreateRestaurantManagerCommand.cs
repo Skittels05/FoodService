@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using AuthService.Application.Common.Interfaces;
+using MediatR;
 
 namespace AuthService.Application.CQRS.RestaurantManagers.Commands;
 
@@ -6,4 +7,4 @@ public record CreateRestaurantManagerCommand(
     Guid UserId,
     Guid ManagedRestaurantId,
     string Name
-) : IRequest<Guid>;
+) : IRequest<Guid>, ITransactionalCommand;

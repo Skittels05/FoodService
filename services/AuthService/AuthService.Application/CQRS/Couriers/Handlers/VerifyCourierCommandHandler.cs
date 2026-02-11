@@ -15,6 +15,5 @@ public class VerifyCourierCommandHandler(IUnitOfWork unitOfWork)
                 ?? throw new NotFoundException(nameof(Courier), request.Id);
         courier.Verify();
         await unitOfWork.CourierRepository.UpdateAsync(courier, cancellationToken);
-        await unitOfWork.CommitTransactionAsync(cancellationToken);
     }
 }

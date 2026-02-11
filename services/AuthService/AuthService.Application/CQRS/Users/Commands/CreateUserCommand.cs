@@ -1,4 +1,5 @@
-﻿using AuthService.Domain.Enums;
+﻿using AuthService.Application.Common.Interfaces;
+using AuthService.Domain.Enums;
 using MediatR;
 
 namespace AuthService.Application.CQRS.Users.Commands
@@ -8,5 +9,5 @@ namespace AuthService.Application.CQRS.Users.Commands
     string UserName,
     string Password,
     UserRole Role
-) : IRequest<Guid>;
+) : IRequest<Guid>, ITransactionalCommand;
 }

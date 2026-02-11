@@ -11,24 +11,13 @@ public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
+        var user = mapper.Map<User>(request);
+        var result = await unitOfWork.UserRepository.CreateAsync(user, request.Password, cancellationToken);
+        if (!result.Succeeded)
         {
-            var user = mapper.Map<User>(request);
-            var result = await unitOfWork.UserRepository.CreateAsync(user, request.Password, cancellationToken);
-
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to create user: {errors}");
-            }
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return user.Id;
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new Exception($"Failed to create user: {errors}");
         }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        return user.Id;
     }
 }

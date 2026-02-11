@@ -14,26 +14,15 @@ public class UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
     public async Task<IdentityResult> Handle(UpdateUserCommand request, CancellationToken cancellationToken)
     {
         await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
+        var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new NotFoundException(nameof(User), request.Id);
-            mapper.Map(request, user);
-
-            var result = await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
-
-            if (!result.Succeeded)
-            {
-                var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to update user: {errorMsg}");
-            }
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return result;
-        }
-        catch (Exception)
+        mapper.Map(request, user);
+        var result = await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
+        if (!result.Succeeded)
         {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
+            var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new Exception($"Failed to update user: {errorMsg}");
         }
+        return result;
     }
 }

@@ -11,18 +11,8 @@ public class CreateAddressCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<Guid> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var address = mapper.Map<CustomerAddress>(request);
-            await unitOfWork.CustomerAddressRepository.AddAsync(address, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return address.Id;
-        }
-        catch
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        var address = mapper.Map<CustomerAddress>(request);
+        await unitOfWork.CustomerAddressRepository.AddAsync(address, cancellationToken);
+        return address.Id;
     }
 }

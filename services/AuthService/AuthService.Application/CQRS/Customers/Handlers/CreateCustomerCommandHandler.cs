@@ -11,18 +11,8 @@ public class CreateCustomerCommandHandler(IUnitOfWork unitOfWork, IMapper mapper
 {
     public async Task<Guid> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var customer = mapper.Map<Customer>(request);
-            var createdCustomer = await unitOfWork.CustomerRepository.AddAsync(customer, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return createdCustomer.Id;
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        var customer = mapper.Map<Customer>(request);
+        var createdCustomer = await unitOfWork.CustomerRepository.AddAsync(customer, cancellationToken);
+        return createdCustomer.Id;
     }
 }

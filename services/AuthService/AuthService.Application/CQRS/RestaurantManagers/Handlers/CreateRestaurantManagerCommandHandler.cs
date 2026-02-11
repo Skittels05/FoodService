@@ -10,20 +10,8 @@ public class CreateRestaurantManagerCommandHandler(IUnitOfWork unitOfWork, IMapp
 {
     public async Task<Guid> Handle(CreateRestaurantManagerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var manager = mapper.Map<Domain.Entities.RestaurantManager>(request);
-
-            await unitOfWork.RestaurantManagerRepository.AddAsync(manager, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-
-            return manager.Id;
-        }
-        catch
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        var manager = mapper.Map<Domain.Entities.RestaurantManager>(request);
+        await unitOfWork.RestaurantManagerRepository.AddAsync(manager, cancellationToken);
+        return manager.Id;
     }
 }
