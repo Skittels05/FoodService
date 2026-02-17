@@ -1,8 +1,9 @@
-﻿using AutoMapper;
-using AuthService.Application.CQRS.Users.Commands;
+﻿using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Identity;
 
@@ -18,11 +19,7 @@ public class UpdateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
                 ?? throw new NotFoundException(nameof(User), request.Id);
         mapper.Map(request, user);
         var result = await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
-        if (!result.Succeeded)
-        {
-            var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
-            throw new Exception($"Failed to update user: {errorMsg}");
-        }
+        result.EnsureSuccess();
         return result;
     }
 }
