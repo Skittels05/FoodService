@@ -11,20 +11,10 @@ public class UpdateCustomerCommandHandler(IUnitOfWork unitOfWork)
 {
     public async Task<Guid> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.Id, cancellationToken)
+        var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.Id, cancellationToken)
                 ?? throw new NotFoundException(nameof(Customer), request.Id);
-            customer.ChangeName(request.Name);
-            var updatedCustomer = await unitOfWork.CustomerRepository.UpdateAsync(customer, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return updatedCustomer.Id;
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        customer.ChangeName(request.Name);
+        var updatedCustomer = await unitOfWork.CustomerRepository.UpdateAsync(customer, cancellationToken);
+        return updatedCustomer.Id;
     }
 }

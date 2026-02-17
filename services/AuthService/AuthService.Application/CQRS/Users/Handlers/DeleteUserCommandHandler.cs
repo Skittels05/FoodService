@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using MediatR;
@@ -17,11 +18,7 @@ public class DeleteUserCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             var user = await unitOfWork.UserRepository.GetByIdAsync(request.Id, cancellationToken)
                   ?? throw new NotFoundException(nameof(User), request.Id);
             var result = await unitOfWork.UserRepository.DeleteAsync(user, cancellationToken);
-            if (!result.Succeeded)
-            {
-                var errorMsg = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to delete user: {errorMsg}");
-            }
+            result.EnsureSuccess();
             await unitOfWork.CommitTransactionAsync(cancellationToken);
             return result;
         }

@@ -11,18 +11,8 @@ public class CreateCourierCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<Guid> Handle(CreateCourierCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var courier = mapper.Map<Courier>(request);
-            await unitOfWork.CourierRepository.AddAsync(courier, cancellationToken);
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return courier.Id;
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        var courier = mapper.Map<Courier>(request);
+        await unitOfWork.CourierRepository.AddAsync(courier, cancellationToken);
+        return courier.Id;
     }
 }

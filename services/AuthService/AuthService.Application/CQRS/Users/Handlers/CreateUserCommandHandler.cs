@@ -1,7 +1,8 @@
-﻿using AutoMapper;
-using AuthService.Application.CQRS.Users.Commands;
+﻿using AuthService.Application.CQRS.Users.Commands;
+using AuthService.Application.Extensions;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
+using AutoMapper;
 using MediatR;
 
 namespace AuthService.Application.CQRS.Users.Handlers;
@@ -11,24 +12,9 @@ public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
 {
     public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-        try
-        {
-            var user = mapper.Map<User>(request);
-            var result = await unitOfWork.UserRepository.CreateAsync(user, request.Password, cancellationToken);
-
-            if (!result.Succeeded)
-            {
-                var errors = string.Join(", ", result.Errors.Select(e => e.Description));
-                throw new Exception($"Failed to create user: {errors}");
-            }
-            await unitOfWork.CommitTransactionAsync(cancellationToken);
-            return user.Id;
-        }
-        catch (Exception)
-        {
-            await unitOfWork.RollbackTransactionAsync();
-            throw;
-        }
+        var user = mapper.Map<User>(request);
+        var result = await unitOfWork.UserRepository.CreateAsync(user, request.Password, cancellationToken);
+        result.EnsureSuccess();
+        return user.Id;
     }
 }
