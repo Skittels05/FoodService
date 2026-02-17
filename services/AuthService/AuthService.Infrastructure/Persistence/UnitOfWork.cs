@@ -2,7 +2,9 @@
 using AuthService.Domain.Interfaces;
 using AuthService.Domain.Interfaces.Repositories;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 
 namespace AuthService.Infrastructure.Persistence.Repositories;
 
@@ -18,10 +20,10 @@ public class UnitOfWork(ApplicationDbContext context, UserManager<User> userMana
     public IRestaurantManagerRepository RestaurantManagerRepository { get; } = new RestaurantManagerRepository(context);
     public ICustomerAddressRepository CustomerAddressRepository { get; } = new CustomerAddressRepository(context);
 
-    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default)
+    public async Task BeginTransactionAsync(CancellationToken cancellationToken = default, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted)
     {
         if (_currentTransaction is not null) return;
-        _currentTransaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        _currentTransaction = await _context.Database.BeginTransactionAsync(isolationLevel, cancellationToken);
     }
 
     public async Task CommitTransactionAsync(CancellationToken cancellationToken = default)

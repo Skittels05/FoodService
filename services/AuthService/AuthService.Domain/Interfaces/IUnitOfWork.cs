@@ -1,4 +1,5 @@
-﻿using AuthService.Domain.Interfaces.Repositories;
+﻿using System.Data;
+using AuthService.Domain.Interfaces.Repositories;
 
 namespace AuthService.Domain.Interfaces;
 
@@ -10,7 +11,7 @@ public interface IUnitOfWork : IDisposable, IAsyncDisposable
     IRestaurantManagerRepository RestaurantManagerRepository { get; }
     ICustomerAddressRepository CustomerAddressRepository { get; }
 
-    Task BeginTransactionAsync(CancellationToken cancellationToken = default);
+    Task BeginTransactionAsync(CancellationToken cancellationToken = default, IsolationLevel isolationLevel = IsolationLevel.ReadCommitted);
     Task CommitTransactionAsync(CancellationToken cancellationToken = default);
     Task RollbackTransactionAsync();
 }
