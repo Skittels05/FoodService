@@ -16,8 +16,12 @@ public class GlobalExceptionHandler(
         Exception exception,
         CancellationToken cancellationToken)
     {
-        logger.LogError(exception, "An unhandled exception occurred");
+
         var (statusCode, title, detail, errors) = MapException(exception);
+        if (statusCode >= 500)
+        {
+            logger.LogError(exception, "An unhandled exception occurred processing request {Path}", httpContext.Request.Path);
+        }
 
         var problemDetails = new ProblemDetails
         {

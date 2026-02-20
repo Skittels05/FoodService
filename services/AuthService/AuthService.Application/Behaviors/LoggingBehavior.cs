@@ -37,9 +37,9 @@ public class LoggingBehavior<TRequest, TResponse>(ILogger<LoggingBehavior<TReque
         {
             stopwatch.Stop();
 
-            if (ex is ValidationException)
+            if (ex is AppException)
             {
-                logger.LogWarning("Validation failed for {Name}. Error: {Message}", requestName, ex.Message);
+                logger.LogWarning("Request business rule violation for {Name}. Error: {Message} ({Elapsed} ms)", requestName, ex.Message, stopwatch.ElapsedMilliseconds);
             }
             else
             {

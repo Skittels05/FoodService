@@ -2,7 +2,7 @@
 
 namespace AuthService.Application.Exceptions;
 
-public class ValidationException : Exception
+public class ValidationException : AppException
 {
     public IDictionary<string, string[]> Errors { get; }
 
