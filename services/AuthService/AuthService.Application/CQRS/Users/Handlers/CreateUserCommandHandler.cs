@@ -1,5 +1,4 @@
 ﻿using AuthService.Application.CQRS.Users.Commands;
-using AuthService.Application.Extensions;
 using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
@@ -13,8 +12,7 @@ public class CreateUserCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
     public async Task<Guid> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = mapper.Map<User>(request);
-        var result = await unitOfWork.UserRepository.CreateAsync(user, request.Password, cancellationToken);
-        result.EnsureSuccess();
+        await unitOfWork.UserRepository.AddAsync(user, cancellationToken);
         return user.Id;
     }
 }

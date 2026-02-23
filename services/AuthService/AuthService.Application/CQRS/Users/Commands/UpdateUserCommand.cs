@@ -1,13 +1,10 @@
 ﻿using AuthService.Application.Common.Interfaces;
 using MediatR;
-using Microsoft.AspNetCore.Identity;
 
-namespace AuthService.Application.CQRS.Users.Commands
-{
-    public record UpdateUserCommand(
+namespace AuthService.Application.CQRS.Users.Commands;
+
+public record UpdateUserCommand(
     Guid Id,
     string Email,
-    string UserName,
-    string? PhoneNumber
-) : IRequest<IdentityResult>, ITransactionalCommand;
-}
+    string UserName
+) : IRequest, ITransactionalCommand;

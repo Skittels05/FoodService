@@ -1,14 +1,8 @@
-﻿using AuthService.Domain.Common;
-using AuthService.Domain.Entities;
-using Microsoft.AspNetCore.Identity;
+﻿using AuthService.Domain.Entities;
 
 namespace AuthService.Domain.Interfaces.Repositories;
 
-public interface IUserRepository
+public interface IUserRepository : IGenericRepository<User>
 {
-    Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
-    Task<PagedList<User>> GetAllAsync(PageRequest request, CancellationToken cancellationToken);
-    Task<IdentityResult> CreateAsync(User user, string password, CancellationToken cancellationToken);
-    Task<IdentityResult> UpdateAsync(User user, CancellationToken cancellationToken);
-    Task<IdentityResult> DeleteAsync(User user, CancellationToken cancellationToken);
+    Task<User?> GetByAuth0IdAsync(string auth0Id, CancellationToken cancellationToken);
 }
