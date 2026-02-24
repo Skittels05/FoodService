@@ -8,6 +8,6 @@ public class DeleteAddressCommandValidator : AbstractValidator<DeleteAddressComm
     public DeleteAddressCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Address ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using AuthService.Application.CQRS.Customers.Commands;
+using AuthService.Application.Constants;
 
 namespace AuthService.Application.Validators.Customers;
 
@@ -8,6 +9,6 @@ public class DeleteCustomerCommandValidator : AbstractValidator<DeleteCustomerCo
     public DeleteCustomerCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Customer ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }

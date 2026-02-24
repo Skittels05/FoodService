@@ -8,6 +8,6 @@ public class VerifyCourierCommandValidator : AbstractValidator<VerifyCourierComm
     public VerifyCourierCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Courier ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }

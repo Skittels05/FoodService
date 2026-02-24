@@ -1,5 +1,6 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.RestaurantManagers.Commands;
+using FluentValidation;
 
 namespace AuthService.Application.Validators.RestaurantManagers;
 
@@ -8,6 +9,6 @@ public class DeleteRestaurantManagerCommandValidator : AbstractValidator<DeleteR
     public DeleteRestaurantManagerCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Manager ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }

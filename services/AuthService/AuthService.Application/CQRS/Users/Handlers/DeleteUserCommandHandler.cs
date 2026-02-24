@@ -12,7 +12,7 @@ public class DeleteUserCommandHandler(IUnitOfWork unitOfWork)
     public async Task Handle(DeleteUserCommand request, CancellationToken cancellationToken)
     {
         var isDeleted = await unitOfWork.UserRepository.DeleteAsync(request.Id, cancellationToken);
-        if (isDeleted is false)
+        if (!isDeleted)
         {
             throw new NotFoundException(nameof(User), request.Id);
         }

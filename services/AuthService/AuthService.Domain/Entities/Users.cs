@@ -1,4 +1,5 @@
-﻿using AuthService.Domain.Enums;
+﻿using AuthService.Domain.Constants;
+using AuthService.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace AuthService.Domain.Entities;
@@ -7,9 +8,9 @@ public class User : EntityBase
 {
 
     public string Auth0Id { get; private set; }
-    [MaxLength(50)]
+    [MaxLength(ValidationConstants.EmailMaxLength)]
     public string Email { get; private set; }
-    [MaxLength(30)]
+    [MaxLength(ValidationConstants.UserNameMaxLength)]
     public string UserName { get; private set; }
     public UserRole Role { get; private set; }
 

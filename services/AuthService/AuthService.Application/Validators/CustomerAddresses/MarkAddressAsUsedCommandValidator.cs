@@ -8,6 +8,6 @@ public class MarkAddressAsUsedCommandValidator : AbstractValidator<MarkAddressAs
     public MarkAddressAsUsedCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Address ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }

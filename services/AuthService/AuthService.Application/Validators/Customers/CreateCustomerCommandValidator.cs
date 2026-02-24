@@ -1,5 +1,7 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.Customers.Commands;
+using AuthService.Domain.Constants;
+using FluentValidation;
 
 namespace AuthService.Application.Validators.Customers;
 
@@ -8,10 +10,10 @@ public class CreateCustomerCommandValidator : AbstractValidator<CreateCustomerCo
     public CreateCustomerCommandValidator()
     {
         RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage("User ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
 
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Customer name is required.")
-            .MaximumLength(50).WithMessage("Customer name must not exceed 50 characters.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required)
+            .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ValidatorMessages.MaxLength);
     }
 }
