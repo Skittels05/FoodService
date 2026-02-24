@@ -1,7 +1,6 @@
-﻿using MediatR;
-using Microsoft.AspNetCore.Identity;
+﻿using AuthService.Application.Common.Interfaces;
+using MediatR;
 
-namespace AuthService.Application.CQRS.Users.Commands
-{
-    public record DeleteUserCommand(Guid Id) : IRequest<IdentityResult>;
-}
+namespace AuthService.Application.CQRS.Users.Commands;
+
+public record DeleteUserCommand(Guid Id) : IRequest;

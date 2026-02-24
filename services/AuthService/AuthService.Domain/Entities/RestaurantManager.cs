@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AuthService.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthService.Domain.Entities;
 
@@ -6,7 +7,7 @@ public class RestaurantManager : EntityBase
 {
     public Guid UserId { get; private set; }
     public Guid ManagedRestaurantId { get; private set; }
-    [MaxLength(50)]
+    [MaxLength(ValidationConstants.NameMaxLength)]
     public string Name { get; private set; }
 
     protected RestaurantManager() { }

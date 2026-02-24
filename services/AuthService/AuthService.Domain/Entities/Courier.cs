@@ -1,4 +1,5 @@
-﻿using AuthService.Domain.Enums;
+﻿using AuthService.Domain.Constants;
+using AuthService.Domain.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace AuthService.Domain.Entities;
@@ -6,7 +7,7 @@ namespace AuthService.Domain.Entities;
 public class Courier : EntityBase
 {
     public Guid UserId { get; private set; }
-    [MaxLength(50)]
+    [MaxLength(ValidationConstants.NameMaxLength)]
     public string Name { get; private set; }
     public VehicleType VehicleType { get; private set; }
     public string DocumentsPath { get; private set; }

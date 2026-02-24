@@ -14,8 +14,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         return services
-            .AddContext(configuration)
-            .AddIdentity();
+            .AddContext(configuration);
     }
 
     private static IServiceCollection AddContext(this IServiceCollection services, IConfiguration configuration)
@@ -29,22 +28,6 @@ public static class DependencyInjection
                    .AddInterceptors(auditableInterceptor);
         });
         services.AddScoped<IUnitOfWork, UnitOfWork>();
-
-        return services;
-    }
-
-    private static IServiceCollection AddIdentity(this IServiceCollection services)
-    {
-        services.AddIdentityCore<User>(options =>
-        {
-            options.Password.RequireDigit = false;
-            options.Password.RequiredLength = 6;
-            options.Password.RequireNonAlphanumeric = false;
-            options.Password.RequireUppercase = false;
-            options.Password.RequireLowercase = false;
-            options.User.RequireUniqueEmail = true;
-        })
-        .AddEntityFrameworkStores<ApplicationDbContext>();
 
         return services;
     }

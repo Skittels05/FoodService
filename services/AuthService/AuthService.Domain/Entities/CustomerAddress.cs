@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using AuthService.Domain.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace AuthService.Domain.Entities;
 
 public class CustomerAddress : EntityBase
 {
     public Guid CustomerId { get; private set; }
-    [MaxLength(250)]
+    [MaxLength(ValidationConstants.AddressMaxLength)]
     public string Address { get; private set; }
     public DateTime? LastUsedAt { get; private set; }
 

@@ -1,5 +1,4 @@
 ﻿using AuthService.API.Infrastructure;
-using Destructurama;
 using Serilog;
 
 namespace AuthService.API;
@@ -20,7 +19,6 @@ public static class DependencyInjection
         builder.Host.UseSerilog((context, services, configuration) => configuration
             .ReadFrom.Configuration(context.Configuration)
             .ReadFrom.Services(services)
-            .Destructure.UsingAttributes()
             .Enrich.FromLogContext());
         return builder;
     }

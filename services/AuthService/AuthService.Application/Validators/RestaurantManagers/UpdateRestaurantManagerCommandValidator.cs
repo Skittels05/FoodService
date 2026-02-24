@@ -1,5 +1,7 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.RestaurantManagers.Commands;
+using AuthService.Domain.Constants;
+using FluentValidation;
 
 namespace AuthService.Application.Validators.RestaurantManagers;
 
@@ -8,13 +10,13 @@ public class UpdateRestaurantManagerCommandValidator : AbstractValidator<UpdateR
     public UpdateRestaurantManagerCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Manager ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
 
         RuleFor(x => x.ManagedRestaurantId)
-            .NotEmpty().WithMessage("Managed Restaurant ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
 
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Manager name is required.")
-            .MaximumLength(50).WithMessage("Manager name must not exceed 50 characters.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required)
+            .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ValidatorMessages.MaxLength);
     }
 }

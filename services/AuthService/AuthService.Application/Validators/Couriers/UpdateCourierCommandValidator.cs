@@ -1,4 +1,6 @@
-﻿using AuthService.Application.CQRS.Couriers.Commands;
+﻿using AuthService.Application.Constants;
+using AuthService.Application.CQRS.Couriers.Commands;
+using AuthService.Domain.Constants;
 using AuthService.Domain.Enums;
 using FluentValidation;
 
@@ -9,12 +11,12 @@ public class UpdateCourierCommandValidator : AbstractValidator<UpdateCourierComm
     public UpdateCourierCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Courier ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
         RuleFor(x => x.Name)
-            .NotEmpty().WithMessage("Courier name is required.")
-            .MaximumLength(50).WithMessage("Courier name must not exceed 50 characters.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required)
+            .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ValidatorMessages.MaxLength);
         RuleFor(x => x.VehicleType)
-            .IsInEnum().WithMessage("Invalid vehicle type.")
-            .NotEqual(VehicleType.None).WithMessage("Vehicle type must be selected.");
+            .IsInEnum().WithMessage(ValidatorMessages.InvalidEnum)
+            .NotEqual(VehicleType.None).WithMessage(ValidatorMessages.MustBeSelected);
     }
 }

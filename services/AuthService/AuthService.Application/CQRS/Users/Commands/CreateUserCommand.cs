@@ -1,14 +1,12 @@
 ﻿using AuthService.Application.Common.Interfaces;
 using AuthService.Domain.Enums;
 using MediatR;
-using Destructurama.Attributed;
 
-namespace AuthService.Application.CQRS.Users.Commands
-{
-    public record CreateUserCommand(
+namespace AuthService.Application.CQRS.Users.Commands;
+
+public record CreateUserCommand(
+    string Auth0Id,
     string Email,
     string UserName,
-    [property: LogMasked] string Password,
     UserRole Role
 ) : IRequest<Guid>, ITransactionalCommand;
-}

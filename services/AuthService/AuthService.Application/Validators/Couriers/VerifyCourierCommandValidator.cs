@@ -1,5 +1,6 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.Couriers.Commands;
+using FluentValidation;
 
 namespace AuthService.Application.Validators.Couriers;
 
@@ -8,6 +9,6 @@ public class VerifyCourierCommandValidator : AbstractValidator<VerifyCourierComm
     public VerifyCourierCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Courier ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }

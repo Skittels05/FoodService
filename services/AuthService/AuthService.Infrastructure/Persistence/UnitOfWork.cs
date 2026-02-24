@@ -8,13 +8,12 @@ using System.Data;
 
 namespace AuthService.Infrastructure.Persistence.Repositories;
 
-public class UnitOfWork(ApplicationDbContext context, UserManager<User> userManager) : IUnitOfWork
+public class UnitOfWork(ApplicationDbContext context) : IUnitOfWork
 {
     private readonly ApplicationDbContext _context = context;
-    private readonly UserManager<User> _userManager = userManager;
     private IDbContextTransaction? _currentTransaction;
 
-    public IUserRepository UserRepository { get; } = new UserRepository(userManager);
+    public IUserRepository UserRepository { get; } = new UserRepository(context);
     public ICourierRepository CourierRepository { get; } = new CourierRepository(context);
     public ICustomerRepository CustomerRepository { get; } = new CustomerRepository(context);
     public IRestaurantManagerRepository RestaurantManagerRepository { get; } = new RestaurantManagerRepository(context);

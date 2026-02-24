@@ -1,5 +1,6 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.CustomerAddresses.Commands;
+using FluentValidation;
 
 namespace AuthService.Application.Validators.CustomerAddresses;
 
@@ -8,6 +9,6 @@ public class DeleteAddressCommandValidator : AbstractValidator<DeleteAddressComm
     public DeleteAddressCommandValidator()
     {
         RuleFor(x => x.Id)
-            .NotEmpty().WithMessage("Address ID is required.");
+            .NotEmpty().WithMessage(ValidatorMessages.Required);
     }
 }
