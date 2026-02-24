@@ -1,5 +1,6 @@
-﻿using FluentValidation;
+﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.Users.Commands;
+using FluentValidation;
 
 namespace AuthService.Application.Validators.Users;
 
