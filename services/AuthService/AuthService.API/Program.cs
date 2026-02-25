@@ -13,7 +13,7 @@ public class Program
         builder.AddApiLogging();
         builder.Services.AddApplication();
         builder.Services.AddInfrastructure(builder.Configuration);
-        builder.Services.AddApiServices();
+        builder.Services.AddApiServices(builder.Configuration);
 
         var app = builder.Build();
         app.UseSerilogRequestLogging();
@@ -31,6 +31,7 @@ public class Program
         }
 
         app.UseHttpsRedirection();
+        app.UseAuthentication();
         app.UseAuthorization();
         app.MapControllers();
         app.Run();
