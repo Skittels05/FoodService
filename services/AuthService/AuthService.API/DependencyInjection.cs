@@ -1,4 +1,6 @@
 ﻿using AuthService.API.Infrastructure;
+using AuthService.API.Services;
+using AuthService.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
@@ -29,7 +31,10 @@ public static class DependencyInjection
                 NameClaimType = ClaimTypes.NameIdentifier
             };
         });
+
         services.AddAuthorization();
+        services.AddHttpContextAccessor();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         return services;
     }
 

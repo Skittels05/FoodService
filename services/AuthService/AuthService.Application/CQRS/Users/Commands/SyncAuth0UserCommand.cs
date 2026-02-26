@@ -3,8 +3,4 @@ using MediatR;
 
 namespace AuthService.Application.CQRS.Users.Commands;
 
-public record SyncAuth0UserCommand(
-    string Auth0Id,
-    string Email,
-    string UserName
-) : IRequest<Guid>, ITransactionalCommand;
+public record SyncAuth0UserCommand() : IRequest<Guid>, ITransactionalCommand;

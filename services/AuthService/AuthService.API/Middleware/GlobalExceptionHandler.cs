@@ -52,6 +52,8 @@ public class GlobalExceptionHandler(
     {
         return exception switch
         {
+            UnauthorizedException
+            => (Status401Unauthorized, "Unauthorized", exception.Message, null),
             NotFoundException or NotFoundByUserException
                 => (Status404NotFound, "Not Found", exception.Message, null),
             ValidationException ex

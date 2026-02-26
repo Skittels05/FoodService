@@ -14,31 +14,19 @@ namespace AuthService.API.Controllers;
 [Authorize]
 public class UsersController(IMediator mediator) : ControllerBase
 {
-    //исправь
     [HttpPost("sync")]
     public async Task<ActionResult<Guid>> Sync(CancellationToken cancellationToken)
     {
-        var auth0Id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var email = User.FindFirst(ClaimTypes.Email)?.Value
-                    ?? User.FindFirst("email")?.Value;
-        var name = User.FindFirst("nickname")?.Value
-                   ?? User.FindFirst("name")?.Value;
 
-        if (string.IsNullOrEmpty(auth0Id)) return Unauthorized();
-
-        var command = new SyncAuth0UserCommand(auth0Id, email ?? "", name ?? "");
-        var userId = await mediator.Send(command, cancellationToken);
-
+        var userId = await mediator.Send(new SyncAuth0UserCommand(), cancellationToken);
         return Ok(userId);
     }
-    //исправь
+
     [HttpGet("me")]
     public async Task<ActionResult<UserAccountDto>> GetCurrentUserInfo(CancellationToken cancellationToken)
     {
-        var auth0Id = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        if (string.IsNullOrEmpty(auth0Id)) return Unauthorized();
-        var user = await mediator.Send(new GetUserByAuth0IdQuery(auth0Id), cancellationToken);
-        return user is not null ? Ok(user) : NotFound();
+        var user = await mediator.Send(new GetCurrentUserQuery(), cancellationToken);
+        return Ok(user);
     }
 
     [HttpGet]

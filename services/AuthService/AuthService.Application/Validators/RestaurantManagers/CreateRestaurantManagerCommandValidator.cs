@@ -9,9 +9,6 @@ public class CreateRestaurantManagerCommandValidator : AbstractValidator<CreateR
 {
     public CreateRestaurantManagerCommandValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(ValidatorMessages.Required);
-
         RuleFor(x => x.ManagedRestaurantId)
             .NotEmpty().WithMessage(ValidatorMessages.Required);
 
