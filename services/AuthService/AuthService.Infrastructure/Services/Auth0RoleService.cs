@@ -3,6 +3,7 @@ using Auth0.AuthenticationApi.Models;
 using Auth0.ManagementApi;
 using Auth0.ManagementApi.Models;
 using AuthService.Application.Interfaces;
+using AuthService.Domain.Enums;
 using AuthService.Infrastructure.Settings;
 using Microsoft.Extensions.Options;
 
@@ -12,18 +13,13 @@ public class Auth0RoleService(IOptions<Auth0ManagementSettings> options) : IAuth
 {
     private readonly Auth0ManagementSettings _settings = options.Value;
 
-    public Task AssignCourierRoleAsync(string auth0UserId, CancellationToken cancellationToken)
-        => AssignRoleInternalAsync(auth0UserId, _settings.CourierRoleId, cancellationToken);
-
-    public Task AssignCustomerRoleAsync(string auth0UserId, CancellationToken cancellationToken)
-        => AssignRoleInternalAsync(auth0UserId, _settings.CustomerRoleId, cancellationToken);
-
-    public Task AssignRestaurantManagerRoleAsync(string auth0UserId, CancellationToken cancellationToken)
-        => AssignRoleInternalAsync(auth0UserId, _settings.RestaurantManagerRoleId, cancellationToken);
-    private async Task AssignRoleInternalAsync(string auth0UserId, string roleId, CancellationToken cancellationToken)
+    public async Task AssignRoleAsync(string auth0UserId, UserRole role, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrEmpty(roleId))
-            throw new InvalidOperationException("Role ID is not configured in settings.");
+        var roleName = role.ToString();
+        if (!_settings.Roles.TryGetValue(roleName, out var roleId))
+        {
+            throw new InvalidOperationException($"Role ID for '{roleName}' is not configured in appsettings.json.");
+        }
         var authClient = new AuthenticationApiClient(new Uri($"https://{_settings.Domain}/"));
         var tokenResponse = await authClient.GetTokenAsync(new ClientCredentialsTokenRequest
         {

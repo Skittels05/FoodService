@@ -20,16 +20,20 @@ public class CreateCustomerCommandHandler(
     {
         var auth0Id = currentUserService.Auth0Id
             ?? throw new UnauthorizedException();
+
         var user = await unitOfWork.UserRepository.GetByAuth0IdAsync(auth0Id, cancellationToken)
             ?? throw new NotFoundByAuth0Exception(auth0Id);
+
         if (user.Role is not UserRole.None)
             throw new RoleAlreadyAssignedException();
+
         request.UserId = user.Id;
         var customer = mapper.Map<Customer>(request);
         await unitOfWork.CustomerRepository.AddAsync(customer, cancellationToken);
         user.AssignRole(UserRole.Customer);
         await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
-        await auth0RoleService.AssignCustomerRoleAsync(user.Auth0Id, cancellationToken);
+        await auth0RoleService.AssignRoleAsync(user.Auth0Id, UserRole.Customer, cancellationToken);
+
         return customer.Id;
     }
 }

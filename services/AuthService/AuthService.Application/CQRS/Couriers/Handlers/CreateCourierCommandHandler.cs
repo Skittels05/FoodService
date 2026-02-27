@@ -20,16 +20,20 @@ public class CreateCourierCommandHandler(
     {
         var auth0Id = currentUserService.Auth0Id
             ?? throw new UnauthorizedException();
+
         var user = await unitOfWork.UserRepository.GetByAuth0IdAsync(auth0Id, cancellationToken)
             ?? throw new NotFoundByAuth0Exception(auth0Id);
+
         if (user.Role is not UserRole.None)
             throw new RoleAlreadyAssignedException();
+
         request.UserId = user.Id;
         var courier = mapper.Map<Courier>(request);
         await unitOfWork.CourierRepository.AddAsync(courier, cancellationToken);
         user.AssignRole(UserRole.Courier);
         await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
-        await auth0RoleService.AssignCourierRoleAsync(user.Auth0Id, cancellationToken);
+        await auth0RoleService.AssignRoleAsync(user.Auth0Id,UserRole.Courier, cancellationToken);
+
         return courier.Id;
     }
 }

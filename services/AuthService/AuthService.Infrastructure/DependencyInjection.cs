@@ -37,8 +37,12 @@ public static class DependencyInjection
 
     private static IServiceCollection AddExternalServices(this IServiceCollection services, IConfiguration configuration)
     {
-        services.Configure<Auth0ManagementSettings>(configuration.GetSection("Auth0Management"));
+        services.AddOptions<Auth0ManagementSettings>()
+            .BindConfiguration("Auth0Management")
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
         services.AddScoped<IAuth0RoleService, Auth0RoleService>();
+
         return services;
     }
 }

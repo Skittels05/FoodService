@@ -1,8 +1,8 @@
-﻿namespace AuthService.Application.Interfaces;
+﻿using AuthService.Domain.Enums;
+
+namespace AuthService.Application.Interfaces;
 
 public interface IAuth0RoleService
 {
-    Task AssignCourierRoleAsync(string auth0UserId, CancellationToken cancellationToken);
-    Task AssignCustomerRoleAsync(string auth0UserId, CancellationToken cancellationToken);
-    Task AssignRestaurantManagerRoleAsync(string auth0UserId, CancellationToken cancellationToken);
+    Task AssignRoleAsync(string auth0UserId, UserRole role, CancellationToken cancellationToken);
 }
