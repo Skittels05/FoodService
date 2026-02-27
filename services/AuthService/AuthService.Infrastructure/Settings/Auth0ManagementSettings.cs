@@ -5,6 +5,7 @@ namespace AuthService.Infrastructure.Settings;
 
 public class Auth0ManagementSettings: IValidatableObject
 {
+    public const string SectionName = "Auth0Management";
     [Required]
     public string Domain { get; set; } = string.Empty;
 
