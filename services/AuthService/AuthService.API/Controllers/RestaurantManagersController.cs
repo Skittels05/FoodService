@@ -4,10 +4,12 @@ using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Domain.Common;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class RestaurantManagersController(IMediator mediator, IMapper mapper) : ControllerBase

@@ -1,7 +1,6 @@
 ﻿using AuthService.Application.Constants;
 using AuthService.Application.CQRS.Couriers.Commands;
 using AuthService.Domain.Constants;
-using AuthService.Domain.Entities;
 using AuthService.Domain.Enums;
 using FluentValidation;
 
@@ -11,8 +10,6 @@ public class CreateCourierCommandValidator : AbstractValidator<CreateCourierComm
 {
     public CreateCourierCommandValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(ValidatorMessages.Required);
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage(ValidatorMessages.Required)
             .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ValidatorMessages.MaxLength);

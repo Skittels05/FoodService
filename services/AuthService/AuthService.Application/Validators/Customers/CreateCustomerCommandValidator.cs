@@ -9,9 +9,6 @@ public class CreateCustomerCommandValidator : AbstractValidator<CreateCustomerCo
 {
     public CreateCustomerCommandValidator()
     {
-        RuleFor(x => x.UserId)
-            .NotEmpty().WithMessage(ValidatorMessages.Required);
-
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage(ValidatorMessages.Required)
             .MaximumLength(ValidationConstants.NameMaxLength).WithMessage(ValidatorMessages.MaxLength);

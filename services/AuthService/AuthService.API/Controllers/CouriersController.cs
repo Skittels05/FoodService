@@ -4,10 +4,12 @@ using AuthService.Application.DTO.Courier;
 using AuthService.Domain.Common;
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AuthService.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CouriersController(IMediator mediator, IMapper mapper) : ControllerBase
