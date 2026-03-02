@@ -60,6 +60,14 @@ public static class DependencyInjection
                     context.User.HasClaim("https://food-service.com/roles", "Customer")
                 );
             });
+            options.AddPolicy("RestaurantManagerOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("https://food-service.com/roles", "Admin") ||
+                    context.User.HasClaim("https://food-service.com/roles", "RestaurantManager")
+                );
+            });
         });
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
