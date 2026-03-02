@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddControllers();
         services.AddOpenApi();
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,9 +33,36 @@ public static class DependencyInjection
             };
         });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("https://food-service.com/roles", "Admin");
+            });
+
+            options.AddPolicy("VerifiedCourier", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("https://food-service.com/roles", "Courier");
+                policy.RequireClaim("https://food-service.com/is_verified", "true");
+            });
+            options.AddPolicy("CourierOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+
+                policy.RequireAssertion(context =>
+                {
+                    var isAdmin = context.User.HasClaim("https://food-service.com/roles", "Admin");
+                    var isVerifiedCourier = context.User.HasClaim("https://food-service.com/roles", "Courier") &&
+                                            context.User.HasClaim("https://food-service.com/is_verified", "true");
+                    return isAdmin || isVerifiedCourier;
+                });
+            });
+        });
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
         return services;
     }
 
