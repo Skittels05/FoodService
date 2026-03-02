@@ -26,7 +26,7 @@ public class Auth0ManagementSettings: IValidatableObject
             if (Roles.TryGetValue(roleName, out var roleId) is false || string.IsNullOrWhiteSpace(roleId))
             {
                 yield return new ValidationResult(
-                    $"Критическая ошибка: В appsettings.json отсутствует ID для роли '{roleName}'.",
+                    $"Role ID for '{roleName}' is not configured in appsettings.json.",
                     [nameof(Roles)]
                 );
             }
