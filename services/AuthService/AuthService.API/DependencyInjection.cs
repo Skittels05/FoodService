@@ -40,13 +40,6 @@ public static class DependencyInjection
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("https://food-service.com/roles", "Admin");
             });
-
-            options.AddPolicy("VerifiedCourier", policy =>
-            {
-                policy.RequireAuthenticatedUser();
-                policy.RequireClaim("https://food-service.com/roles", "Courier");
-                policy.RequireClaim("https://food-service.com/is_verified", "true");
-            });
             options.AddPolicy("CourierOrAdmin", policy =>
             {
                 policy.RequireAuthenticatedUser();
@@ -58,6 +51,14 @@ public static class DependencyInjection
                                             context.User.HasClaim("https://food-service.com/is_verified", "true");
                     return isAdmin || isVerifiedCourier;
                 });
+            });
+            options.AddPolicy("CustomerOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("https://food-service.com/roles", "Admin") ||
+                    context.User.HasClaim("https://food-service.com/roles", "Customer")
+                );
             });
         });
         services.AddHttpContextAccessor();
