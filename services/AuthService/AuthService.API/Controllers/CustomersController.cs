@@ -14,7 +14,7 @@ namespace AuthService.API.Controllers;
 [Route("api/[controller]")]
 public class CustomersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet]
     public async Task<ActionResult<PagedList<CustomerDto>>> GetAll([FromQuery] GetAllCustomersQuery query, CancellationToken cancellationToken)
     {
@@ -22,6 +22,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return Ok(result);
     }
 
+    [Authorize(Policy = "CustomerOrAdmin")]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CustomerDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -29,6 +30,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return Ok(result);
     }
 
+    [Authorize(Policy = "CustomerOrAdmin")]
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<CustomerDto>> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
@@ -43,6 +45,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return CreatedAtAction(nameof(GetById), new { id = customerId }, customerId);
     }
 
+    [Authorize(Policy = "CustomerOrAdmin")]
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] UpdateCustomerCommand command, CancellationToken cancellationToken)
     {
@@ -50,6 +53,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return NoContent();
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

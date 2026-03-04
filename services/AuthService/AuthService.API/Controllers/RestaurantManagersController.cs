@@ -14,7 +14,7 @@ namespace AuthService.API.Controllers;
 [Route("api/[controller]")]
 public class RestaurantManagersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-
+    [Authorize(Policy = "AdminOnly")]
     [HttpGet]
     public async Task<ActionResult<PagedList<RestaurantManagerDto>>> GetAll([FromQuery] GetAllRestaurantManagersQuery query, CancellationToken cancellationToken)
     {
@@ -22,6 +22,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return Ok(result);
     }
 
+    [Authorize(Policy = "RestaurantManagerOrAdmin")]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RestaurantManagerDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -29,6 +30,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return Ok(result);
     }
 
+    [Authorize(Policy = "RestaurantManagerOrAdmin")]
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<RestaurantManagerDto>> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
@@ -36,6 +38,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return Ok(result);
     }
 
+    [Authorize(Policy = "RestaurantManagerOrAdmin")]
     [HttpGet("restaurant/{restaurantId:guid}")]
     public async Task<ActionResult<PagedList<RestaurantManagerDto>>> GetByRestaurant(Guid restaurantId, CancellationToken cancellationToken)
     {
@@ -50,6 +53,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return CreatedAtAction(nameof(GetById), new { id = managerId }, managerId);
     }
 
+    [Authorize(Policy = "RestaurantManagerOrAdmin")]
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] UpdateRestaurantManagerCommand command, CancellationToken cancellationToken)
     {
@@ -57,6 +61,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return NoContent();
     }
 
+    [Authorize(Policy = "AdminOnly")]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

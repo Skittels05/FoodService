@@ -15,11 +15,34 @@ public class Auth0RoleService(IOptions<Auth0ManagementSettings> options) : IAuth
 
     public async Task AssignRoleAsync(string auth0UserId, UserRole role, CancellationToken cancellationToken)
     {
-        var roleName = role.ToString();
-        if (!_settings.Roles.TryGetValue(roleName, out var roleId))
+        if (role is UserRole.None)
         {
-            throw new InvalidOperationException($"Role ID for '{roleName}' is not configured in appsettings.json.");
+            return;
         }
+
+        var roleId = _settings.Roles[role.ToString()];
+        var managementClient = await GetManagementApiClientAsync(cancellationToken);
+        var request = new AssignRolesRequest
+        {
+            Roles = [roleId]
+        };
+
+        await managementClient.Users.AssignRolesAsync(auth0UserId, request, cancellationToken);
+    }
+
+    public async Task SetAsVerifiedAsync(string auth0UserId, CancellationToken cancellationToken = default)
+    {
+        var managementClient = await GetManagementApiClientAsync(cancellationToken);
+        var request = new UserUpdateRequest
+        {
+            AppMetadata = new { is_verified = true }
+        };
+
+        await managementClient.Users.UpdateAsync(auth0UserId, request, cancellationToken);
+    }
+
+    private async Task<ManagementApiClient> GetManagementApiClientAsync(CancellationToken cancellationToken)
+    {
         var authClient = new AuthenticationApiClient(new Uri($"https://{_settings.Domain}/"));
         var tokenResponse = await authClient.GetTokenAsync(new ClientCredentialsTokenRequest
         {
@@ -28,12 +51,6 @@ public class Auth0RoleService(IOptions<Auth0ManagementSettings> options) : IAuth
             ClientSecret = _settings.ClientSecret
         }, cancellationToken);
 
-        var managementClient = new ManagementApiClient(tokenResponse.AccessToken, new Uri($"https://{_settings.Domain}/api/v2/"));
-        var request = new AssignRolesRequest
-        {
-            Roles = new[] { roleId }
-        };
-
-        await managementClient.Users.AssignRolesAsync(auth0UserId, request, cancellationToken);
+        return new ManagementApiClient(tokenResponse.AccessToken, new Uri($"https://{_settings.Domain}/api/v2/"));
     }
 }

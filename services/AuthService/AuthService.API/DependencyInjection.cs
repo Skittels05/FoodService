@@ -16,6 +16,7 @@ public static class DependencyInjection
         services.AddExceptionHandler<GlobalExceptionHandler>();
         services.AddControllers();
         services.AddOpenApi();
+
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -32,9 +33,45 @@ public static class DependencyInjection
             };
         });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy("AdminOnly", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireClaim("https://food-service.com/roles", "Admin");
+            });
+            options.AddPolicy("CourierOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+
+                policy.RequireAssertion(context =>
+                {
+                    var isAdmin = context.User.HasClaim("https://food-service.com/roles", "Admin");
+                    var isVerifiedCourier = context.User.HasClaim("https://food-service.com/roles", "Courier") &&
+                                            context.User.HasClaim("https://food-service.com/is_verified", "true");
+                    return isAdmin || isVerifiedCourier;
+                });
+            });
+            options.AddPolicy("CustomerOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("https://food-service.com/roles", "Admin") ||
+                    context.User.HasClaim("https://food-service.com/roles", "Customer")
+                );
+            });
+            options.AddPolicy("RestaurantManagerOrAdmin", policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim("https://food-service.com/roles", "Admin") ||
+                    context.User.HasClaim("https://food-service.com/roles", "RestaurantManager")
+                );
+            });
+        });
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
+
         return services;
     }
 
