@@ -9,6 +9,7 @@ public class RestaurantManager : EntityBase
     public Guid ManagedRestaurantId { get; private set; }
     [MaxLength(ValidationConstants.NameMaxLength)]
     public string Name { get; private set; }
+    public bool IsVerified { get; private set; }
 
     protected RestaurantManager() { }
 
@@ -20,6 +21,7 @@ public class RestaurantManager : EntityBase
         UserId = userId;
         ManagedRestaurantId = restaurantId;
         Name = name;
+        IsVerified = false;
     }
 
     public void ChangeName(string newName)
@@ -30,5 +32,9 @@ public class RestaurantManager : EntityBase
     public void ChangeRestaurantId(Guid restaurantId)
     {
         ManagedRestaurantId = restaurantId;
+    }
+    public void Verify()
+    {
+        IsVerified = true;
     }
 }
