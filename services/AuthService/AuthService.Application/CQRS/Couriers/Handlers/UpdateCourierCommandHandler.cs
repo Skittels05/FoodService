@@ -1,7 +1,9 @@
 ﻿using AuthService.Application.CQRS.Couriers.Commands;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Entities;
+using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
 using MediatR;
 
@@ -20,10 +22,7 @@ public class UpdateCourierCommandHandler(
         var courierUser = await unitOfWork.UserRepository.GetByIdAsync(courier.UserId, cancellationToken)
                 ?? throw new NotFoundException(nameof(User), courier.UserId);
 
-        if (currentUserService.Role != "Admin" && currentUserService.Auth0Id != courierUser.Auth0Id)
-        {
-            throw new AccessDeniedException();
-        }
+        currentUserService.EnsureHasAccessToResource(courierUser.Auth0Id);
 
         courier.ChangeVehicle(request.VehicleType);
         courier.ChangeName(request.Name);

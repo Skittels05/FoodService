@@ -1,7 +1,9 @@
 ﻿using AuthService.Application.CQRS.RestaurantManagers.Queries;
 using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Application.Interfaces;
+using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -22,8 +24,7 @@ public class GetRestaurantManagerByIdHandler(
         var managerUser = await unitOfWork.UserRepository.GetByIdAsync(manager.UserId, cancellationToken)
             ?? throw new NotFoundException(nameof(Domain.Entities.User), manager.UserId);
 
-        if (currentUserService.Role != "Admin" && currentUserService.Auth0Id != managerUser.Auth0Id)
-            throw new AccessDeniedException();
+        currentUserService.EnsureHasAccessToResource(managerUser.Auth0Id);
 
         return mapper.Map<RestaurantManagerDto>(manager);
     }

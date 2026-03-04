@@ -1,6 +1,8 @@
 ﻿using AuthService.Application.CQRS.RestaurantManagers.Commands;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Application.Interfaces;
+using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
 using MediatR;
 
@@ -19,8 +21,7 @@ public class UpdateRestaurantManagerCommandHandler(
         var managerUser = await unitOfWork.UserRepository.GetByIdAsync(manager.UserId, cancellationToken)
                 ?? throw new NotFoundException(nameof(Domain.Entities.User), manager.UserId);
 
-        if (currentUserService.Role != "Admin" && currentUserService.Auth0Id != managerUser.Auth0Id)
-            throw new AccessDeniedException();
+        currentUserService.EnsureHasAccessToResource(managerUser.Auth0Id);
 
         manager.ChangeName(request.Name);
         manager.ChangeRestaurantId(request.ManagedRestaurantId);

@@ -1,8 +1,10 @@
 ﻿using AuthService.Application.CQRS.Couriers.Queries;
 using AuthService.Application.DTO.Courier;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Entities;
+using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -20,10 +22,7 @@ public class GetCourierByUserIdHandler(
         var user = await unitOfWork.UserRepository.GetByIdAsync(request.UserId, cancellationToken)
             ?? throw new NotFoundException(nameof(User), request.UserId);
 
-        if (currentUserService.Role != "Admin" && currentUserService.Auth0Id != user.Auth0Id)
-        {
-            throw new AccessDeniedException();
-        }
+        currentUserService.EnsureHasAccessToResource(user.Auth0Id);
 
         var courier = await unitOfWork.CourierRepository.GetByUserIdAsync(request.UserId, cancellationToken)
             ?? throw new NotFoundException(nameof(Courier), request.UserId);
