@@ -41,6 +41,17 @@ public class Auth0RoleService(IOptions<Auth0ManagementSettings> options) : IAuth
         await managementClient.Users.UpdateAsync(auth0UserId, request, cancellationToken);
     }
 
+    public async Task SetRestaurantIdAsync(string auth0UserId, Guid restaurantId, CancellationToken cancellationToken = default)
+    {
+        var managementClient = await GetManagementApiClientAsync(cancellationToken);
+        var request = new UserUpdateRequest
+        {
+            AppMetadata = new { restaurant_id = restaurantId.ToString() }
+        };
+
+        await managementClient.Users.UpdateAsync(auth0UserId, request, cancellationToken);
+    }
+
     private async Task<ManagementApiClient> GetManagementApiClientAsync(CancellationToken cancellationToken)
     {
         var authClient = new AuthenticationApiClient(new Uri($"https://{_settings.Domain}/"));

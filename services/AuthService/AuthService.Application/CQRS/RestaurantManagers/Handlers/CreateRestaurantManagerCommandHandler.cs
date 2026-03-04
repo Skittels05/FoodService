@@ -10,7 +10,7 @@ namespace AuthService.Application.CQRS.RestaurantManagers.Handlers;
 
 public class CreateRestaurantManagerCommandHandler(
     IUnitOfWork unitOfWork,
-    IAuth0RoleService auth0RoleService,
+    // УБРАЛИ: IAuth0RoleService
     ICurrentUserService currentUserService,
     IMapper mapper)
     : IRequestHandler<CreateRestaurantManagerCommand, Guid>
@@ -29,9 +29,6 @@ public class CreateRestaurantManagerCommandHandler(
         request.UserId = user.Id;
         var manager = mapper.Map<Domain.Entities.RestaurantManager>(request);
         await unitOfWork.RestaurantManagerRepository.AddAsync(manager, cancellationToken);
-        user.AssignRole(UserRole.RestaurantManager);
-        await unitOfWork.UserRepository.UpdateAsync(user, cancellationToken);
-        await auth0RoleService.AssignRoleAsync(user.Auth0Id, UserRole.RestaurantManager, cancellationToken);
 
         return manager.Id;
     }

@@ -10,7 +10,8 @@ namespace AuthService.Application.CQRS.RestaurantManagers.Handlers;
 
 public class UpdateRestaurantManagerCommandHandler(
     IUnitOfWork unitOfWork,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    IAuth0RoleService auth0RoleService)
     : IRequestHandler<UpdateRestaurantManagerCommand>
 {
     public async Task Handle(UpdateRestaurantManagerCommand request, CancellationToken cancellationToken)
@@ -23,8 +24,19 @@ public class UpdateRestaurantManagerCommandHandler(
 
         currentUserService.EnsureHasAccessToResource(managerUser.Auth0Id);
 
+        if (manager.ManagedRestaurantId != request.ManagedRestaurantId)
+        {
+            if (currentUserService.Role != UserRole.Admin)
+            {
+                throw new AccessDeniedException();
+            }
+
+            manager.ChangeRestaurantId(request.ManagedRestaurantId);
+
+            await auth0RoleService.SetRestaurantIdAsync(managerUser.Auth0Id, request.ManagedRestaurantId, cancellationToken);
+        }
+
         manager.ChangeName(request.Name);
-        manager.ChangeRestaurantId(request.ManagedRestaurantId);
         await unitOfWork.RestaurantManagerRepository.UpdateAsync(manager, cancellationToken);
     }
 }

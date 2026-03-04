@@ -9,10 +9,11 @@ namespace AuthService.Infrastructure.Persistence.Repositories;
 public class RestaurantManagerRepository(ApplicationDbContext context)
     : GenericRepository<RestaurantManager>(context), IRestaurantManagerRepository
 {
-    public async Task<PagedList<RestaurantManager>> GetByRestaurantIdAsync(Guid restaurantId,PageRequest request, CancellationToken cancellationToken)
+    public async Task<PagedList<RestaurantManager>> GetByRestaurantIdAsync(Guid restaurantId, bool? isVerified, PageRequest request, CancellationToken cancellationToken)
     {
         return await _dbSet
             .Where(rm => rm.ManagedRestaurantId == restaurantId)
+            .Where(rm => isVerified == null || rm.IsVerified == isVerified)
             .ApplySorting(request.SortBy, request.SortOrder)
             .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }

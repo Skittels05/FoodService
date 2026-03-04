@@ -40,9 +40,13 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
 
     [Authorize(Policy = "RestaurantManagerOrAdmin")]
     [HttpGet("restaurant/{restaurantId:guid}")]
-    public async Task<ActionResult<PagedList<RestaurantManagerDto>>> GetByRestaurant(Guid restaurantId, CancellationToken cancellationToken)
+    public async Task<ActionResult<PagedList<RestaurantManagerDto>>> GetByRestaurant(
+    Guid restaurantId,
+    [FromQuery] GetManagersByRestaurantQuery query,
+    CancellationToken cancellationToken)
     {
-        var result = await mediator.Send(new GetManagersByRestaurantQuery(restaurantId), cancellationToken);
+        query.RestaurantId = restaurantId;
+        var result = await mediator.Send(query, cancellationToken);
         return Ok(result);
     }
 
@@ -58,6 +62,14 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
     public async Task<ActionResult> Update([FromBody] UpdateRestaurantManagerCommand command, CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
+        return NoContent();
+    }
+
+    [Authorize(Policy = "RestaurantManagerOrAdmin")]
+    [HttpPost("{id:guid}/verify")]
+    public async Task<IActionResult> Verify(Guid id, CancellationToken cancellationToken)
+    {
+        await mediator.Send(new VerifyRestaurantManagerCommand(id), cancellationToken);
         return NoContent();
     }
 

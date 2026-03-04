@@ -9,4 +9,5 @@ public interface ICurrentUserService
     string? Username { get; }
     UserRole Role { get; }
     bool IsVerified { get; }
+    Guid? RestaurantId { get; }
 }

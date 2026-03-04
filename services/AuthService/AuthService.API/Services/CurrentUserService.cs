@@ -33,4 +33,13 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
             return bool.TryParse(verifiedClaim, out var isVerified) && isVerified;
         }
     }
+
+    public Guid? RestaurantId
+    {
+        get
+        {
+            var claim = User?.FindFirstValue(AppClaimTypes.RestaurantId);
+            return Guid.TryParse(claim, out var id) ? id : null;
+        }
+    }
 }

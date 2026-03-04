@@ -1,8 +1,11 @@
 ﻿using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Domain.Common;
-using AuthService.Domain.Constants;
 using MediatR;
 
 namespace AuthService.Application.CQRS.RestaurantManagers.Queries;
 
-public record GetManagersByRestaurantQuery(Guid RestaurantId) : PageRequest, IRequest<PagedList<RestaurantManagerDto>>;
+public record GetManagersByRestaurantQuery : PageRequest, IRequest<PagedList<RestaurantManagerDto>>
+{
+    public Guid RestaurantId { get; set; }
+    public bool? IsVerified { get; set; }
+}
