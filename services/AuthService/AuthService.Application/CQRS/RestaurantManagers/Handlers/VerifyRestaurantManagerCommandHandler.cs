@@ -1,5 +1,6 @@
 ﻿using AuthService.Application.CQRS.RestaurantManagers.Commands;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Enums;
 using AuthService.Domain.Interfaces;
@@ -18,14 +19,7 @@ public class VerifyRestaurantManagerCommandHandler(
         var pendingManager = await unitOfWork.RestaurantManagerRepository.GetByIdAsync(request.ManagerId, cancellationToken)
             ?? throw new NotFoundException(nameof(Domain.Entities.RestaurantManager), request.ManagerId);
 
-        if (currentUserService.Role != UserRole.Admin)
-        {
-            if (currentUserService.Role != UserRole.RestaurantManager ||
-                currentUserService.RestaurantId != pendingManager.ManagedRestaurantId)
-            {
-                throw new AccessDeniedException();
-            }
-        }
+        currentUserService.EnsureHasAccessToRestaurant(pendingManager.ManagedRestaurantId);
 
         pendingManager.Verify();
         await unitOfWork.RestaurantManagerRepository.UpdateAsync(pendingManager, cancellationToken);

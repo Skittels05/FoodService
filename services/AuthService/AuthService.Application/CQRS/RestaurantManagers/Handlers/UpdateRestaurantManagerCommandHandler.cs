@@ -26,13 +26,8 @@ public class UpdateRestaurantManagerCommandHandler(
 
         if (manager.ManagedRestaurantId != request.ManagedRestaurantId)
         {
-            if (currentUserService.Role != UserRole.Admin)
-            {
-                throw new AccessDeniedException();
-            }
-
+            currentUserService.EnsureIsAdmin();
             manager.ChangeRestaurantId(request.ManagedRestaurantId);
-
             await auth0RoleService.SetRestaurantIdAsync(managerUser.Auth0Id, request.ManagedRestaurantId, cancellationToken);
         }
 

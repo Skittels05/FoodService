@@ -1,6 +1,7 @@
 ﻿using AuthService.Application.CQRS.RestaurantManagers.Queries;
 using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Application.Exceptions;
+using AuthService.Application.Extensions;
 using AuthService.Application.Interfaces;
 using AuthService.Domain.Common;
 using AuthService.Domain.Enums;
@@ -19,13 +20,7 @@ public class GetManagersByRestaurantHandler(
     public async Task<PagedList<RestaurantManagerDto>> Handle(GetManagersByRestaurantQuery request, CancellationToken cancellationToken)
     {
 
-        if (currentUserService.Role != UserRole.Admin)
-        {
-            if (currentUserService.RestaurantId != request.RestaurantId)
-            {
-                throw new AccessDeniedException();
-            }
-        }
+        currentUserService.EnsureHasAccessToRestaurant(request.RestaurantId);
 
         var pagedManagers = await unitOfWork.RestaurantManagerRepository
             .GetByRestaurantIdAsync(request.RestaurantId, request.IsVerified, request, cancellationToken);
