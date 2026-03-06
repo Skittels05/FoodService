@@ -5,6 +5,6 @@ namespace AuthService.Domain.Interfaces.Repositories;
 
 public interface IRestaurantManagerRepository : IGenericRepository<RestaurantManager>
 {
-    Task<PagedList<RestaurantManager>> GetByRestaurantIdAsync(Guid restaurantId, PageRequest request, CancellationToken cancellationToken);
+    Task<PagedList<RestaurantManager>> GetByRestaurantIdAsync(Guid restaurantId, bool? isVerified, PageRequest request, CancellationToken cancellationToken);
     Task<RestaurantManager?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
 }

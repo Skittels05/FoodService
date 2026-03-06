@@ -1,8 +1,13 @@
 ﻿using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Domain.Common;
-using AuthService.Domain.Constants;
 using MediatR;
+using System.Text.Json.Serialization;
 
 namespace AuthService.Application.CQRS.RestaurantManagers.Queries;
 
-public record GetManagersByRestaurantQuery(Guid RestaurantId) : PageRequest, IRequest<PagedList<RestaurantManagerDto>>;
+public record GetManagersByRestaurantQuery : PageRequest, IRequest<PagedList<RestaurantManagerDto>>
+{
+    [JsonIgnore]
+    public Guid RestaurantId { get; set; }
+    public bool? IsVerified { get; set; }
+}
