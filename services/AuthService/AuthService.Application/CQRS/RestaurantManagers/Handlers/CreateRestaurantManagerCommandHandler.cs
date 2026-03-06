@@ -10,7 +10,6 @@ namespace AuthService.Application.CQRS.RestaurantManagers.Handlers;
 
 public class CreateRestaurantManagerCommandHandler(
     IUnitOfWork unitOfWork,
-    // УБРАЛИ: IAuth0RoleService
     ICurrentUserService currentUserService,
     IMapper mapper)
     : IRequestHandler<CreateRestaurantManagerCommand, Guid>
