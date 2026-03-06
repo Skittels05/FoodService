@@ -2,7 +2,6 @@
 
 public enum DocumentType
 {
-
     None = 0,
     Inn = 1,
     Ogrn = 2,
