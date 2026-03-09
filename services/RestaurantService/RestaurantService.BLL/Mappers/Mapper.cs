@@ -1,10 +1,11 @@
 ﻿using RestaurantService.BLL.DTOs.Restaurant;
 using RestaurantService.BLL.DTOs.RestaurantDocument;
+using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Models;
 
 namespace RestaurantService.BLL.Mappers;
 
-public static class RestaurantMapper
+public static class Mapper
 {
 
     public static RestaurantDto ToDto(this Restaurant restaurant)
@@ -37,6 +38,18 @@ public static class RestaurantMapper
             Status: document.Status.ToString(),
             RejectionReason: document.RejectionReason
         );
+    }
+
+    public static RestaurantDocument ToEntity(this AddRestaurantDocumentDto dto, Guid restaurantId)
+    {
+        return new RestaurantDocument
+        {
+            RestaurantId = restaurantId,
+            Type = dto.Type,
+            FileUrl = dto.FileUrl,
+            Status = VerificationStatus.Pending,
+            RejectionReason = null
+        };
     }
 
 }
