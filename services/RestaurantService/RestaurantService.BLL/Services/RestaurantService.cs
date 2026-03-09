@@ -39,19 +39,16 @@ public class RestaurantService(IRestaurantRepository restaurantRepository) : IRe
     }
 
     public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-    {
-        return await restaurantRepository.DeleteAsync(id, cancellationToken);
-    }
+        => await restaurantRepository.DeleteAsync(id, cancellationToken);
 
     public async Task UpdateActiveStatusAsync(Guid restaurantId, bool isActive, CancellationToken cancellationToken = default)
     {
         var restaurant = await restaurantRepository.GetByIdAsync(restaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
 
-        if (restaurant.IsActive == isActive)
-            return;
+        if (restaurant.IsActive == isActive) return;
 
-        if (isActive && !restaurant.IsVerified)
+        if (isActive && restaurant is { IsVerified: false })
             throw new RestaurantNotVerifiedException(restaurantId);
 
         restaurant.IsActive = isActive;
@@ -63,10 +60,10 @@ public class RestaurantService(IRestaurantRepository restaurantRepository) : IRe
         var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(restaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
 
-        if (!restaurant.Documents.Any())
+        if (restaurant.Documents is [])
             throw new MissingRestaurantDocumentsException(restaurantId);
 
-        if (restaurant.Documents.Any(d => d.Status != VerificationStatus.Approved))
+        if (restaurant.Documents.Any(d => d.Status is not VerificationStatus.Approved))
             throw new UnapprovedDocumentsException(restaurantId);
 
         restaurant.IsVerified = true;
