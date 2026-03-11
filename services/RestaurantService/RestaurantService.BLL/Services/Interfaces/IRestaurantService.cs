@@ -1,4 +1,4 @@
-﻿using RestaurantService.BLL.DTOs.Restaurant;
+﻿using RestaurantService.BLL.DTOs;
 
 namespace RestaurantService.BLL.Services.Interfaces;
 

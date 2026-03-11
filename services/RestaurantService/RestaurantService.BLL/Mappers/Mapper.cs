@@ -1,5 +1,4 @@
-﻿using RestaurantService.BLL.DTOs.Restaurant;
-using RestaurantService.BLL.DTOs.RestaurantDocument;
+﻿using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;

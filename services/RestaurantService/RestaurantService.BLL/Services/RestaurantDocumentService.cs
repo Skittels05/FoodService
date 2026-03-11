@@ -1,4 +1,4 @@
-﻿using RestaurantService.BLL.DTOs.RestaurantDocument;
+﻿using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Exceptions;
 using RestaurantService.BLL.Mappers.Interfaces;

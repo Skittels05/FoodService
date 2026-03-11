@@ -1,5 +1,4 @@
-﻿using RestaurantService.BLL.DTOs.Restaurant;
-using RestaurantService.BLL.Models;
+﻿using RestaurantService.BLL.Models;
 
 namespace RestaurantService.BLL.Repositories.Interfaces;
 
