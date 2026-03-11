@@ -1,30 +1,38 @@
 ﻿using RestaurantService.BLL.DTOs.Restaurant;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Exceptions;
-using RestaurantService.BLL.Mappers;
+using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
 using RestaurantService.BLL.Services.Interfaces;
 
 namespace RestaurantService.BLL.Services;
 
-public class RestaurantService(IRestaurantRepository restaurantRepository) : IRestaurantService
+public class RestaurantService(
+    IRestaurantRepository restaurantRepository,
+    IMappingService mappingService)
+    : IRestaurantService
 {
     public async Task<IEnumerable<RestaurantDto>> GetAllAsync(CancellationToken cancellationToken = default)
     {
         var restaurants = await restaurantRepository.GetAllAsync(cancellationToken);
-        return restaurants.Select(r => r.ToDto());
+
+        return restaurants.Select(mappingService.Map<Restaurant, RestaurantDto>);
     }
 
     public async Task<RestaurantDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(id, cancellationToken);
-        return restaurant?.ToDto();
+
+        return restaurant is not null
+            ? mappingService.Map<Restaurant, RestaurantDto>(restaurant)
+            : null;
     }
 
     public async Task<Guid> CreateAsync(CreateRestaurantDto dto, CancellationToken cancellationToken = default)
     {
-        var restaurant = dto.ToEntity();
+        var restaurant = mappingService.Map<CreateRestaurantDto, Restaurant>(dto);
+
         await restaurantRepository.AddAsync(restaurant, cancellationToken);
         return restaurant.Id;
     }
@@ -38,8 +46,8 @@ public class RestaurantService(IRestaurantRepository restaurantRepository) : IRe
         await restaurantRepository.UpdateAsync(restaurant, cancellationToken);
     }
 
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => await restaurantRepository.DeleteAsync(id, cancellationToken);
+    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+        => restaurantRepository.DeleteAsync(id, cancellationToken);
 
     public async Task UpdateActiveStatusAsync(Guid restaurantId, bool isActive, CancellationToken cancellationToken = default)
     {
@@ -48,7 +56,7 @@ public class RestaurantService(IRestaurantRepository restaurantRepository) : IRe
 
         if (restaurant.IsActive == isActive) return;
 
-        if (isActive && restaurant is { IsVerified: false })
+        if (isActive && !restaurant.IsVerified)
             throw new RestaurantNotVerifiedException(restaurantId);
 
         restaurant.IsActive = isActive;

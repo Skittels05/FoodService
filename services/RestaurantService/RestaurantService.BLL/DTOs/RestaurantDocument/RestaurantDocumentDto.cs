@@ -5,5 +5,5 @@ public record RestaurantDocumentDto(
     string Type,
     string FileUrl,
     string Status,
-    string? RejectionReason
+    string? RejectionReason = null
 );

@@ -1,55 +1,63 @@
 ﻿using RestaurantService.BLL.DTOs.Restaurant;
 using RestaurantService.BLL.DTOs.RestaurantDocument;
 using RestaurantService.BLL.Enums;
+using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 
 namespace RestaurantService.BLL.Mappers;
 
-public static class Mapper
+public class RestaurantToDtoMapper(IMapper<RestaurantDocument, RestaurantDocumentDto> documentMapper)
+    : IMapper<Restaurant, RestaurantDto>
 {
-
-    public static RestaurantDto ToDto(this Restaurant restaurant)
+    public RestaurantDto Map(Restaurant input)
     {
         return new RestaurantDto(
-            Id: restaurant.Id,
-            Name: restaurant.Name,
-            IsVerified: restaurant.IsVerified,
-            IsActive: restaurant.IsActive,
-            Documents: restaurant.Documents?.Select(d => d.ToDto()).ToList() ?? new List<RestaurantDocumentDto>()
+            Id: input.Id,
+            Name: input.Name,
+            IsVerified: input.IsVerified,
+            IsActive: input.IsActive,
+            Documents: input.Documents?.Select(documentMapper.Map).ToList() ?? []
         );
     }
+}
 
-    public static Restaurant ToEntity(this CreateRestaurantDto dto)
+public class CreateRestaurantDtoToEntityMapper : IMapper<CreateRestaurantDto, Restaurant>
+{
+    public Restaurant Map(CreateRestaurantDto input)
     {
         return new Restaurant
         {
-            Name = dto.Name,
+            Name = input.Name,
             IsVerified = false,
             IsActive = false
         };
     }
+}
 
-    public static RestaurantDocumentDto ToDto(this RestaurantDocument document)
+public class RestaurantDocumentToDtoMapper : IMapper<RestaurantDocument, RestaurantDocumentDto>
+{
+    public RestaurantDocumentDto Map(RestaurantDocument input)
     {
         return new RestaurantDocumentDto(
-            Id: document.Id,
-            Type: document.Type.ToString(),
-            FileUrl: document.FileUrl,
-            Status: document.Status.ToString(),
-            RejectionReason: document.RejectionReason
+            Id: input.Id,
+            Type: input.Type.ToString(),
+            FileUrl: input.FileUrl,
+            Status: input.Status.ToString(),
+            RejectionReason: input.RejectionReason
         );
     }
+}
 
-    public static RestaurantDocument ToEntity(this AddRestaurantDocumentDto dto, Guid restaurantId)
+public class AddRestaurantDocumentDtoToEntityMapper : IMapper<AddRestaurantDocumentDto, RestaurantDocument>
+{
+    public RestaurantDocument Map(AddRestaurantDocumentDto input)
     {
         return new RestaurantDocument
         {
-            RestaurantId = restaurantId,
-            Type = dto.Type,
-            FileUrl = dto.FileUrl,
+            Type = input.Type,
+            FileUrl = input.FileUrl,
             Status = VerificationStatus.Pending,
             RejectionReason = null
         };
     }
-
 }
