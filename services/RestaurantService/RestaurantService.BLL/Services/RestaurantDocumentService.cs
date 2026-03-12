@@ -11,7 +11,7 @@ namespace RestaurantService.BLL.Services;
 public class RestaurantDocumentService(
     IGenericRepository<RestaurantDocument> documentRepository,
     IRestaurantRepository restaurantRepository,
-    IMapper<AddRestaurantDocumentDto, RestaurantDocument> addDocumentMapper) : IRestaurantDocumentService
+    IMappingService mappingService) : IRestaurantDocumentService
 {
     public async Task<Guid> AddDocumentAsync(Guid restaurantId, AddRestaurantDocumentDto dto, CancellationToken cancellationToken = default)
     {
@@ -21,7 +21,7 @@ public class RestaurantDocumentService(
         if (restaurant.IsVerified)
             throw new RestaurantAlreadyVerifiedException(restaurantId);
 
-        var document = addDocumentMapper.Map(dto);
+        var document = mappingService.Map<AddRestaurantDocumentDto, RestaurantDocument>(dto);
         document.RestaurantId = restaurantId;
 
         await documentRepository.AddAsync(document, cancellationToken);
