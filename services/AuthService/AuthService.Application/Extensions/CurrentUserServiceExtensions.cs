@@ -43,4 +43,13 @@ public static class CurrentUserServiceExtensions
             throw new AccessDeniedException();
         }
     }
+
+    public static void EnsureIsOwnerOrAdmin(this ICurrentUserService currentUserService, Guid currentUserId, Guid targetId)
+    {
+        if (currentUserService.Role is UserRole.Admin) return;
+
+        if (currentUserId == targetId) return;
+
+        throw new AccessDeniedException();
+    }
 }

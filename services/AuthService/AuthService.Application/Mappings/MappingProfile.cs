@@ -23,9 +23,6 @@ public class MappingProfile : Profile
 
         CreateMap<User, UserAccountDto>();
 
-        CreateMap<CreateUserCommand, User>()
-            .ConstructUsing(src => new User(src.Auth0Id, src.Email, src.UserName, src.Role));
-
         CreateMap<UpdateUserCommand, User>()
             .ForMember(dest => dest.Id, opt => opt.Ignore())
             .ForMember(dest => dest.Auth0Id, opt => opt.Ignore())
