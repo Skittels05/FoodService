@@ -1,20 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using RestaurantService.BLL.Constants;
-
-namespace RestaurantService.BLL.Models;
+﻿namespace RestaurantService.BLL.Models;
 
 public class Location : BaseModel
 {
-    [Required]
-    public Guid RestaurantId { get; set; }
-    [Required]
-    [MaxLength(ValidationConstants.LocationAddressMaxLength)]
-    public string Address { get; set; }
-    [Required]
-    public double Latitude { get; set; }
-    [Required]
-    public double Longitude { get; set; }
-    [Required]
-    public bool IsAcceptingOrders { get; set; }
+    public required Guid RestaurantId { get; set; }
+    public required string Address { get; set; }
+    public required double Latitude { get; set; }
+    public required double Longitude { get; set; }
+    public required bool IsAcceptingOrders { get; set; }
     public List<StopListItem> StopList { get; set; } = [];
 }

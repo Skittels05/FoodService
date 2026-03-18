@@ -1,17 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
-using RestaurantService.BLL.Constants;
-
-namespace RestaurantService.BLL.Models;
+﻿namespace RestaurantService.BLL.Models;
 
 public class MenuItem : BaseModel
 {
-    [Required]
-    public Guid RestaurantId { get; set; }
-    [Required]
-    [MaxLength(ValidationConstants.MenuItemNameMaxLength)]
-    public string Name { get; set; }
-    [Required]
-    public decimal Price { get; set; }
-    [Required]
-    public bool IsActive { get; set; }
+    public required Guid RestaurantId { get; set; }
+    public required string Name { get; set; }
+    public required decimal Price { get; set; }
+    public required bool IsActive { get; set; }
 }

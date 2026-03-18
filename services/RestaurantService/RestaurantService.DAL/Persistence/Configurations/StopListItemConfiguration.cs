@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using RestaurantService.BLL.Constants;
 using RestaurantService.BLL.Models;
 
 namespace RestaurantService.DAL.Configurations;
@@ -10,6 +11,9 @@ public sealed class StopListItemConfiguration : IEntityTypeConfiguration<StopLis
     {
         builder.ToTable("StopListItems");
         builder.HasKey(s => s.Id);
+
+        builder.Property(s => s.Reason)
+               .HasMaxLength(ValidationConstants.StopListReasonMaxLength);
 
         builder.HasOne<MenuItem>()
                .WithMany()

@@ -13,7 +13,6 @@ public class RestaurantDbContext(DbContextOptions<RestaurantDbContext> options) 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(modelBuilder);
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(RestaurantDbContext).Assembly);
     }
 }
