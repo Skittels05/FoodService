@@ -1,4 +1,5 @@
-﻿using AuthService.Application.CQRS.Users.Commands;
+﻿using AuthService.API.Constants;
+using AuthService.Application.CQRS.Users.Commands;
 using AuthService.Application.CQRS.Users.Queries;
 using AuthService.Application.DTO.Users;
 using AuthService.Domain.Common;
@@ -28,7 +29,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult<PagedList<UserAccountDto>>> GetAll([FromQuery] GetAllUsersQuery query, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(query, cancellationToken);
@@ -36,7 +37,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     }
 
     [HttpGet("{id:guid}")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult<UserAccountDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
         var result = await mediator.Send(new GetUserByIdQuery(id), cancellationToken);
@@ -44,7 +45,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     }
 
     [HttpPut]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult> Update([FromBody] UpdateUserCommand command, CancellationToken cancellationToken)
     {
         await mediator.Send(command, cancellationToken);
@@ -52,7 +53,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     }
 
     [HttpPost("{id:guid}/assign-admin")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<IActionResult> AssignAdminRole(Guid id, CancellationToken cancellationToken)
     {
         await mediator.Send(new AssignAdminRoleCommand(id), cancellationToken);
@@ -60,7 +61,7 @@ public class UsersController(IMediator mediator) : ControllerBase
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         await mediator.Send(new DeleteUserCommand(id), cancellationToken);

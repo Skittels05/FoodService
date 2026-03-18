@@ -1,4 +1,5 @@
-﻿using AuthService.Application.CQRS.Customers.Commands;
+﻿using AuthService.API.Constants;
+using AuthService.Application.CQRS.Customers.Commands;
 using AuthService.Application.CQRS.Customers.Queries;
 using AuthService.Application.DTO.Customers;
 using AuthService.Domain.Common;
@@ -14,7 +15,7 @@ namespace AuthService.API.Controllers;
 [Route("api/[controller]")]
 public class CustomersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpGet]
     public async Task<ActionResult<PagedList<CustomerDto>>> GetAll([FromQuery] GetAllCustomersQuery query, CancellationToken cancellationToken)
     {
@@ -22,7 +23,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return Ok(result);
     }
 
-    [Authorize(Policy = "CustomerOrAdmin")]
+    [Authorize(Policy = Policies.CustomerOrAdmin)]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CustomerDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -30,7 +31,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return Ok(result);
     }
 
-    [Authorize(Policy = "CustomerOrAdmin")]
+    [Authorize(Policy = Policies.CustomerOrAdmin)]
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<CustomerDto>> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
@@ -45,7 +46,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return CreatedAtAction(nameof(GetById), new { id = customerId }, customerId);
     }
 
-    [Authorize(Policy = "CustomerOrAdmin")]
+    [Authorize(Policy = Policies.CustomerOrAdmin)]
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] UpdateCustomerCommand command, CancellationToken cancellationToken)
     {
@@ -53,7 +54,7 @@ public class CustomersController(IMediator mediator, IMapper mapper) : Controlle
         return NoContent();
     }
 
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
