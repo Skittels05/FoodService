@@ -1,4 +1,5 @@
-﻿using AuthService.API.Infrastructure;
+﻿using AuthService.API.Constants;
+using AuthService.API.Infrastructure;
 using AuthService.API.Services;
 using AuthService.Application.Interfaces;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,12 +36,12 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy("AdminOnly", policy =>
+            options.AddPolicy(Policies.AdminOnly, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireClaim("https://food-service.com/roles", "Admin");
             });
-            options.AddPolicy("CourierOrAdmin", policy =>
+            options.AddPolicy(Policies.CourierOrAdmin, policy =>
             {
                 policy.RequireAuthenticatedUser();
 
@@ -52,7 +53,7 @@ public static class DependencyInjection
                     return isAdmin || isVerifiedCourier;
                 });
             });
-            options.AddPolicy("CustomerOrAdmin", policy =>
+            options.AddPolicy(Policies.CustomerOrAdmin, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireAssertion(context =>
@@ -60,7 +61,7 @@ public static class DependencyInjection
                     context.User.HasClaim("https://food-service.com/roles", "Customer")
                 );
             });
-            options.AddPolicy("RestaurantManagerOrAdmin", policy =>
+            options.AddPolicy(Policies.RestaurantManagerOrAdmin, policy =>
             {
                 policy.RequireAuthenticatedUser();
                 policy.RequireAssertion(context =>

@@ -1,4 +1,5 @@
-﻿using AuthService.Application.CQRS.Couriers.Commands;
+﻿using AuthService.API.Constants;
+using AuthService.Application.CQRS.Couriers.Commands;
 using AuthService.Application.CQRS.Couriers.Queries;
 using AuthService.Application.DTO.Courier;
 using AuthService.Domain.Common;
@@ -14,7 +15,7 @@ namespace AuthService.API.Controllers;
 [Route("api/[controller]")]
 public class CouriersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpGet]
     public async Task<ActionResult<PagedList<CourierDto>>> GetAll([FromQuery] GetAllCouriersQuery query, CancellationToken cancellationToken)
     {
@@ -22,7 +23,7 @@ public class CouriersController(IMediator mediator, IMapper mapper) : Controller
         return Ok(result);
     }
 
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpGet("pending")]
     public async Task<ActionResult<PagedList<CourierDto>>> GetPending([FromQuery] GetPendingCouriersQuery query, CancellationToken cancellationToken)
     {
@@ -30,7 +31,7 @@ public class CouriersController(IMediator mediator, IMapper mapper) : Controller
         return Ok(result);
     }
 
-    [Authorize(Policy = "CourierOrAdmin")]
+    [Authorize(Policy = Policies.CourierOrAdmin)]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<CourierDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -38,7 +39,7 @@ public class CouriersController(IMediator mediator, IMapper mapper) : Controller
         return Ok(result);
     }
 
-    [Authorize(Policy = "CourierOrAdmin")]
+    [Authorize(Policy = Policies.CourierOrAdmin)]
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<CourierDto>> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
@@ -53,7 +54,7 @@ public class CouriersController(IMediator mediator, IMapper mapper) : Controller
         return CreatedAtAction(nameof(GetById), new { id = courierId }, courierId);
     }
 
-    [Authorize(Policy = "CourierOrAdmin")]
+    [Authorize(Policy = Policies.CourierOrAdmin)]
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] UpdateCourierCommand command, CancellationToken cancellationToken)
     {
@@ -61,7 +62,7 @@ public class CouriersController(IMediator mediator, IMapper mapper) : Controller
         return NoContent();
     }
 
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpPost("verify")]
     public async Task<ActionResult> Verify([FromBody] VerifyCourierCommand command, CancellationToken cancellationToken)
     {
@@ -69,7 +70,7 @@ public class CouriersController(IMediator mediator, IMapper mapper) : Controller
         return NoContent();
     }
 
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpDelete("{id:guid}")]
     public async Task<ActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {

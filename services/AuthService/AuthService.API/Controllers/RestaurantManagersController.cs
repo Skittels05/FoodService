@@ -1,4 +1,5 @@
-﻿using AuthService.Application.CQRS.RestaurantManagers.Commands;
+﻿using AuthService.API.Constants;
+using AuthService.Application.CQRS.RestaurantManagers.Commands;
 using AuthService.Application.CQRS.RestaurantManagers.Queries;
 using AuthService.Application.DTO.RestaurantManagers;
 using AuthService.Domain.Common;
@@ -14,7 +15,7 @@ namespace AuthService.API.Controllers;
 [Route("api/[controller]")]
 public class RestaurantManagersController(IMediator mediator, IMapper mapper) : ControllerBase
 {
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpGet]
     public async Task<ActionResult<PagedList<RestaurantManagerDto>>> GetAll([FromQuery] GetAllRestaurantManagersQuery query, CancellationToken cancellationToken)
     {
@@ -22,7 +23,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return Ok(result);
     }
 
-    [Authorize(Policy = "RestaurantManagerOrAdmin")]
+    [Authorize(Policy = Policies.RestaurantManagerOrAdmin)]
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<RestaurantManagerDto>> GetById(Guid id, CancellationToken cancellationToken)
     {
@@ -30,7 +31,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return Ok(result);
     }
 
-    [Authorize(Policy = "RestaurantManagerOrAdmin")]
+    [Authorize(Policy = Policies.RestaurantManagerOrAdmin)]
     [HttpGet("user/{userId:guid}")]
     public async Task<ActionResult<RestaurantManagerDto>> GetByUserId(Guid userId, CancellationToken cancellationToken)
     {
@@ -38,7 +39,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return Ok(result);
     }
 
-    [Authorize(Policy = "RestaurantManagerOrAdmin")]
+    [Authorize(Policy = Policies.RestaurantManagerOrAdmin)]
     [HttpGet("restaurant/{restaurantId:guid}")]
     public async Task<ActionResult<PagedList<RestaurantManagerDto>>> GetByRestaurant(
     Guid restaurantId,
@@ -57,7 +58,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return CreatedAtAction(nameof(GetById), new { id = managerId }, managerId);
     }
 
-    [Authorize(Policy = "RestaurantManagerOrAdmin")]
+    [Authorize(Policy = Policies.RestaurantManagerOrAdmin)]
     [HttpPut]
     public async Task<ActionResult> Update([FromBody] UpdateRestaurantManagerCommand command, CancellationToken cancellationToken)
     {
@@ -65,7 +66,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return NoContent();
     }
 
-    [Authorize(Policy = "RestaurantManagerOrAdmin")]
+    [Authorize(Policy = Policies.RestaurantManagerOrAdmin)]
     [HttpPost("{id:guid}/verify")]
     public async Task<IActionResult> Verify(Guid id, CancellationToken cancellationToken)
     {
@@ -73,7 +74,7 @@ public class RestaurantManagersController(IMediator mediator, IMapper mapper) : 
         return NoContent();
     }
 
-    [Authorize(Policy = "AdminOnly")]
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpDelete("{id:guid}")]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
