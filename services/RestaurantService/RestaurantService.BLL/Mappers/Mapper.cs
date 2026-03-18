@@ -60,3 +60,86 @@ public class AddRestaurantDocumentDtoToEntityMapper : IMapper<AddRestaurantDocum
         };
     }
 }
+
+public class MenuItemToDtoMapper : IMapper<MenuItem, MenuItemDto>
+{
+    public MenuItemDto Map(MenuItem input)
+    {
+        return new MenuItemDto(
+            Id: input.Id,
+            RestaurantId: input.RestaurantId,
+            Name: input.Name,
+            Price: input.Price,
+            IsActive: input.IsActive
+        );
+    }
+}
+
+public class CreateMenuItemDtoToEntityMapper : IMapper<CreateMenuItemDto, MenuItem>
+{
+    public MenuItem Map(CreateMenuItemDto input)
+    {
+        return new MenuItem
+        {
+            Name = input.Name,
+            Price = input.Price,
+            IsActive = input.IsActive
+        };
+    }
+}
+
+public class StopListItemToDtoMapper : IMapper<StopListItem, StopListItemDto>
+{
+    public StopListItemDto Map(StopListItem input)
+    {
+        return new StopListItemDto(
+            Id: input.Id,
+            LocationId: input.LocationId,
+            MenuItemId: input.MenuItemId,
+            Reason: input.Reason
+        );
+    }
+}
+
+public class AddStopListItemDtoToEntityMapper : IMapper<AddStopListItemDto, StopListItem>
+{
+    public StopListItem Map(AddStopListItemDto input)
+    {
+        return new StopListItem
+        {
+            MenuItemId = input.MenuItemId,
+            Reason = input.Reason
+        };
+    }
+}
+
+public class LocationToDtoMapper(IMapper<StopListItem, StopListItemDto> stopListMapper)
+    : IMapper<Location, LocationDto>
+{
+    public LocationDto Map(Location input)
+    {
+        return new LocationDto(
+            Id: input.Id,
+            RestaurantId: input.RestaurantId,
+            Address: input.Address,
+            Latitude: input.Latitude,
+            Longitude: input.Longitude,
+            IsAcceptingOrders: input.IsAcceptingOrders,
+            StopList: input.StopList?.Select(stopListMapper.Map).ToList() ?? []
+        );
+    }
+}
+
+public class CreateLocationDtoToEntityMapper : IMapper<CreateLocationDto, Location>
+{
+    public Location Map(CreateLocationDto input)
+    {
+        return new Location
+        {
+            Address = input.Address,
+            Latitude = input.Latitude,
+            Longitude = input.Longitude,
+            IsAcceptingOrders = input.IsAcceptingOrders
+        };
+    }
+}
