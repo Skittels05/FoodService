@@ -2,8 +2,8 @@
 
 public class MenuItem : BaseModel
 {
-    public Guid RestaurantId { get; set; }
-    public string Name { get; set; }
-    public decimal Price { get; set; }
-    public bool IsActive { get; set; }
+    public required Guid RestaurantId { get; set; }
+    public required string Name { get; set; }
+    public required decimal Price { get; set; }
+    public required bool IsActive { get; set; }
 }

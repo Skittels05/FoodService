@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="RestaurantService.BLL/RestaurantService.BLL.csproj" />
+  <Project Path="RestaurantService.DAL/RestaurantService.DAL.csproj" />
 </Solution>
