@@ -98,7 +98,7 @@ public class StopListItemToDtoMapper : IMapper<StopListItem, StopListItemDto>
             Id: input.Id,
             LocationId: input.LocationId,
             MenuItemId: input.MenuItemId,
-            Reason: input.Reason.ToString(),
+            Reason: input.Reason,
             Description: input.Description
         );
     }

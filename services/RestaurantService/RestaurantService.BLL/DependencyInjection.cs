@@ -10,7 +10,7 @@ namespace RestaurantService.BLL;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddBll(this IServiceCollection services)
+    public static IServiceCollection AddBusinessLogicLayer(this IServiceCollection services)
     {
         return services
             .AddValidators()

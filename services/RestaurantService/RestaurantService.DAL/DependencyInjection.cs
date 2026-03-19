@@ -8,7 +8,7 @@ namespace RestaurantService.DAL;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddDal(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection AddDataAccessLayer(this IServiceCollection services, IConfiguration configuration)
     {
         return services
             .AddPersistence(configuration);
@@ -18,9 +18,9 @@ public static class DependencyInjection
     {
         var connectionString = configuration.GetConnectionString("DefaultConnection");
         services.AddScoped<EntityInterceptor>();
-        services.AddDbContext<RestaurantDbContext>((sp, options) =>
+        services.AddDbContext<RestaurantDbContext>((serviceProvider, options) =>
         {
-            var interceptor = sp.GetRequiredService<EntityInterceptor>();
+            var interceptor = serviceProvider.GetRequiredService<EntityInterceptor>();
 
             options.UseNpgsql(connectionString)
                    .AddInterceptors(interceptor);
