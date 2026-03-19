@@ -13,6 +13,10 @@ public sealed class StopListItemConfiguration : IEntityTypeConfiguration<StopLis
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Reason)
+               .IsRequired();
+
+        builder.Property(s => s.Description)
+               .IsRequired(false)
                .HasMaxLength(ValidationConstants.StopListReasonMaxLength);
 
         builder.HasOne<MenuItem>()

@@ -53,6 +53,7 @@ public class AddRestaurantDocumentDtoToEntityMapper : IMapper<AddRestaurantDocum
     {
         return new RestaurantDocument
         {
+            RestaurantId = Guid.Empty,
             Type = input.Type,
             FileUrl = input.FileUrl,
             Status = VerificationStatus.Pending,
@@ -81,6 +82,7 @@ public class CreateMenuItemDtoToEntityMapper : IMapper<CreateMenuItemDto, MenuIt
     {
         return new MenuItem
         {
+            RestaurantId = Guid.Empty,
             Name = input.Name,
             Price = input.Price,
             IsActive = input.IsActive
@@ -96,7 +98,8 @@ public class StopListItemToDtoMapper : IMapper<StopListItem, StopListItemDto>
             Id: input.Id,
             LocationId: input.LocationId,
             MenuItemId: input.MenuItemId,
-            Reason: input.Reason
+            Reason: input.Reason.ToString(),
+            Description: input.Description
         );
     }
 }
@@ -107,8 +110,10 @@ public class AddStopListItemDtoToEntityMapper : IMapper<AddStopListItemDto, Stop
     {
         return new StopListItem
         {
+            LocationId = Guid.Empty,
             MenuItemId = input.MenuItemId,
-            Reason = input.Reason
+            Reason = input.Reason,
+            Description = input.Description
         };
     }
 }
@@ -136,6 +141,7 @@ public class CreateLocationDtoToEntityMapper : IMapper<CreateLocationDto, Locati
     {
         return new Location
         {
+            RestaurantId = Guid.Empty,
             Address = input.Address,
             Latitude = input.Latitude,
             Longitude = input.Longitude,
