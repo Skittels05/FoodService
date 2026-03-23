@@ -22,8 +22,10 @@ public static class DependencyInjection
 
         var mapperTypePairs = Assembly.GetExecutingAssembly().GetTypes()
             .Where(t => t is { IsClass: true, IsAbstract: false })
-            .SelectMany(t => t.GetInterfaces(), (impl, iface) => new { impl, iface })
-            .Where(x => x.iface.IsGenericType && x.iface.GetGenericTypeDefinition() == typeof(IMapper<,>));
+            .SelectMany(
+                t => t.GetInterfaces().Where(i => i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IMapper<,>)),
+                (impl, iface) => (impl, iface)
+            );
 
         foreach (var pair in mapperTypePairs)
         {
