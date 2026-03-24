@@ -5,4 +5,5 @@ namespace RestaurantService.BLL.Repositories.Interfaces;
 public interface ILocationRepository : IGenericRepository<Location>
 {
     Task<IEnumerable<Location>> GetAllByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken = default);
+    Task<IEnumerable<Location>> GetByIdsWithRestaurantAsync(IEnumerable<Guid> ids, CancellationToken cancellationToken = default);
 }
