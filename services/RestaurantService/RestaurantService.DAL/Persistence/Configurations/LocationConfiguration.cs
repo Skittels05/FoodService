@@ -21,7 +21,7 @@ public sealed class LocationConfiguration : IEntityTypeConfiguration<Location>
         builder.Property(l => l.IsAcceptingOrders).IsRequired();
         builder.HasIndex(l => new { l.RestaurantId, l.Address }).IsUnique();
 
-        builder.HasOne<Restaurant>()
+        builder.HasOne(l => l.Restaurant)
                .WithMany()
                .HasForeignKey(l => l.RestaurantId)
                .OnDelete(DeleteBehavior.Cascade);
