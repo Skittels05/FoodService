@@ -36,7 +36,7 @@ public static class DependencyInjection
     {
         var redisConnectionString = configuration.GetConnectionString("Redis");
 
-        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(redisConnectionString));
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
         services.AddScoped<IGeoService, RedisGeoService>();
 
         return services;
