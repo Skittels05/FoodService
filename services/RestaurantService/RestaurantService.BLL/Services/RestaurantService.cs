@@ -39,7 +39,7 @@ public class RestaurantService(
 
     public async Task UpdateAsync(Guid id, UpdateRestaurantDto dto, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdAsync(id, cancellationToken)
+        var restaurant = await restaurantRepository.GetByIdAsync(id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(Restaurant), id);
 
         restaurant.Name = dto.Name;
@@ -51,7 +51,7 @@ public class RestaurantService(
 
     public async Task UpdateActiveStatusAsync(Guid restaurantId, bool isActive, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdAsync(restaurantId, cancellationToken)
+        var restaurant = await restaurantRepository.GetByIdAsync(restaurantId, cancellationToken, true)
             ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
 
         if (restaurant.IsActive == isActive) return;
@@ -65,7 +65,7 @@ public class RestaurantService(
 
     public async Task VerifyAsync(Guid restaurantId, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(restaurantId, cancellationToken)
+        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(restaurantId, cancellationToken, true)
             ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
 
         if (restaurant.Documents is [])

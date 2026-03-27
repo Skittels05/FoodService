@@ -71,7 +71,7 @@ public class LocationService(
 
     public async Task UpdateAsync(Guid id, UpdateLocationDto dto, CancellationToken cancellationToken = default)
     {
-        var location = await locationRepository.GetByIdAsync(id, cancellationToken)
+        var location = await locationRepository.GetByIdAsync(id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(Location), id);
 
         location.Address = dto.Address;
