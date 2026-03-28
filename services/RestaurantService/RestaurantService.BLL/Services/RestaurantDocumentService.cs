@@ -44,7 +44,7 @@ public class RestaurantDocumentService(
 
     public async Task ReplaceDocumentAsync(Guid documentId, ReplaceRestaurantDocumentDto dto, CancellationToken cancellationToken = default)
     {
-        var document = await documentRepository.GetByIdAsync(documentId, cancellationToken)
+        var document = await documentRepository.GetByIdAsync(documentId, cancellationToken, true)
             ?? throw new NotFoundException(nameof(RestaurantDocument), documentId);
 
         var restaurant = await restaurantRepository.GetByIdAsync(document.RestaurantId, cancellationToken)
@@ -62,7 +62,7 @@ public class RestaurantDocumentService(
 
     public async Task ApproveDocumentAsync(Guid documentId, CancellationToken cancellationToken = default)
     {
-        var document = await documentRepository.GetByIdAsync(documentId, cancellationToken)
+        var document = await documentRepository.GetByIdAsync(documentId, cancellationToken, true)
             ?? throw new NotFoundException(nameof(RestaurantDocument), documentId);
 
         document.Status = VerificationStatus.Approved;
@@ -73,7 +73,7 @@ public class RestaurantDocumentService(
 
     public async Task RejectDocumentAsync(Guid documentId, RejectRestaurantDocumentDto dto, CancellationToken cancellationToken = default)
     {
-        var document = await documentRepository.GetByIdAsync(documentId, cancellationToken)
+        var document = await documentRepository.GetByIdAsync(documentId, cancellationToken, true)
             ?? throw new NotFoundException(nameof(RestaurantDocument), documentId);
 
         document.Status = VerificationStatus.Rejected;

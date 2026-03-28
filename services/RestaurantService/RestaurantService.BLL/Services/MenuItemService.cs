@@ -33,7 +33,7 @@ public class MenuItemService(
 
     public async Task UpdateAsync(Guid id, UpdateMenuItemDto dto, CancellationToken cancellationToken = default)
     {
-        var menuItem = await menuItemRepository.GetByIdAsync(id, cancellationToken)
+        var menuItem = await menuItemRepository.GetByIdAsync(id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(MenuItem), id);
 
         menuItem.Name = dto.Name;
