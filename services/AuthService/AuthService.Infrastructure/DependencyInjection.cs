@@ -8,6 +8,7 @@ using AuthService.Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 
 namespace AuthService.Infrastructure;
 
@@ -17,7 +18,8 @@ public static class DependencyInjection
     {
         return services
             .AddContext(configuration)
-            .AddExternalServices(configuration);
+            .AddExternalServices(configuration)
+            .AddRedis(configuration);
     }
 
     private static IServiceCollection AddContext(this IServiceCollection services, IConfiguration configuration)
@@ -42,6 +44,17 @@ public static class DependencyInjection
             .ValidateDataAnnotations()
             .ValidateOnStart();
         services.AddScoped<IAuth0RoleService, Auth0RoleService>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        var redisConnectionString = configuration.GetConnectionString("Redis")
+            ?? throw new InvalidOperationException("Redis connection string is missing.");
+
+        services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
+        services.AddScoped<IGeoService, RedisGeoService>();
 
         return services;
     }

@@ -10,7 +10,8 @@ namespace AuthService.Application.CQRS.CustomerAddresses.Handlers;
 
 public class DeleteAddressCommandHandler(
     IUnitOfWork unitOfWork,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    IGeoService geoService)
     : IRequestHandler<DeleteAddressCommand>
 {
     public async Task Handle(DeleteAddressCommand request, CancellationToken cancellationToken)
@@ -21,8 +22,12 @@ public class DeleteAddressCommandHandler(
         var currentUser = await unitOfWork.UserRepository.GetByAuth0IdAsync(currentUserService.Auth0Id!, cancellationToken)
             ?? throw new UnauthorizedException();
 
-        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, address.CustomerId);
+        var customer = await unitOfWork.CustomerRepository.GetByIdAsync(address.CustomerId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Customer), address.CustomerId);
+
+        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, customer.UserId);
 
         await unitOfWork.CustomerAddressRepository.DeleteAsync(request.Id, cancellationToken);
+        await geoService.RemoveLocationAsync(request.Id);
     }
 }

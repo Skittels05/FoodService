@@ -4,6 +4,7 @@ using AuthService.Application.Exceptions;
 using AuthService.Application.Interfaces;
 using AuthService.Application.Extensions;
 using AuthService.Domain.Common;
+using AuthService.Domain.Entities;
 using AuthService.Domain.Interfaces;
 using AutoMapper;
 using MediatR;
@@ -20,7 +21,11 @@ public class GetCustomerAddressesHandler(
     {
         var currentUser = await unitOfWork.UserRepository.GetByAuth0IdAsync(currentUserService.Auth0Id!, cancellationToken)
             ?? throw new UnauthorizedException();
-        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, request.CustomerId);
+
+        var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.CustomerId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Customer), request.CustomerId);
+
+        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, customer.UserId);
 
         var pagedAddresses = await unitOfWork.CustomerAddressRepository
             .GetByCustomerIdAsync(request.CustomerId, request, cancellationToken);

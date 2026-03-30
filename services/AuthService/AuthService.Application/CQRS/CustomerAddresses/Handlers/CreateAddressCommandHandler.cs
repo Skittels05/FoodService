@@ -12,7 +12,8 @@ namespace AuthService.Application.CQRS.CustomerAddresses.Handlers;
 public class CreateAddressCommandHandler(
     IUnitOfWork unitOfWork,
     IMapper mapper,
-    ICurrentUserService currentUserService)
+    ICurrentUserService currentUserService,
+    IGeoService geoService)
     : IRequestHandler<CreateAddressCommand, Guid>
 {
     public async Task<Guid> Handle(CreateAddressCommand request, CancellationToken cancellationToken)
@@ -20,10 +21,15 @@ public class CreateAddressCommandHandler(
         var currentUser = await unitOfWork.UserRepository.GetByAuth0IdAsync(currentUserService.Auth0Id!, cancellationToken)
             ?? throw new UnauthorizedException();
 
-        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, request.CustomerId);
+        var customer = await unitOfWork.CustomerRepository.GetByIdAsync(request.CustomerId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Customer), request.CustomerId);
+
+        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, customer.UserId);
 
         var address = mapper.Map<CustomerAddress>(request);
         await unitOfWork.CustomerAddressRepository.AddAsync(address, cancellationToken);
+
+        await geoService.AddOrUpdateLocationAsync(address.Id, address.Longitude, address.Latitude);
 
         return address.Id;
     }
