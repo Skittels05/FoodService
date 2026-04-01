@@ -21,7 +21,10 @@ public class MarkAddressAsUsedCommandHandler(
         var currentUser = await unitOfWork.UserRepository.GetByAuth0IdAsync(currentUserService.Auth0Id!, cancellationToken)
             ?? throw new UnauthorizedException();
 
-        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, address.CustomerId);
+        var customer = await unitOfWork.CustomerRepository.GetByIdAsync(address.CustomerId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Customer), address.CustomerId);
+
+        currentUserService.EnsureIsOwnerOrAdmin(currentUser.Id, customer.UserId);
 
         address.MarkAsUsed();
         await unitOfWork.CustomerAddressRepository.UpdateAsync(address, cancellationToken);

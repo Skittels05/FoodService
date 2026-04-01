@@ -54,7 +54,9 @@ public class MappingProfile : Profile
         CreateMap<CreateAddressCommand, CustomerAddress>()
             .ConstructUsing(src => new CustomerAddress(
                 src.CustomerId,
-                src.Address
+                src.Address,
+                src.Latitude,
+                src.Longitude
             ));
     }
 }
