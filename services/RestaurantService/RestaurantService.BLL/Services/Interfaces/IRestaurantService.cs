@@ -1,10 +1,12 @@
-﻿using RestaurantService.BLL.DTOs;
+﻿using RestaurantService.BLL.Common;
+using RestaurantService.BLL.DTOs;
+using RestaurantService.BLL.Models;
 
 namespace RestaurantService.BLL.Services.Interfaces;
 
 public interface IRestaurantService
 {
-    Task<IEnumerable<RestaurantDto>> GetAllAsync(CancellationToken cancellationToken = default);
+    Task<PagedList<RestaurantDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default);
     Task<RestaurantDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<Guid> CreateAsync(CreateRestaurantDto dto, CancellationToken cancellationToken = default);
     Task UpdateAsync(Guid id, UpdateRestaurantDto dto, CancellationToken cancellationToken = default);

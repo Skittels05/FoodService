@@ -1,4 +1,5 @@
-﻿using RestaurantService.BLL.DTOs;
+﻿using RestaurantService.BLL.Common;
+using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Exceptions;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
@@ -12,11 +13,10 @@ public class MenuItemService(
     IRestaurantRepository restaurantRepository,
     IMappingService mappingService) : IMenuItemService
 {
-    public async Task<IEnumerable<MenuItemDto>> GetAllByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken = default)
+    public async Task<PagedList<MenuItemDto>> GetAllByRestaurantIdAsync(Guid restaurantId, PageRequest request, CancellationToken cancellationToken = default)
     {
-        var menuItems = await menuItemRepository.GetAllByRestaurantIdAsync(restaurantId, cancellationToken);
-
-        return menuItems.Select(mappingService.Map<MenuItem, MenuItemDto>);
+        var pagedMenuItems = await menuItemRepository.GetAllByRestaurantIdAsync(restaurantId, request, cancellationToken);
+        return mappingService.MapPagedList<MenuItem, MenuItemDto>(pagedMenuItems);
     }
 
     public async Task<Guid> CreateAsync(Guid restaurantId, CreateMenuItemDto dto, CancellationToken cancellationToken = default)

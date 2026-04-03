@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RestaurantService.BLL.Common;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
+using RestaurantService.DAL.Extensions;
 
 namespace RestaurantService.DAL.Persistence.Repositories;
 
@@ -10,11 +12,13 @@ public class GenericRepository<TEntity>(RestaurantDbContext context)
     protected readonly RestaurantDbContext DbContext = context;
     protected readonly DbSet<TEntity> DbSet = context.Set<TEntity>();
 
-    public virtual async Task<IEnumerable<TEntity>> GetAllAsync(CancellationToken cancellationToken = default, bool trackChanges = false)
+    public virtual async Task<PagedList<TEntity>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false)
     {
-        return trackChanges
-            ? await DbSet.ToListAsync(cancellationToken)
-            : await DbSet.AsNoTracking().ToListAsync(cancellationToken);
+        var query = trackChanges ? DbSet : DbSet.AsNoTracking();
+
+        return await query
+            .ApplySorting(request.SortBy, request.SortOrder)
+            .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool trackChanges = false)
