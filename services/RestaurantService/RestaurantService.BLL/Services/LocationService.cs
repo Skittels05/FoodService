@@ -1,4 +1,5 @@
-﻿using RestaurantService.BLL.DTOs;
+﻿using RestaurantService.BLL.Common;
+using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Exceptions;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
@@ -13,10 +14,10 @@ public class LocationService(
     IMappingService mappingService,
     IGeoService geoService) : ILocationService
 {
-    public async Task<IEnumerable<LocationDto>> GetAllByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken = default)
+    public async Task<PagedList<LocationDto>> GetAllByRestaurantIdAsync(Guid restaurantId, PageRequest request, CancellationToken cancellationToken = default)
     {
-        var locations = await locationRepository.GetAllByRestaurantIdAsync(restaurantId, cancellationToken);
-        return locations.Select(mappingService.Map<Location, LocationDto>);
+        var pagedLocations = await locationRepository.GetAllByRestaurantIdAsync(restaurantId, request, cancellationToken);
+        return mappingService.MapPagedList<Location, LocationDto>(pagedLocations);
     }
 
     public async Task<LocationDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
