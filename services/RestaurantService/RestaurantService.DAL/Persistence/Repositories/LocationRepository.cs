@@ -3,6 +3,7 @@ using RestaurantService.BLL.Common;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
 using RestaurantService.DAL.Extensions;
+using RestaurantService.DAL.Extensions.Sorting;
 
 namespace RestaurantService.DAL.Persistence.Repositories;
 
@@ -14,7 +15,7 @@ public class LocationRepository(RestaurantDbContext context)
         return await DbSet
             .Where(l => l.RestaurantId == restaurantId)
             .AsNoTracking()
-            .ApplySorting(request.SortBy, request.SortOrder)
+            .ApplyLocationSorting(request.SortBy, request.SortOrder)
             .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 

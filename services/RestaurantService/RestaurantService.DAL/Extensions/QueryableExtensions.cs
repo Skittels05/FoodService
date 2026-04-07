@@ -1,38 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Common;
-using System.Reflection;
-using System.Linq.Dynamic.Core;
 
 namespace RestaurantService.DAL.Extensions;
 
 public static class QueryableExtensions
 {
-    public static IQueryable<T> ApplySorting<T>(
-        this IQueryable<T> query,
-        string? sortBy,
-        string? sortOrder)
-        where T : BaseModel 
-    {
-        if (string.IsNullOrWhiteSpace(sortBy))
-        {
-            return query.OrderByDescending(e => e.CreatedAt);
-        }
-
-        var propertyInfo = typeof(T).GetProperty(
-            sortBy.Trim(),
-            BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-
-        if (propertyInfo is null)
-        {
-            return query.OrderByDescending(e => e.CreatedAt);
-        }
-
-        var direction = sortOrder?.ToLower() == "desc" ? "descending" : "ascending";
-        var orderQuery = $"{propertyInfo.Name} {direction}";
-        return query.OrderBy(orderQuery);
-    }
-
     public static async Task<PagedList<T>> ToPagedListAsync<T>(
         this IQueryable<T> source,
         int pageNumber,

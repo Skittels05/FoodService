@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestaurantService.BLL.Common;
+using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
 using RestaurantService.DAL.Extensions;
@@ -16,9 +17,11 @@ public class GenericRepository<TEntity>(RestaurantDbContext context)
     {
         var query = trackChanges ? DbSet : DbSet.AsNoTracking();
 
-        return await query
-            .ApplySorting(request.SortBy, request.SortOrder)
-            .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+        query = request.SortOrder == SortOrder.Desc
+            ? query.OrderByDescending(e => e.CreatedAt)
+            : query.OrderBy(e => e.CreatedAt);
+
+        return await query.ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool trackChanges = false)
