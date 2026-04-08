@@ -1,13 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantService.API.RequestModels;
 using RestaurantService.BLL.DTOs;
+using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Services.Interfaces;
 
 namespace RestaurantService.API.Controllers;
 
 [ApiController]
 [Route("api/documents")]
-public class RestaurantDocumentsController(IRestaurantDocumentService documentService) : ControllerBase
+public class RestaurantDocumentsController(
+    IRestaurantDocumentService documentService,
+    IMappingService mappingService) : ControllerBase
 {
     [HttpPost("restaurant/{restaurantId:guid}")]
     public async Task<ActionResult<Guid>> AddDocument(
@@ -15,7 +18,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         [FromBody] AddRestaurantDocumentRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new AddRestaurantDocumentDto(request.Type, request.FileUrl);
+        var dto = mappingService.Map<AddRestaurantDocumentRequest, AddRestaurantDocumentDto>(request);
         var documentId = await documentService.AddDocumentAsync(restaurantId, dto, cancellationToken);
 
         return Created(string.Empty, documentId);
@@ -37,7 +40,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         [FromBody] ReplaceRestaurantDocumentRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new ReplaceRestaurantDocumentDto(request.NewFileUrl);
+        var dto = mappingService.Map<ReplaceRestaurantDocumentRequest, ReplaceRestaurantDocumentDto>(request);
         await documentService.ReplaceDocumentAsync(id, dto, cancellationToken);
 
         return NoContent();
@@ -59,7 +62,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         [FromBody] RejectRestaurantDocumentRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new RejectRestaurantDocumentDto(request.Reason);
+        var dto = mappingService.Map<RejectRestaurantDocumentRequest, RejectRestaurantDocumentDto>(request);
         await documentService.RejectDocumentAsync(id, dto, cancellationToken);
 
         return NoContent();

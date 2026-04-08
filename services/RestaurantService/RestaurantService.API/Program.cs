@@ -14,6 +14,7 @@ public class Program
 
         builder.Services.AddDataAccessLayer(builder.Configuration);
         builder.Services.AddBusinessLogicLayer();
+        builder.Services.AddPresentationMappers();
 
         var app = builder.Build();
 

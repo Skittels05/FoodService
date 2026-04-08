@@ -2,6 +2,7 @@
 using RestaurantService.API.RequestModels;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
+using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Services.Interfaces;
 
@@ -9,7 +10,9 @@ namespace RestaurantService.API.Controllers;
 
 [ApiController]
 [Route("api/menu-items")]
-public class MenuItemsController(IMenuItemService menuItemService) : ControllerBase
+public class MenuItemsController(
+    IMenuItemService menuItemService, 
+    IMappingService mappingService) : ControllerBase
 {
     [HttpGet("~/api/restaurants/{restaurantId:guid}/menu")]
     public async Task<ActionResult<PagedList<MenuItemDto>>> GetAllByRestaurant(
@@ -26,7 +29,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
         [FromBody] CreateMenuItemRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new CreateMenuItemDto(request.Name, request.Price, request.IsActive);
+        var dto = mappingService.Map<CreateMenuItemRequest, CreateMenuItemDto>(request);
         var menuItemId = await menuItemService.CreateAsync(restaurantId, dto, cancellationToken);
 
         return Created(string.Empty, menuItemId);
@@ -38,7 +41,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
         [FromBody] UpdateMenuItemRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new UpdateMenuItemDto(request.Name, request.Price, request.IsActive);
+        var dto = mappingService.Map<UpdateMenuItemRequest, UpdateMenuItemDto>(request);
         await menuItemService.UpdateAsync(id, dto, cancellationToken);
 
         return NoContent();

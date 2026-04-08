@@ -2,6 +2,7 @@
 using RestaurantService.API.RequestModels;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
+using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Services.Interfaces;
 
@@ -9,7 +10,9 @@ namespace RestaurantService.API.Controllers;
 
 [ApiController]
 [Route("api/locations")]
-public class LocationsController(ILocationService locationService) : ControllerBase
+public class LocationsController(
+    ILocationService locationService, 
+    IMappingService mappingService) : ControllerBase
 {
     [HttpGet("~/api/restaurants/{restaurantId:guid}/locations")]
     public async Task<ActionResult<PagedList<LocationDto>>> GetAllByRestaurant(
@@ -33,13 +36,11 @@ public class LocationsController(ILocationService locationService) : ControllerB
         [FromQuery] GetNearbyLocationsRequest request,
         CancellationToken cancellationToken)
     {
-        var result = await locationService.GetNearbyAsync(
+        return Ok(await locationService.GetNearbyAsync(
             request.Latitude, 
             request.Longitude, 
             request.RadiusKm, 
-            cancellationToken);
-
-        return Ok(result);
+            cancellationToken));
     }
 
     [HttpPost("~/api/restaurants/{restaurantId:guid}/locations")]
@@ -48,12 +49,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
         [FromBody] CreateLocationRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new CreateLocationDto(
-            request.Address, 
-            request.Latitude, 
-            request.Longitude, 
-            request.IsAcceptingOrders);
-
+        var dto = mappingService.Map<CreateLocationRequest, CreateLocationDto>(request);
         var locationId = await locationService.CreateAsync(restaurantId, dto, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { id = locationId }, locationId);
@@ -65,12 +61,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
         [FromBody] UpdateLocationRequest request,
         CancellationToken cancellationToken)
     {
-        var dto = new UpdateLocationDto(
-            request.Address, 
-            request.Latitude, 
-            request.Longitude, 
-            request.IsAcceptingOrders);
-
+        var dto = mappingService.Map<UpdateLocationRequest, UpdateLocationDto>(request);
         await locationService.UpdateAsync(id, dto, cancellationToken);
 
         return NoContent();

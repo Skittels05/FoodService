@@ -1,7 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestaurantService.API.RequestModels;
-using RestaurantService.BLL.Common; 
+using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
+using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Services.Interfaces;
 
@@ -9,7 +10,9 @@ namespace RestaurantService.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class RestaurantsController(IRestaurantService restaurantService) : ControllerBase
+public class RestaurantsController(
+    IRestaurantService restaurantService,
+    IMappingService mappingService) : ControllerBase
 {
     [HttpGet]
     public async Task<ActionResult<PagedList<RestaurantDto>>> GetAll(
@@ -32,7 +35,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         [FromBody] CreateRestaurantRequest request, 
         CancellationToken cancellationToken)
     {
-        var dto = new CreateRestaurantDto(request.Name);
+        var dto = mappingService.Map<CreateRestaurantRequest, CreateRestaurantDto>(request);
         var restaurantId = await restaurantService.CreateAsync(dto, cancellationToken);
 
         return CreatedAtAction(nameof(GetById), new { id = restaurantId }, restaurantId);
@@ -44,7 +47,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         [FromBody] UpdateRestaurantRequest request, 
         CancellationToken cancellationToken)
     {
-        var dto = new UpdateRestaurantDto(request.Name);
+        var dto = mappingService.Map<UpdateRestaurantRequest, UpdateRestaurantDto>(request);
         await restaurantService.UpdateAsync(id, dto, cancellationToken);
 
         return NoContent();
