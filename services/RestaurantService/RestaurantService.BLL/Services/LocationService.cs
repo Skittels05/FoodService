@@ -20,10 +20,12 @@ public class LocationService(
         return mappingService.MapPagedList<Location, LocationDto>(pagedLocations);
     }
 
-    public async Task<LocationDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<LocationDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var location = await locationRepository.GetByIdAsync(id, cancellationToken);
-        return location is not null ? mappingService.Map<Location, LocationDto>(location) : null;
+        var location = await locationRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Location), id);
+            
+        return mappingService.Map<Location, LocationDto>(location);
     }
 
     public async Task<IEnumerable<RestaurantNearbyDto>> GetNearbyAsync(double latitude, double longitude, double radiusKm, CancellationToken cancellationToken = default)
@@ -64,7 +66,6 @@ public class LocationService(
         location.RestaurantId = restaurantId;
 
         await locationRepository.AddAsync(location, cancellationToken);
-
         await geoService.AddOrUpdateLocationAsync(location.Id, location.Longitude, location.Latitude);
 
         return location.Id;
@@ -83,15 +84,14 @@ public class LocationService(
         await locationRepository.UpdateAsync(location, cancellationToken);
         await geoService.AddOrUpdateLocationAsync(location.Id, location.Longitude, location.Latitude);
     }
-
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var isDeleted = await locationRepository.DeleteAsync(id, cancellationToken);
-        if (isDeleted)
-        {
-            await geoService.RemoveLocationAsync(id);
-        }
+        
+        if (!isDeleted)
+            throw new NotFoundException(nameof(Location), id);
 
-        return isDeleted;
+        await geoService.RemoveLocationAsync(id);
     }
 }
