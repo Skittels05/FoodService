@@ -19,22 +19,22 @@ public class MenuItemService(
         return mappingService.MapPagedList<MenuItem, MenuItemDto>(pagedMenuItems);
     }
 
-    public async Task<Guid> CreateAsync(Guid restaurantId, CreateMenuItemDto dto, CancellationToken cancellationToken = default)
+    public async Task<Guid> CreateAsync(CreateMenuItemDto dto, CancellationToken cancellationToken = default)
     {
-        _ = await restaurantRepository.GetByIdAsync(restaurantId, cancellationToken)
-            ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
+        _ = await restaurantRepository.GetByIdAsync(dto.RestaurantId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Restaurant), dto.RestaurantId);
 
         var menuItem = mappingService.Map<CreateMenuItemDto, MenuItem>(dto);
-        menuItem.RestaurantId = restaurantId;
+        menuItem.RestaurantId = dto.RestaurantId;
 
         await menuItemRepository.AddAsync(menuItem, cancellationToken);
         return menuItem.Id;
     }
 
-    public async Task UpdateAsync(Guid id, UpdateMenuItemDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(UpdateMenuItemDto dto, CancellationToken cancellationToken = default)
     {
-        var menuItem = await menuItemRepository.GetByIdAsync(id, cancellationToken, true)
-            ?? throw new NotFoundException(nameof(MenuItem), id);
+        var menuItem = await menuItemRepository.GetByIdAsync(dto.Id, cancellationToken, true)
+            ?? throw new NotFoundException(nameof(MenuItem), dto.Id);
 
         menuItem.Name = dto.Name;
         menuItem.Price = dto.Price;
@@ -43,6 +43,11 @@ public class MenuItemService(
         await menuItemRepository.UpdateAsync(menuItem, cancellationToken);
     }
 
-    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => menuItemRepository.DeleteAsync(id, cancellationToken);
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var isDeleted = await menuItemRepository.DeleteAsync(id, cancellationToken);
+        
+        if (!isDeleted)
+            throw new NotFoundException(nameof(MenuItem), id);
+    }
 }
