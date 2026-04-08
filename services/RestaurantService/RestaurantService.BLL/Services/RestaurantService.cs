@@ -17,17 +17,15 @@ public class RestaurantService(
     public async Task<PagedList<RestaurantDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var pagedRestaurants = await restaurantRepository.GetAllAsync(request, cancellationToken);
-
         return mappingService.MapPagedList<Restaurant, RestaurantDto>(pagedRestaurants);
     }
 
-    public async Task<RestaurantDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<RestaurantDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(id, cancellationToken);
+        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Restaurant), id);
 
-        return restaurant is not null
-            ? mappingService.Map<Restaurant, RestaurantDto>(restaurant)
-            : null;
+        return mappingService.Map<Restaurant, RestaurantDto>(restaurant);
     }
 
     public async Task<Guid> CreateAsync(CreateRestaurantDto dto, CancellationToken cancellationToken = default)
@@ -38,42 +36,46 @@ public class RestaurantService(
         return restaurant.Id;
     }
 
-    public async Task UpdateAsync(Guid id, UpdateRestaurantDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(UpdateRestaurantDto dto, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdAsync(id, cancellationToken, true)
-            ?? throw new NotFoundException(nameof(Restaurant), id);
+        var restaurant = await restaurantRepository.GetByIdAsync(dto.Id, cancellationToken, true)
+            ?? throw new NotFoundException(nameof(Restaurant), dto.Id);
 
         restaurant.Name = dto.Name;
         await restaurantRepository.UpdateAsync(restaurant, cancellationToken);
     }
 
-    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => restaurantRepository.DeleteAsync(id, cancellationToken);
-
-    public async Task UpdateActiveStatusAsync(Guid restaurantId, bool isActive, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdAsync(restaurantId, cancellationToken, true)
-            ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
+        var isDeleted = await restaurantRepository.DeleteAsync(id, cancellationToken);
+        if (!isDeleted)
+            throw new NotFoundException(nameof(Restaurant), id);
+    }
 
-        if (restaurant.IsActive == isActive) return;
+    public async Task UpdateActiveStatusAsync(UpdateRestaurantStatusDto dto, CancellationToken cancellationToken = default)
+    {
+        var restaurant = await restaurantRepository.GetByIdAsync(dto.Id, cancellationToken, true)
+            ?? throw new NotFoundException(nameof(Restaurant), dto.Id);
 
-        if (isActive && !restaurant.IsVerified)
-            throw new RestaurantNotVerifiedException(restaurantId);
+        if (restaurant.IsActive == dto.IsActive) return;
 
-        restaurant.IsActive = isActive;
+        if (dto.IsActive && !restaurant.IsVerified)
+            throw new RestaurantNotVerifiedException(dto.Id);
+
+        restaurant.IsActive = dto.IsActive;
         await restaurantRepository.UpdateAsync(restaurant, cancellationToken);
     }
 
-    public async Task VerifyAsync(Guid restaurantId, CancellationToken cancellationToken = default)
+    public async Task VerifyAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(restaurantId, cancellationToken, true)
-            ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
+        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(id, cancellationToken, true)
+            ?? throw new NotFoundException(nameof(Restaurant), id);
 
         if (restaurant.Documents is [])
-            throw new MissingRestaurantDocumentsException(restaurantId);
+            throw new MissingRestaurantDocumentsException(id);
 
         if (restaurant.Documents.Any(d => d.Status is not VerificationStatus.Approved))
-            throw new UnapprovedDocumentsException(restaurantId);
+            throw new UnapprovedDocumentsException(id);
 
         restaurant.IsVerified = true;
         restaurant.IsActive = true;

@@ -13,5 +13,11 @@ public record CreateRestaurantDto(
 );
 
 public record UpdateRestaurantDto(
+    Guid Id,
     string Name
+);
+
+public record UpdateRestaurantStatusDto(
+    Guid Id,
+    bool IsActive
 );
