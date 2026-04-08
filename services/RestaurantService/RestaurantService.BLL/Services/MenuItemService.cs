@@ -43,6 +43,11 @@ public class MenuItemService(
         await menuItemRepository.UpdateAsync(menuItem, cancellationToken);
     }
 
-    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => menuItemRepository.DeleteAsync(id, cancellationToken);
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var isDeleted = await menuItemRepository.DeleteAsync(id, cancellationToken);
+        
+        if (!isDeleted)
+            throw new NotFoundException(nameof(MenuItem), id);
+    }
 }
