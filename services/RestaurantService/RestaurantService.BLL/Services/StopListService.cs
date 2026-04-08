@@ -30,9 +30,9 @@ public class StopListService(
 
     public async Task RemoveItemAsync(Guid itemId, CancellationToken cancellationToken = default)
     {
-        _ = await stopListRepository.GetByIdAsync(itemId, cancellationToken)
-            ?? throw new NotFoundException(nameof(StopListItem), itemId);
-
-        await stopListRepository.DeleteAsync(itemId, cancellationToken);
+        var isDeleted = await stopListRepository.DeleteAsync(itemId, cancellationToken);
+        
+        if (!isDeleted)
+            throw new NotFoundException(nameof(StopListItem), itemId);
     }
 }
