@@ -25,5 +25,24 @@ public record GeoSearchResultDto(
     double Distance
 );
 
-public record CreateLocationDto(string Address, double Latitude, double Longitude, bool IsAcceptingOrders);
-public record UpdateLocationDto(string Address, double Latitude, double Longitude, bool IsAcceptingOrders);
+public record GetNearbyLocationsDto(
+    double Latitude, 
+    double Longitude, 
+    double RadiusKm
+);
+
+public record CreateLocationDto(
+    Guid RestaurantId,
+    string Address, 
+    double Latitude, 
+    double Longitude, 
+    bool IsAcceptingOrders
+);
+
+public record UpdateLocationDto(
+    Guid Id,
+    string Address, 
+    double Latitude, 
+    double Longitude, 
+    bool IsAcceptingOrders
+);
