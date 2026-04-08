@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RestaurantService.BLL.Repositories.Interfaces;
 using RestaurantService.BLL.Services.Interfaces;
 using RestaurantService.DAL.Interceptors;
+using RestaurantService.DAL.Persistence.Repositories;
 using RestaurantService.DAL.Redis;
+using RestaurantService.DAL.Repositories;
 using StackExchange.Redis;
 
 namespace RestaurantService.DAL;
@@ -14,6 +17,7 @@ public static class DependencyInjection
     {
         return services
             .AddPersistence(configuration)
+            .AddRepositories()
             .AddRedis(configuration);
     }
 
@@ -38,6 +42,16 @@ public static class DependencyInjection
 
         services.AddSingleton<IConnectionMultiplexer>(_ => ConnectionMultiplexer.Connect(redisConnectionString));
         services.AddScoped<IGeoService, RedisGeoService>();
+
+        return services;
+    }
+    
+    private static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+        services.AddScoped<ILocationRepository, LocationRepository>();
+        services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+        services.AddScoped<IRestaurantRepository, RestaurantRepository>();
 
         return services;
     }

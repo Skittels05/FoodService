@@ -17,17 +17,15 @@ public class RestaurantService(
     public async Task<PagedList<RestaurantDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var pagedRestaurants = await restaurantRepository.GetAllAsync(request, cancellationToken);
-
         return mappingService.MapPagedList<Restaurant, RestaurantDto>(pagedRestaurants);
     }
 
-    public async Task<RestaurantDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<RestaurantDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(id, cancellationToken);
+        var restaurant = await restaurantRepository.GetByIdWithDocumentsAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Restaurant), id);
 
-        return restaurant is not null
-            ? mappingService.Map<Restaurant, RestaurantDto>(restaurant)
-            : null;
+        return mappingService.Map<Restaurant, RestaurantDto>(restaurant);
     }
 
     public async Task<Guid> CreateAsync(CreateRestaurantDto dto, CancellationToken cancellationToken = default)
@@ -46,9 +44,14 @@ public class RestaurantService(
         restaurant.Name = dto.Name;
         await restaurantRepository.UpdateAsync(restaurant, cancellationToken);
     }
-
-    public Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
-        => restaurantRepository.DeleteAsync(id, cancellationToken);
+    
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        var isDeleted = await restaurantRepository.DeleteAsync(id, cancellationToken);
+        
+        if (!isDeleted)
+            throw new NotFoundException(nameof(Restaurant), id);
+    }
 
     public async Task UpdateActiveStatusAsync(Guid restaurantId, bool isActive, CancellationToken cancellationToken = default)
     {
