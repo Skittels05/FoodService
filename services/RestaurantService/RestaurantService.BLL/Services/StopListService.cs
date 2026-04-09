@@ -13,16 +13,16 @@ public class StopListService(
     IGenericRepository<MenuItem> menuItemRepository,
     IMappingService mappingService) : IStopListService
 {
-    public async Task<Guid> AddItemAsync(Guid locationId, AddStopListItemDto dto, CancellationToken cancellationToken = default)
+    public async Task<Guid> AddItemAsync(AddStopListItemDto dto, CancellationToken cancellationToken = default)
     {
-        _ = await locationRepository.GetByIdAsync(locationId, cancellationToken)
-            ?? throw new NotFoundException(nameof(Location), locationId);
+        _ = await locationRepository.GetByIdAsync(dto.LocationId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Location), dto.LocationId);
 
         _ = await menuItemRepository.GetByIdAsync(dto.MenuItemId, cancellationToken)
             ?? throw new NotFoundException(nameof(MenuItem), dto.MenuItemId);
 
         var stopListItem = mappingService.Map<AddStopListItemDto, StopListItem>(dto);
-        stopListItem.LocationId = locationId;
+        stopListItem.LocationId = dto.LocationId;
 
         await stopListRepository.AddAsync(stopListItem, cancellationToken);
         return stopListItem.Id;

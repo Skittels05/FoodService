@@ -20,15 +20,17 @@ public class LocationService(
         return mappingService.MapPagedList<Location, LocationDto>(pagedLocations);
     }
 
-    public async Task<LocationDto?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<LocationDto> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
-        var location = await locationRepository.GetByIdAsync(id, cancellationToken);
-        return location is not null ? mappingService.Map<Location, LocationDto>(location) : null;
+        var location = await locationRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Location), id);
+
+        return mappingService.Map<Location, LocationDto>(location);
     }
 
-    public async Task<IEnumerable<RestaurantNearbyDto>> GetNearbyAsync(double latitude, double longitude, double radiusKm, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<RestaurantNearbyDto>> GetNearbyAsync(GetNearbyLocationsDto dto, CancellationToken cancellationToken = default)
     {
-        var geoResults = await geoService.GetLocationsNearAsync(longitude, latitude, radiusKm);
+        var geoResults = await geoService.GetLocationsNearAsync(dto.Longitude, dto.Latitude, dto.RadiusKm);
 
         if (geoResults is null || !geoResults.Any())
             return [];
@@ -43,7 +45,7 @@ public class LocationService(
             return new RestaurantNearbyDto(
                 LocationId: loc.Id,
                 RestaurantId: loc.RestaurantId,
-                RestaurantName: loc.Restaurant?.Name,
+                RestaurantName: loc.Restaurant?.Name ?? string.Empty,
                 Address: loc.Address,
                 DistanceInKm: Math.Round(distance, 2),
                 Latitude: loc.Latitude,
@@ -55,13 +57,13 @@ public class LocationService(
         return result;
     }
 
-    public async Task<Guid> CreateAsync(Guid restaurantId, CreateLocationDto dto, CancellationToken cancellationToken = default)
+    public async Task<Guid> CreateAsync(CreateLocationDto dto, CancellationToken cancellationToken = default)
     {
-        _ = await restaurantRepository.GetByIdAsync(restaurantId, cancellationToken)
-            ?? throw new NotFoundException(nameof(Restaurant), restaurantId);
+        _ = await restaurantRepository.GetByIdAsync(dto.RestaurantId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Restaurant), dto.RestaurantId);
 
         var location = mappingService.Map<CreateLocationDto, Location>(dto);
-        location.RestaurantId = restaurantId;
+        location.RestaurantId = dto.RestaurantId;
 
         await locationRepository.AddAsync(location, cancellationToken);
 
@@ -70,10 +72,10 @@ public class LocationService(
         return location.Id;
     }
 
-    public async Task UpdateAsync(Guid id, UpdateLocationDto dto, CancellationToken cancellationToken = default)
+    public async Task UpdateAsync(UpdateLocationDto dto, CancellationToken cancellationToken = default)
     {
-        var location = await locationRepository.GetByIdAsync(id, cancellationToken, true)
-            ?? throw new NotFoundException(nameof(Location), id);
+        var location = await locationRepository.GetByIdAsync(dto.Id, cancellationToken, true)
+            ?? throw new NotFoundException(nameof(Location), dto.Id);
 
         location.Address = dto.Address;
         location.Latitude = dto.Latitude;
@@ -84,14 +86,13 @@ public class LocationService(
         await geoService.AddOrUpdateLocationAsync(location.Id, location.Longitude, location.Latitude);
     }
 
-    public async Task<bool> DeleteAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
         var isDeleted = await locationRepository.DeleteAsync(id, cancellationToken);
-        if (isDeleted)
-        {
-            await geoService.RemoveLocationAsync(id);
-        }
+        
+        if (!isDeleted)
+            throw new NotFoundException(nameof(Location), id);
 
-        return isDeleted;
+        await geoService.RemoveLocationAsync(id);
     }
 }

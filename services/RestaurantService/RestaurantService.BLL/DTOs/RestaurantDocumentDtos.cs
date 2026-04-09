@@ -11,14 +11,17 @@ public record RestaurantDocumentDto(
 );
 
 public record AddRestaurantDocumentDto(
+    Guid RestaurantId,
     DocumentType Type,
     string FileUrl
 );
 
 public record ReplaceRestaurantDocumentDto(
+    Guid Id,
     string NewFileUrl
 );
 
 public record RejectRestaurantDocumentDto(
+    Guid Id,
     string Reason
 );
