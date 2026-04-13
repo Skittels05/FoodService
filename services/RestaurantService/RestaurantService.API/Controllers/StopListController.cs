@@ -17,7 +17,7 @@ public class StopListController(IStopListService stopListService) : ControllerBa
         var dto = request.ToDto(locationId);
         var itemId = await stopListService.AddItemAsync(dto, cancellationToken);
 
-        return Created(string.Empty, itemId);
+        return Ok(itemId);
     }
 
     [HttpDelete("api/stop-list/{id:guid}")]
@@ -27,6 +27,6 @@ public class StopListController(IStopListService stopListService) : ControllerBa
     {
         await stopListService.RemoveItemAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 }

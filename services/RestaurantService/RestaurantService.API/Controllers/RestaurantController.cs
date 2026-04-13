@@ -36,7 +36,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         var dto = request.ToDto();
         var restaurantId = await restaurantService.CreateAsync(dto, cancellationToken);
 
-        return CreatedAtAction(nameof(GetById), new { id = restaurantId }, restaurantId);
+        return Ok(restaurantId);
     }
 
     [HttpPut("{id:guid}")]
@@ -48,7 +48,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         var dto = request.ToDto(id);
         await restaurantService.UpdateAsync(dto, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{id:guid}")]
@@ -58,7 +58,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     {
         await restaurantService.DeleteAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPatch("{id:guid}/status")]
@@ -70,7 +70,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         var dto = request.ToDto(id);
         await restaurantService.UpdateActiveStatusAsync(dto, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("{id:guid}/verify")]
@@ -80,6 +80,6 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     {
         await restaurantService.VerifyAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 }

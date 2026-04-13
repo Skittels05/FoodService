@@ -32,7 +32,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
         var dto = request.ToDto(restaurantId);
         var menuItemId = await menuItemService.CreateAsync(dto, cancellationToken);
 
-        return Created(string.Empty, menuItemId);
+        return Ok(menuItemId);
     }
 
     [HttpPut("{id:guid}")]
@@ -44,7 +44,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
         var dto = request.ToDto(id);
         await menuItemService.UpdateAsync(dto, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{id:guid}")]
@@ -54,6 +54,6 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
     {
         await menuItemService.DeleteAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 }

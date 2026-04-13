@@ -51,7 +51,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
         var dto = request.ToDto(restaurantId);
         var locationId = await locationService.CreateAsync(dto, cancellationToken);
 
-        return CreatedAtAction(nameof(GetById), new { id = locationId }, locationId);
+        return Ok(locationId);
     }
 
     [HttpPut("{id:guid}")]
@@ -63,7 +63,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
         var dto = request.ToDto(id);
         await locationService.UpdateAsync(dto, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpDelete("{id:guid}")]
@@ -73,6 +73,6 @@ public class LocationsController(ILocationService locationService) : ControllerB
     {
         await locationService.DeleteAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 }

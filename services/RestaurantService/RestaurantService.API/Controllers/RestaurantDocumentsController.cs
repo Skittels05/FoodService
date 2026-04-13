@@ -17,7 +17,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         var dto = request.ToDto(restaurantId);
         var documentId = await documentService.AddDocumentAsync(dto, cancellationToken);
 
-        return Created(string.Empty, documentId);
+        return Ok(documentId);
     }
 
     [HttpDelete("api/documents/{id:guid}")]
@@ -27,7 +27,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     {
         await documentService.RemoveDocumentAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPut("api/documents/{id:guid}")]
@@ -39,7 +39,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         var dto = request.ToDto(id);
         await documentService.ReplaceDocumentAsync(dto, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("api/documents/{id:guid}/approve")]
@@ -49,7 +49,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     {
         await documentService.ApproveDocumentAsync(id, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 
     [HttpPost("api/documents/{id:guid}/reject")]
@@ -61,6 +61,6 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         var dto = request.ToDto(id);
         await documentService.RejectDocumentAsync(dto, cancellationToken);
 
-        return NoContent();
+        return Ok();
     }
 }
