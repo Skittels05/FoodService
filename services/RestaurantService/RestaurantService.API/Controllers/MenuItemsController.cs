@@ -36,7 +36,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(
+    public async Task<ActionResult> Update(
         [FromRoute] Guid id,
         [FromBody] UpdateMenuItemRequest request,
         CancellationToken cancellationToken)

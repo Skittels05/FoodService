@@ -21,7 +21,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpDelete("api/documents/{id:guid}")]
-    public async Task<IActionResult> RemoveDocument(
+    public async Task<ActionResult> RemoveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
@@ -31,7 +31,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpPut("api/documents/{id:guid}")]
-    public async Task<IActionResult> ReplaceDocument(
+    public async Task<ActionResult> ReplaceDocument(
         [FromRoute] Guid id,
         [FromBody] ReplaceRestaurantDocumentRequest request,
         CancellationToken cancellationToken)
@@ -43,7 +43,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpPost("api/documents/{id:guid}/approve")]
-    public async Task<IActionResult> ApproveDocument(
+    public async Task<ActionResult> ApproveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
@@ -53,7 +53,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpPost("api/documents/{id:guid}/reject")]
-    public async Task<IActionResult> RejectDocument(
+    public async Task<ActionResult> RejectDocument(
         [FromRoute] Guid id,
         [FromBody] RejectRestaurantDocumentRequest request,
         CancellationToken cancellationToken)

@@ -40,7 +40,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> Update(
+    public async Task<ActionResult> Update(
         [FromRoute] Guid id, 
         [FromBody] UpdateRestaurantRequest request, 
         CancellationToken cancellationToken)
@@ -52,7 +52,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(
+    public async Task<ActionResult> Delete(
         [FromRoute] Guid id, 
         CancellationToken cancellationToken)
     {
@@ -62,7 +62,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPatch("{id:guid}/status")]
-    public async Task<IActionResult> UpdateStatus(
+    public async Task<ActionResult> UpdateStatus(
         [FromRoute] Guid id, 
         [FromBody] UpdateRestaurantStatusRequest request, 
         CancellationToken cancellationToken)
@@ -74,7 +74,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPost("{id:guid}/verify")]
-    public async Task<IActionResult> Verify(
+    public async Task<ActionResult> Verify(
         [FromRoute] Guid id, 
         CancellationToken cancellationToken)
     {

@@ -21,7 +21,7 @@ public class StopListController(IStopListService stopListService) : ControllerBa
     }
 
     [HttpDelete("api/stop-list/{id:guid}")]
-    public async Task<IActionResult> RemoveItem(
+    public async Task<ActionResult> RemoveItem(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
