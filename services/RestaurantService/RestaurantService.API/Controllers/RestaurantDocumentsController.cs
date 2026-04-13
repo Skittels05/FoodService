@@ -1,26 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantService.API.Mappers;
-using RestaurantService.API.RequestModels;
+using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Services.Interfaces;
 
 namespace RestaurantService.API.Controllers;
 
 [ApiController]
+[Route("api/restaurant-documents")]
 public class RestaurantDocumentsController(IRestaurantDocumentService documentService) : ControllerBase
 {
-    [HttpPost("api/restaurants/{restaurantId:guid}/documents")]
+    [HttpPost("[action]")]
     public async Task<ActionResult<Guid>> AddDocument(
-        [FromRoute] Guid restaurantId,
-        [FromBody] AddRestaurantDocumentRequest request,
+        [FromBody] AddRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(restaurantId);
         var documentId = await documentService.AddDocumentAsync(dto, cancellationToken);
 
         return Ok(documentId);
     }
 
-    [HttpDelete("api/documents/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     public async Task<ActionResult> RemoveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
@@ -30,19 +28,17 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
         return Ok();
     }
 
-    [HttpPut("api/documents/{id:guid}")]
+    [HttpPut("[action]")]
     public async Task<ActionResult> ReplaceDocument(
-        [FromRoute] Guid id,
-        [FromBody] ReplaceRestaurantDocumentRequest request,
+        [FromBody] ReplaceRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(id);
         await documentService.ReplaceDocumentAsync(dto, cancellationToken);
 
         return Ok();
     }
 
-    [HttpPost("api/documents/{id:guid}/approve")]
+    [HttpPost("{id:guid}/approve")]
     public async Task<ActionResult> ApproveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
@@ -51,14 +47,12 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
 
         return Ok();
     }
-
-    [HttpPost("api/documents/{id:guid}/reject")]
+    
+    [HttpPost("[action]")]
     public async Task<ActionResult> RejectDocument(
-        [FromRoute] Guid id,
-        [FromBody] RejectRestaurantDocumentRequest request,
+        [FromBody] RejectRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(id);
         await documentService.RejectDocumentAsync(dto, cancellationToken);
 
         return Ok();

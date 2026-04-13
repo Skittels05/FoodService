@@ -1,26 +1,23 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantService.API.Mappers;
-using RestaurantService.API.RequestModels;
+using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Services.Interfaces;
 
 namespace RestaurantService.API.Controllers;
 
 [ApiController]
+[Route("api/stop-list")]
 public class StopListController(IStopListService stopListService) : ControllerBase
 {
-    [HttpPost("api/locations/{locationId:guid}/stop-list")]
+    [HttpPost("[action]")]
     public async Task<ActionResult<Guid>> AddItem(
-        [FromRoute] Guid locationId,
-        [FromBody] AddStopListItemRequest request,
+        [FromBody] AddStopListItemDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(locationId);
         var itemId = await stopListService.AddItemAsync(dto, cancellationToken);
 
         return Ok(itemId);
     }
-
-    [HttpDelete("api/stop-list/{id:guid}")]
+    [HttpDelete("{id:guid}")]
     public async Task<ActionResult> RemoveItem(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)

@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantService.API.Mappers;
-using RestaurantService.API.RequestModels;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Models;
@@ -28,25 +26,32 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         return Ok(await restaurantService.GetByIdAsync(id, cancellationToken));
     }
 
-    [HttpPost]
+    [HttpPost("[action]")]
     public async Task<ActionResult<Guid>> Create(
-        [FromBody] CreateRestaurantRequest request, 
+        [FromBody] CreateRestaurantDto dto, 
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto();
         var restaurantId = await restaurantService.CreateAsync(dto, cancellationToken);
 
         return Ok(restaurantId);
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("[action]")]
     public async Task<ActionResult> Update(
-        [FromRoute] Guid id, 
-        [FromBody] UpdateRestaurantRequest request, 
+        [FromBody] UpdateRestaurantDto dto, 
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(id);
         await restaurantService.UpdateAsync(dto, cancellationToken);
+
+        return Ok();
+    }
+
+    [HttpPatch("[action]")]
+    public async Task<ActionResult> UpdateStatus(
+        [FromBody] UpdateRestaurantStatusDto dto, 
+        CancellationToken cancellationToken)
+    {
+        await restaurantService.UpdateActiveStatusAsync(dto, cancellationToken);
 
         return Ok();
     }
@@ -57,18 +62,6 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         CancellationToken cancellationToken)
     {
         await restaurantService.DeleteAsync(id, cancellationToken);
-
-        return Ok();
-    }
-
-    [HttpPatch("{id:guid}/status")]
-    public async Task<ActionResult> UpdateStatus(
-        [FromRoute] Guid id, 
-        [FromBody] UpdateRestaurantStatusRequest request, 
-        CancellationToken cancellationToken)
-    {
-        var dto = request.ToDto(id);
-        await restaurantService.UpdateActiveStatusAsync(dto, cancellationToken);
 
         return Ok();
     }

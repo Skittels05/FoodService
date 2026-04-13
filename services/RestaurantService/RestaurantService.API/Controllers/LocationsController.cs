@@ -1,6 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RestaurantService.API.Mappers;
-using RestaurantService.API.RequestModels;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Models;
@@ -12,6 +10,7 @@ namespace RestaurantService.API.Controllers;
 [Route("api/[controller]")]
 public class LocationsController(ILocationService locationService) : ControllerBase
 {
+
     [HttpGet("~/api/restaurants/{restaurantId:guid}/locations")]
     public async Task<ActionResult<PagedList<LocationDto>>> GetAllByRestaurant(
         [FromRoute] Guid restaurantId,
@@ -33,41 +32,36 @@ public class LocationsController(ILocationService locationService) : ControllerB
 
     [HttpGet("nearby")]
     public async Task<ActionResult<IEnumerable<RestaurantNearbyDto>>> GetNearby(
-        [FromQuery] GetNearbyLocationsQuery query,
+        [FromQuery] GetNearbyLocationsDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = query.ToDto();
         var nearbyRestaurants = await locationService.GetNearbyAsync(dto, cancellationToken);
         
         return Ok(nearbyRestaurants);
     }
-
-    [HttpPost("~/api/restaurants/{restaurantId:guid}/locations")]
+    
+    [HttpPost("[action]")]
     public async Task<ActionResult<Guid>> Create(
-        [FromRoute] Guid restaurantId,
-        [FromBody] CreateLocationRequest request,
+        [FromBody] CreateLocationDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(restaurantId);
         var locationId = await locationService.CreateAsync(dto, cancellationToken);
 
         return Ok(locationId);
     }
 
-    [HttpPut("{id:guid}")]
+    [HttpPut("[action]")]
     public async Task<ActionResult> Update(
-        [FromRoute] Guid id,
-        [FromBody] UpdateLocationRequest request,
+        [FromBody] UpdateLocationDto dto,
         CancellationToken cancellationToken)
     {
-        var dto = request.ToDto(id);
         await locationService.UpdateAsync(dto, cancellationToken);
 
         return Ok();
     }
 
     [HttpDelete("{id:guid}")]
-    public async Task<IActionResult> Delete(
+    public async Task<ActionResult> Delete(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
     {
