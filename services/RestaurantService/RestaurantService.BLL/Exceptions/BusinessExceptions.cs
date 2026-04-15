@@ -1,6 +1,7 @@
 ﻿namespace RestaurantService.BLL.Exceptions;
 
 public abstract class BusinessRuleException(string message) : Exception(message);
+
 public class RestaurantAlreadyVerifiedException(Guid restaurantId)
     : BusinessRuleException($"Operation failed because restaurant with Id '{restaurantId}' is already verified.");
 
