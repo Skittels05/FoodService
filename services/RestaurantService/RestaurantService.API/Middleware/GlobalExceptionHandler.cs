@@ -36,12 +36,6 @@ public class GlobalExceptionHandler(
             problemDetails.Extensions["errors"] = errors;
         }
         
-        if (env.IsDevelopment())
-        {
-            problemDetails.Extensions["exception"] = exception.GetType().Name;
-            problemDetails.Extensions["stackTrace"] = exception.StackTrace;
-        }
-
         httpContext.Response.StatusCode = statusCode;
         await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
 
