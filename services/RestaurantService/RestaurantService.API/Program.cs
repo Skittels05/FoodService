@@ -1,10 +1,9 @@
-using FluentValidation;
-using RestaurantService.API.Filters;
-using RestaurantService.API.Middleware;
+using RestaurantService.API;
+using RestaurantService.API.Extensions;
 using RestaurantService.BLL;
 using RestaurantService.DAL;
 using Scalar.AspNetCore;
-using System.Reflection;
+using Serilog;
 
 namespace RestaurantService.API;
 
@@ -14,28 +13,21 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.AddApiLogging();
+
         builder.Services.AddDataAccessLayer(builder.Configuration);
         builder.Services.AddBusinessLogicLayer();
-
-        builder.Services.AddControllers(options =>
-        {
-            options.Filters.Add<ValidationActionFilter>();
-        });
-        
-        builder.Services.AddProblemDetails();
-        builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
-        builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
-        builder.Services.AddOpenApi();
+        builder.Services.AddApiLayer();
 
         var app = builder.Build();
 
+        app.UseApiLogging();
         app.UseExceptionHandler();
+        
 
         if (app.Environment.IsDevelopment())
         {
             app.MapOpenApi();
-
             app.MapScalarApiReference(options =>
             {
                 options
@@ -43,6 +35,8 @@ public class Program
                     .WithTheme(ScalarTheme.Moon)
                     .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
             });
+
+            
         }
         
         app.UseHttpsRedirection();
