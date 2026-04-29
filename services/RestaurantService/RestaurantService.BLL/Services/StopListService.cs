@@ -1,5 +1,7 @@
 ﻿using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Exceptions;
+using RestaurantService.BLL.Extensions;
+using RestaurantService.BLL.Interfaces;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
@@ -11,12 +13,15 @@ public class StopListService(
     IGenericRepository<StopListItem> stopListRepository,
     IGenericRepository<Location> locationRepository,
     IGenericRepository<MenuItem> menuItemRepository,
-    IMappingService mappingService) : IStopListService
+    IMappingService mappingService,
+    ICurrentUserService currentUserService) : IStopListService
 {
     public async Task<Guid> AddItemAsync(AddStopListItemDto dto, CancellationToken cancellationToken = default)
     {
-        _ = await locationRepository.GetByIdAsync(dto.LocationId, cancellationToken)
+        var location = await locationRepository.GetByIdAsync(dto.LocationId, cancellationToken)
             ?? throw new NotFoundException(nameof(Location), dto.LocationId);
+
+        currentUserService.EnsureHasAccessToRestaurant(location.RestaurantId);
 
         _ = await menuItemRepository.GetByIdAsync(dto.MenuItemId, cancellationToken)
             ?? throw new NotFoundException(nameof(MenuItem), dto.MenuItemId);
@@ -30,8 +35,13 @@ public class StopListService(
 
     public async Task RemoveItemAsync(Guid itemId, CancellationToken cancellationToken = default)
     {
-        _ = await stopListRepository.GetByIdAsync(itemId, cancellationToken)
+        var stopListItem = await stopListRepository.GetByIdAsync(itemId, cancellationToken)
             ?? throw new NotFoundException(nameof(StopListItem), itemId);
+
+        var location = await locationRepository.GetByIdAsync(stopListItem.LocationId, cancellationToken)
+            ?? throw new NotFoundException(nameof(Location), stopListItem.LocationId);
+
+        currentUserService.EnsureHasAccessToRestaurant(location.RestaurantId);
 
         await stopListRepository.DeleteAsync(itemId, cancellationToken);
     }
