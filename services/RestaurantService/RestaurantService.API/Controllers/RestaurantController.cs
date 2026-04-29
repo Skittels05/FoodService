@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantService.API.Constants;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Models;
@@ -27,6 +29,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPost("[action]")]
+    [Authorize]
     public async Task<ActionResult<Guid>> Create(
         [FromBody] CreateRestaurantDto dto, 
         CancellationToken cancellationToken)
@@ -37,6 +40,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPut("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> Update(
         [FromBody] UpdateRestaurantDto dto, 
         CancellationToken cancellationToken)
@@ -46,6 +50,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
         return Ok();
     }
 
+    [Authorize(Policy = Policies.AdminOnly)]
     [HttpPatch("[action]")]
     public async Task<ActionResult> UpdateStatus(
         [FromBody] UpdateRestaurantStatusDto dto, 
@@ -57,6 +62,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid id, 
         CancellationToken cancellationToken)
@@ -67,6 +73,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPost("{id:guid}/verify")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult> Verify(
         [FromRoute] Guid id, 
         CancellationToken cancellationToken)

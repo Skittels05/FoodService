@@ -1,6 +1,8 @@
 ﻿using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Exceptions;
+using RestaurantService.BLL.Extensions;
+using RestaurantService.BLL.Interfaces;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
@@ -12,7 +14,8 @@ public class LocationService(
     ILocationRepository locationRepository,
     IRestaurantRepository restaurantRepository,
     IMappingService mappingService,
-    IGeoService geoService) : ILocationService
+    IGeoService geoService,
+    ICurrentUserService currentUserService) : ILocationService
 {
     public async Task<PagedList<LocationDto>> GetAllByRestaurantIdAsync(Guid restaurantId, PageRequest request, CancellationToken cancellationToken = default)
     {
@@ -59,6 +62,8 @@ public class LocationService(
 
     public async Task<Guid> CreateAsync(CreateLocationDto dto, CancellationToken cancellationToken = default)
     {
+        currentUserService.EnsureHasAccessToRestaurant(dto.RestaurantId);
+
         _ = await restaurantRepository.GetByIdAsync(dto.RestaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), dto.RestaurantId);
 
@@ -77,6 +82,8 @@ public class LocationService(
         var location = await locationRepository.GetByIdAsync(dto.Id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(Location), dto.Id);
 
+        currentUserService.EnsureHasAccessToRestaurant(location.RestaurantId);
+
         location.Address = dto.Address;
         location.Latitude = dto.Latitude;
         location.Longitude = dto.Longitude;
@@ -88,6 +95,11 @@ public class LocationService(
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        var location = await locationRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(Location), id);
+
+        currentUserService.EnsureHasAccessToRestaurant(location.RestaurantId);
+
         var isDeleted = await locationRepository.DeleteAsync(id, cancellationToken);
         
         if (!isDeleted)

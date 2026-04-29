@@ -1,6 +1,8 @@
 ﻿using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Exceptions;
+using RestaurantService.BLL.Extensions;
+using RestaurantService.BLL.Interfaces;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
@@ -11,10 +13,13 @@ namespace RestaurantService.BLL.Services;
 public class RestaurantDocumentService(
     IGenericRepository<RestaurantDocument> documentRepository,
     IRestaurantRepository restaurantRepository,
-    IMappingService mappingService) : IRestaurantDocumentService
+    IMappingService mappingService,
+    ICurrentUserService currentUserService) : IRestaurantDocumentService
 {
     public async Task<Guid> AddDocumentAsync(AddRestaurantDocumentDto dto, CancellationToken cancellationToken = default)
     {
+        currentUserService.EnsureHasAccessToRestaurant(dto.RestaurantId);
+
         var restaurant = await restaurantRepository.GetByIdAsync(dto.RestaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), dto.RestaurantId);
 
@@ -33,6 +38,8 @@ public class RestaurantDocumentService(
         var document = await documentRepository.GetByIdAsync(documentId, cancellationToken)
             ?? throw new NotFoundException(nameof(RestaurantDocument), documentId);
 
+        currentUserService.EnsureHasAccessToRestaurant(document.RestaurantId);
+
         var restaurant = await restaurantRepository.GetByIdAsync(document.RestaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), document.RestaurantId);
 
@@ -46,6 +53,8 @@ public class RestaurantDocumentService(
     {
         var document = await documentRepository.GetByIdAsync(dto.Id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(RestaurantDocument), dto.Id);
+        
+        currentUserService.EnsureHasAccessToRestaurant(document.RestaurantId);
 
         var restaurant = await restaurantRepository.GetByIdAsync(document.RestaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), document.RestaurantId);

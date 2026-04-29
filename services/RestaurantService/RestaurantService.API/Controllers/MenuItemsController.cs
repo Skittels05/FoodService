@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantService.API.Constants;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Models;
@@ -22,6 +24,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
     }
     
     [HttpPost("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult<Guid>> Create(
         [FromBody] CreateMenuItemDto dto,
         CancellationToken cancellationToken)
@@ -32,6 +35,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
     }
 
     [HttpPut("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> Update(
         [FromBody] UpdateMenuItemDto dto,
         CancellationToken cancellationToken)
@@ -42,6 +46,7 @@ public class MenuItemsController(IMenuItemService menuItemService) : ControllerB
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)

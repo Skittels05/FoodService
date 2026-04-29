@@ -1,6 +1,8 @@
 ﻿using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Exceptions;
+using RestaurantService.BLL.Extensions;
+using RestaurantService.BLL.Interfaces;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
@@ -11,7 +13,8 @@ namespace RestaurantService.BLL.Services;
 public class MenuItemService(
     IMenuItemRepository menuItemRepository,
     IRestaurantRepository restaurantRepository,
-    IMappingService mappingService) : IMenuItemService
+    IMappingService mappingService,
+    ICurrentUserService currentUserService) : IMenuItemService
 {
     public async Task<PagedList<MenuItemDto>> GetAllByRestaurantIdAsync(Guid restaurantId, PageRequest request, CancellationToken cancellationToken = default)
     {
@@ -21,6 +24,8 @@ public class MenuItemService(
 
     public async Task<Guid> CreateAsync(CreateMenuItemDto dto, CancellationToken cancellationToken = default)
     {
+        currentUserService.EnsureHasAccessToRestaurant(dto.RestaurantId);
+
         _ = await restaurantRepository.GetByIdAsync(dto.RestaurantId, cancellationToken)
             ?? throw new NotFoundException(nameof(Restaurant), dto.RestaurantId);
 
@@ -35,6 +40,8 @@ public class MenuItemService(
     {
         var menuItem = await menuItemRepository.GetByIdAsync(dto.Id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(MenuItem), dto.Id);
+        
+        currentUserService.EnsureHasAccessToRestaurant(menuItem.RestaurantId);
 
         menuItem.Name = dto.Name;
         menuItem.Price = dto.Price;
@@ -45,6 +52,11 @@ public class MenuItemService(
 
     public async Task DeleteAsync(Guid id, CancellationToken cancellationToken = default)
     {
+        var menuItem = await menuItemRepository.GetByIdAsync(id, cancellationToken)
+            ?? throw new NotFoundException(nameof(MenuItem), id);
+        
+        currentUserService.EnsureHasAccessToRestaurant(menuItem.RestaurantId);
+
         var isDeleted = await menuItemRepository.DeleteAsync(id, cancellationToken);
         
         if (!isDeleted)

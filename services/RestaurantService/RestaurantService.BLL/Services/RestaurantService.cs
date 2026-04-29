@@ -2,6 +2,8 @@
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Exceptions;
+using RestaurantService.BLL.Extensions;
+using RestaurantService.BLL.Interfaces;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
@@ -11,8 +13,8 @@ namespace RestaurantService.BLL.Services;
 
 public class RestaurantService(
     IRestaurantRepository restaurantRepository,
-    IMappingService mappingService)
-    : IRestaurantService
+    IMappingService mappingService,
+    ICurrentUserService currentUserService) : IRestaurantService
 {
     public async Task<PagedList<RestaurantDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
@@ -30,7 +32,15 @@ public class RestaurantService(
 
     public async Task<Guid> CreateAsync(CreateRestaurantDto dto, CancellationToken cancellationToken = default)
     {
+        if (currentUserService.Role != "Admin" && currentUserService.RestaurantId.HasValue)
+        {
+            throw new AccessDeniedException();
+        }
+
         var restaurant = mappingService.Map<CreateRestaurantDto, Restaurant>(dto);
+        
+        restaurant.IsVerified = false;
+        restaurant.IsActive = false;
 
         await restaurantRepository.AddAsync(restaurant, cancellationToken);
         return restaurant.Id;
@@ -38,6 +48,8 @@ public class RestaurantService(
 
     public async Task UpdateAsync(UpdateRestaurantDto dto, CancellationToken cancellationToken = default)
     {
+        currentUserService.EnsureHasAccessToRestaurant(dto.Id);
+
         var restaurant = await restaurantRepository.GetByIdAsync(dto.Id, cancellationToken, true)
             ?? throw new NotFoundException(nameof(Restaurant), dto.Id);
 
