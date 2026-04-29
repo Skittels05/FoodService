@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantService.API.Constants;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Services.Interfaces;
 
@@ -6,6 +8,7 @@ namespace RestaurantService.API.Controllers;
 
 [ApiController]
 [Route("api/stop-list")]
+[Authorize(Policy = Policies.ManagerOrAdmin)]
 public class StopListController(IStopListService stopListService) : ControllerBase
 {
     [HttpPost("[action]")]

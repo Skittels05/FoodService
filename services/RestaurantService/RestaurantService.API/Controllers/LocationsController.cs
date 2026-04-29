@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantService.API.Constants;
 using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Models;
@@ -41,6 +43,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
     }
     
     [HttpPost("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult<Guid>> Create(
         [FromBody] CreateLocationDto dto,
         CancellationToken cancellationToken)
@@ -51,6 +54,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
     }
 
     [HttpPut("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> Update(
         [FromBody] UpdateLocationDto dto,
         CancellationToken cancellationToken)
@@ -61,6 +65,7 @@ public class LocationsController(ILocationService locationService) : ControllerB
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> Delete(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
