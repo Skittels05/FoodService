@@ -1,8 +1,8 @@
 ﻿using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Exceptions;
-using RestaurantService.BLL.Extensions; // <-- Подключаем экстеншены
-using RestaurantService.BLL.Interfaces; // <-- Подключаем интерфейс пользователя
+using RestaurantService.BLL.Extensions;
+using RestaurantService.BLL.Interfaces;
 using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;

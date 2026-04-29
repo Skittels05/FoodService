@@ -38,11 +38,29 @@ public static class DependencyInjection
 
         services.AddAuthorization(options =>
         {
-            options.AddPolicy(Policies.AdminOnly, p => p.RequireClaim(CustomClaims.Roles, "Admin"));
-            options.AddPolicy(Policies.RestaurantManager, p => p.RequireClaim(CustomClaims.Roles, "RestaurantManager"));
-            options.AddPolicy(Policies.ManagerOrAdmin, p => 
-                p.RequireAssertion(c => c.User.HasClaim(CustomClaims.Roles, "Admin") 
-                                     || c.User.HasClaim(CustomClaims.Roles, "RestaurantManager")));
+            options.AddPolicy(Policies.AdminOnly, p => 
+                p.RequireClaim(CustomClaims.Roles, "Admin"));
+
+            options.AddPolicy(Policies.RestaurantManager, policy =>
+            {
+                policy.RequireClaim(CustomClaims.Roles, "RestaurantManager");
+                policy.RequireClaim(CustomClaims.IsVerified, "true");
+            });
+            
+            options.AddPolicy(Policies.ManagerOrAdmin, policy => 
+            {
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim(CustomClaims.Roles, "Admin") ||
+                    (context.User.HasClaim(CustomClaims.Roles, "RestaurantManager") && 
+                     context.User.HasClaim(CustomClaims.IsVerified, "true")));
+            });
+            
+            options.AddPolicy("UnverifiedManagerOrAdmin", policy => 
+            {
+                policy.RequireAssertion(context =>
+                    context.User.HasClaim(CustomClaims.Roles, "Admin") ||
+                    context.User.HasClaim(CustomClaims.Roles, "RestaurantManager"));
+            });
         });
 
         services.AddHttpContextAccessor();

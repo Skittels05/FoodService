@@ -11,7 +11,7 @@ namespace RestaurantService.API.Controllers;
 public class RestaurantDocumentsController(IRestaurantDocumentService documentService) : ControllerBase
 {
     [HttpPost("[action]")]
-    [Authorize(Policy = Policies.ManagerOrAdmin)]
+    [Authorize(Policy = "UnverifiedManagerOrAdmin")]
     public async Task<ActionResult<Guid>> AddDocument(
         [FromBody] AddRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
@@ -22,7 +22,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpDelete("{id:guid}")]
-    [Authorize(Policy = Policies.ManagerOrAdmin)]
+    [Authorize(Policy = "UnverifiedManagerOrAdmin")]
     public async Task<ActionResult> RemoveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
@@ -33,7 +33,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpPut("[action]")]
-    [Authorize(Policy = Policies.ManagerOrAdmin)]
+    [Authorize(Policy = "UnverifiedManagerOrAdmin")]
     public async Task<ActionResult> ReplaceDocument(
         [FromBody] ReplaceRestaurantDocumentDto dto,
         CancellationToken cancellationToken)

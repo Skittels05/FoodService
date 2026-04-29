@@ -29,7 +29,7 @@ public class RestaurantsController(IRestaurantService restaurantService) : Contr
     }
 
     [HttpPost("[action]")]
-    [Authorize(Policy = Policies.AdminOnly)]
+    [Authorize]
     public async Task<ActionResult<Guid>> Create(
         [FromBody] CreateRestaurantDto dto, 
         CancellationToken cancellationToken)
