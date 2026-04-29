@@ -48,6 +48,9 @@ public class GlobalExceptionHandler(
         {
             NotFoundException => (Status404NotFound, "Not Found", exception.Message, null),
             
+            AccessDeniedException
+                => (Status403Forbidden, "Forbidden", "You do not have permission to perform this action.", null),
+            
             DbUpdateException { InnerException: PostgresException { SqlState: "23505" } }
                 => (Status409Conflict, "Conflict", "A record with this unique identifier already exists.", null),
 
