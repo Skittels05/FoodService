@@ -5,7 +5,6 @@ namespace RestaurantService.BLL.Extensions;
 
 public static class CurrentUserServiceExtensions
 {
-
     public static void EnsureHasAccessToRestaurant(this ICurrentUserService user, Guid targetRestaurantId)
     {
         var hasAccess = user.Role switch
