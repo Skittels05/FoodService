@@ -17,7 +17,7 @@ public class Program
 
         builder.Services.AddDataAccessLayer(builder.Configuration);
         builder.Services.AddBusinessLogicLayer();
-        builder.Services.AddApiLayer();
+        builder.Services.AddApiLayer(builder.Configuration);
 
         var app = builder.Build();
 
@@ -40,6 +40,7 @@ public class Program
         }
         
         app.UseHttpsRedirection();
+        app.UseAuthentication(); 
         app.UseAuthorization();
         app.MapControllers();
 

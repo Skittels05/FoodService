@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using RestaurantService.API.Constants;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Services.Interfaces;
 
@@ -9,6 +11,7 @@ namespace RestaurantService.API.Controllers;
 public class RestaurantDocumentsController(IRestaurantDocumentService documentService) : ControllerBase
 {
     [HttpPost("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult<Guid>> AddDocument(
         [FromBody] AddRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
@@ -19,6 +22,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> RemoveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
@@ -29,6 +33,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpPut("[action]")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
     public async Task<ActionResult> ReplaceDocument(
         [FromBody] ReplaceRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
@@ -39,6 +44,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
 
     [HttpPost("{id:guid}/approve")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult> ApproveDocument(
         [FromRoute] Guid id,
         CancellationToken cancellationToken)
@@ -49,6 +55,7 @@ public class RestaurantDocumentsController(IRestaurantDocumentService documentSe
     }
     
     [HttpPost("[action]")]
+    [Authorize(Policy = Policies.AdminOnly)]
     public async Task<ActionResult> RejectDocument(
         [FromBody] RejectRestaurantDocumentDto dto,
         CancellationToken cancellationToken)
