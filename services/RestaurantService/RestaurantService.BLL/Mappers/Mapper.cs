@@ -14,8 +14,7 @@ public class RestaurantToDtoMapper(IMapper<RestaurantDocument, RestaurantDocumen
             Id: input.Id,
             Name: input.Name,
             IsVerified: input.IsVerified,
-            IsActive: input.IsActive,
-            Documents: input.Documents?.Select(documentMapper.Map).ToList() ?? []
+            IsActive: input.IsActive
         );
     }
 }

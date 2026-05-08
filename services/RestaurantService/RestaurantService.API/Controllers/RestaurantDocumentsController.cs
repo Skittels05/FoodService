@@ -10,6 +10,16 @@ namespace RestaurantService.API.Controllers;
 [Route("api/restaurant-documents")]
 public class RestaurantDocumentsController(IRestaurantDocumentService documentService) : ControllerBase
 {
+    [HttpGet("restaurant/{restaurantId:guid}")]
+    [Authorize(Policy = Policies.ManagerOrAdmin)]
+    public async Task<ActionResult<IEnumerable<RestaurantDocumentDto>>> GetByRestaurant(
+        [FromRoute] Guid restaurantId,
+        CancellationToken cancellationToken)
+    {
+        var documents = await documentService.GetByRestaurantIdAsync(restaurantId, cancellationToken);
+        return Ok(documents);
+    }
+    
     [HttpPost("[action]")]
     [Authorize(Policy = "UnverifiedManagerOrAdmin")]
     public async Task<ActionResult<Guid>> AddDocument(
