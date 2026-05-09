@@ -22,4 +22,11 @@ public class RestaurantManagerRepository(ApplicationDbContext context)
     {
         return await _dbSet.FirstOrDefaultAsync(rm => rm.UserId == userId, cancellationToken);
     }
+    
+    public async Task<RestaurantManager?> GetPendingByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken)
+    {
+        return await _dbSet.SingleOrDefaultAsync(
+            x => x.ManagedRestaurantId == restaurantId && !x.IsVerified, 
+            cancellationToken);
+    }
 }

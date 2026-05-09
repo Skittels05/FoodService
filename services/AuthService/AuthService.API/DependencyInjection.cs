@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
 using System.Security.Claims;
+using AuthService.API.Consumers;
+using MassTransit;
 
 namespace AuthService.API;
 
@@ -70,6 +72,24 @@ public static class DependencyInjection
                 );
             });
         });
+        
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumer<RestaurantVerifiedConsumer>();
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitConfig = configuration.GetSection("RabbitMQ");
+                
+                cfg.Host(rabbitConfig["Host"] ?? "localhost", "/", h =>
+                {
+                    h.Username(rabbitConfig["Username"]);
+                    h.Password(rabbitConfig["Password"]);
+                });
+                
+                cfg.ConfigureEndpoints(context);
+            });
+        });
+        
         services.AddHttpContextAccessor();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 

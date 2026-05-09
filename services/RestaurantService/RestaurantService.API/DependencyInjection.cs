@@ -72,8 +72,8 @@ public static class DependencyInjection
                 
                 cfg.Host(rabbitConfig["Host"] ?? "localhost", "/", h =>
                 {
-                    h.Username(rabbitConfig["Username"] ?? "guest");
-                    h.Password(rabbitConfig["Password"] ?? "guest");
+                    h.Username(rabbitConfig["Username"]);
+                    h.Password(rabbitConfig["Password"]);
                 });
 
                 cfg.ConfigureEndpoints(context);
