@@ -8,6 +8,7 @@ using RestaurantService.API.Filters;
 using RestaurantService.API.Middleware;
 using RestaurantService.API.Services;
 using RestaurantService.BLL.Interfaces;
+using MassTransit;
 
 namespace RestaurantService.API;
 
@@ -60,6 +61,22 @@ public static class DependencyInjection
                 policy.RequireAssertion(context =>
                     context.User.HasClaim(CustomClaims.Roles, "Admin") ||
                     context.User.HasClaim(CustomClaims.Roles, "RestaurantManager"));
+            });
+        });
+        
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var rabbitConfig = configuration.GetSection("RabbitMQ");
+                
+                cfg.Host(rabbitConfig["Host"] ?? "localhost", "/", h =>
+                {
+                    h.Username(rabbitConfig["Username"] ?? "guest");
+                    h.Password(rabbitConfig["Password"] ?? "guest");
+                });
+
+                cfg.ConfigureEndpoints(context);
             });
         });
 
