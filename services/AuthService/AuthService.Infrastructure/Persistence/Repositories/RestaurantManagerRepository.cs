@@ -25,7 +25,7 @@ public class RestaurantManagerRepository(ApplicationDbContext context)
     
     public async Task<RestaurantManager?> GetPendingByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken)
     {
-        return await _dbSet.SingleOrDefaultAsync(
+        return await _dbSet.FirstOrDefaultAsync(
             x => x.ManagedRestaurantId == restaurantId && !x.IsVerified, 
             cancellationToken);
     }
