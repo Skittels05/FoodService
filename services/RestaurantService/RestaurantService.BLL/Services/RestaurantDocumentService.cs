@@ -11,11 +11,19 @@ using RestaurantService.BLL.Services.Interfaces;
 namespace RestaurantService.BLL.Services;
 
 public class RestaurantDocumentService(
-    IGenericRepository<RestaurantDocument> documentRepository,
+    IRestaurantDocumentRepository documentRepository,
     IRestaurantRepository restaurantRepository,
     IMappingService mappingService,
     ICurrentUserService currentUserService) : IRestaurantDocumentService
 {
+    public async Task<IEnumerable<RestaurantDocumentDto>> GetByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken = default)
+    {
+        currentUserService.EnsureHasAccessToRestaurant(restaurantId);
+        var documents = await documentRepository.GetByRestaurantIdAsync(restaurantId, cancellationToken);
+
+        return mappingService.Map<IEnumerable<RestaurantDocument>, IEnumerable<RestaurantDocumentDto>>(documents);
+    }
+    
     public async Task<Guid> AddDocumentAsync(AddRestaurantDocumentDto dto, CancellationToken cancellationToken = default)
     {
         currentUserService.EnsureHasAccessToRestaurant(dto.RestaurantId);

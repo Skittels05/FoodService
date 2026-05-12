@@ -7,4 +7,5 @@ public interface IRestaurantManagerRepository : IGenericRepository<RestaurantMan
 {
     Task<PagedList<RestaurantManager>> GetByRestaurantIdAsync(Guid restaurantId, bool? isVerified, PageRequest request, CancellationToken cancellationToken);
     Task<RestaurantManager?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+    Task<RestaurantManager?> GetPendingByRestaurantIdAsync(Guid restaurantId, CancellationToken cancellationToken);
 }

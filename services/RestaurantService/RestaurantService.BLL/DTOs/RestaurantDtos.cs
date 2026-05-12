@@ -4,8 +4,7 @@ public record RestaurantDto(
     Guid Id,
     string Name,
     bool IsVerified,
-    bool IsActive,
-    List<RestaurantDocumentDto> Documents
+    bool IsActive
 );
 
 public record CreateRestaurantDto(

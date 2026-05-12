@@ -1,4 +1,5 @@
-﻿using RestaurantService.BLL.Common;
+﻿using MassTransit;
+using RestaurantService.BLL.Common;
 using RestaurantService.BLL.DTOs;
 using RestaurantService.BLL.Enums;
 using RestaurantService.BLL.Exceptions;
@@ -8,13 +9,15 @@ using RestaurantService.BLL.Mappers.Interfaces;
 using RestaurantService.BLL.Models;
 using RestaurantService.BLL.Repositories.Interfaces;
 using RestaurantService.BLL.Services.Interfaces;
+using RestaurantService.BLL.Events;
 
 namespace RestaurantService.BLL.Services;
 
 public class RestaurantService(
     IRestaurantRepository restaurantRepository,
     IMappingService mappingService,
-    ICurrentUserService currentUserService) : IRestaurantService
+    ICurrentUserService currentUserService,
+    IPublishEndpoint publishEndpoint) : IRestaurantService
 {
     public async Task<PagedList<RestaurantDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
@@ -93,5 +96,8 @@ public class RestaurantService(
         restaurant.IsActive = true;
 
         await restaurantRepository.UpdateAsync(restaurant, cancellationToken);
+        
+        var verificationEvent = new RestaurantVerifiedEvent(restaurant.Id);
+        await publishEndpoint.Publish(verificationEvent, cancellationToken);
     }
 }
