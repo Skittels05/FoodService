@@ -10,7 +10,8 @@ public class Order : BaseModel
     public required decimal TotalAmount { get; set; }
     public required string DeliveryAddress { get; set; } = string.Empty;
     public string? CustomerComment { get; set; }
-
+    public OrderCancellationReason? CancellationReason { get; set; }
+    public string? CancellationComment { get; set; }
     public List<OrderItem> Items { get; set; } = [];
     public List<Payment> Payments { get; set; } = [];
 }
