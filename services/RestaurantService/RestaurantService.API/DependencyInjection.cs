@@ -14,8 +14,22 @@ namespace RestaurantService.API;
 
 public static class DependencyInjection
 {
+    public const string FrontendCorsPolicy = "FrontendCorsPolicy";
     public static IServiceCollection AddApiLayer(this IServiceCollection services, IConfiguration configuration)
     {
+        var allowedOrigins = configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy(FrontendCorsPolicy, policy =>
+            {
+                policy.WithOrigins(allowedOrigins)
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+            });
+        });
+        
         services.AddControllers(options =>
         {
             options.Filters.Add<ValidationActionFilter>();

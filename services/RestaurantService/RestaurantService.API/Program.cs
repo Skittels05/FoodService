@@ -40,6 +40,7 @@ public class Program
         }
         
         app.UseHttpsRedirection();
+        app.UseCors(DependencyInjection.FrontendCorsPolicy);
         app.UseAuthentication(); 
         app.UseAuthorization();
         app.MapControllers();
