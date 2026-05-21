@@ -4,7 +4,7 @@ using DeliveryService.BLL.Enums;
 using DeliveryService.BLL.Repositories.Interfaces;
 using DeliveryService.BLL.Mappers.Interfaces;
 using DeliveryService.BLL.Services.Interfaces;
-
+using DeliveryService.BLL.Exceptions;
 
 namespace DeliveryService.BLL.Services;
 
@@ -26,7 +26,7 @@ public class OrderService(
     public async Task UpdateStatusAsync(Guid orderId, OrderStatus newStatus, CancellationToken cancellationToken = default)
     {
         var order = await orderRepository.GetByIdAsync(orderId, cancellationToken)
-            ?? throw new Exception($"Order with id {orderId} not found");
+            ?? throw new NotFoundException(nameof(Order), orderId);
 
         order.Status = newStatus;
 
@@ -36,7 +36,7 @@ public class OrderService(
     public async Task AssignCourierAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
     {
         var order = await orderRepository.GetByIdAsync(orderId, cancellationToken)
-            ?? throw new Exception($"Order with id {orderId} not found");
+            ?? throw new NotFoundException(nameof(Order), orderId);
 
         order.CourierId = courierId;
         
@@ -46,7 +46,7 @@ public class OrderService(
     public async Task CancelAsync(CancelOrderDto request, CancellationToken cancellationToken = default)
     {
         var order = await orderRepository.GetByIdWithPaymentsAsync(request.OrderId, cancellationToken)
-            ?? throw new Exception($"Order with id {request.OrderId} not found");
+            ?? throw new NotFoundException(nameof(Order), request.OrderId);
 
         order.Status = OrderStatus.Cancelled;
         order.CancellationReason = request.Reason;
