@@ -8,7 +8,7 @@ public class Order : BaseModel
     public required Guid RestaurantLocationId { get; set; }
     public Guid? CourierId { get; set; }
     public required OrderStatus Status { get; set; }
-    public required bool IsPayed { get; set; } 
+    public required bool IsPaid { get; set; } 
     public required decimal TotalAmount { get; set; }
     public required string DeliveryAddress { get; set; } = string.Empty;
     public string? CustomerComment { get; set; }

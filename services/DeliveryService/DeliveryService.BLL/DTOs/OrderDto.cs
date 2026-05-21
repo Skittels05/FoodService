@@ -2,6 +2,22 @@
 
 namespace DeliveryService.BLL.DTOs;
 
+public record CreateOrderDto(
+    Guid CustomerId, 
+    Guid RestaurantId,
+    Guid RestaurantLocationId,
+    string DeliveryAddress,
+    string? CustomerComment
+);
+
+public record AddOrderItemDto(
+    Guid OrderId,
+    Guid MenuItemId,
+    string Name,
+    decimal Price,
+    int Quantity
+);
+
 public record OrderDto(
     Guid Id,
     Guid CustomerId,
@@ -20,22 +36,6 @@ public record OrderDto(
 );
 
 public record OrderItemDto(
-    Guid MenuItemId,
-    string Name,
-    decimal Price,
-    int Quantity
-);
-
-public record CreateOrderDto(
-    Guid CustomerId, 
-    Guid RestaurantId,
-    Guid RestaurantLocationId,
-    string DeliveryAddress,
-    string? CustomerComment,
-    List<CreateOrderItemDto> Items
-);
-
-public record CreateOrderItemDto(
     Guid MenuItemId,
     string Name,
     decimal Price,
