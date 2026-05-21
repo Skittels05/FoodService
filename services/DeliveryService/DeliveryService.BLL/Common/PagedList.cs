@@ -1,4 +1,4 @@
-﻿namespace RestaurantService.BLL.Common;
+﻿namespace DeliveryService.BLL.Common;
 
 public class PagedList<T>
 {

@@ -1,4 +1,4 @@
-﻿using RestaurantService.BLL.Common;
+﻿using DeliveryService.BLL.Common;
 
 namespace DeliveryService.BLL.Mappers.Interfaces;
 

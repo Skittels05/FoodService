@@ -1,15 +1,15 @@
 ﻿using DeliveryService.BLL.DTOs;
 using DeliveryService.BLL.Enums;
-using RestaurantService.BLL.Common;
+using DeliveryService.BLL.Common;
 
 namespace DeliveryService.BLL.Services.Interfaces;
 
 public interface IOrderService
 {
-    Task<PagedList<Order>?> GetAllAsync(CancellationToken cancellationToken = default);
-    Task<Order?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default);
-    Task<PagedList<Order>?> GetByCustomerAsync (Guid userId, CancellationToken cancellationToken = default);
-    Task <PagedList<Order>?> GetByCourierAsync (Guid courierId, CancellationToken cancellationToken = default);
+    Task<PagedList<OrderDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default);
+    Task<OrderDto?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default);
+    Task<PagedList<OrderDto>> GetByCustomerAsync (Guid userId, PageRequest request,CancellationToken cancellationToken = default);
+    Task <PagedList<OrderDto>> GetByCourierAsync (Guid courierId, PageRequest request, CancellationToken cancellationToken = default);
     Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default);
     Task CancelAsync(CancelOrderDto request, CancellationToken cancellationToken = default);
     Task AssignCourierAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default);

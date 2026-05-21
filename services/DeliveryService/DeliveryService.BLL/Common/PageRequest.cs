@@ -1,6 +1,6 @@
 ﻿using DeliveryService.BLL.Enums;
 
-namespace RestaurantService.BLL.Common;
+namespace DeliveryService.BLL.Common;
 
 public record PageRequest(
     int PageNumber = 1,

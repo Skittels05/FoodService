@@ -5,21 +5,6 @@ using DeliveryService.BLL.Models;
 
 namespace DeliveryService.BLL.Mappers;
 
-public class AddOrderItemDtoToEntityMapper : IMapper<AddOrderItemDto, OrderItem>
-{
-    public OrderItem Map(AddOrderItemDto input)
-    {
-        return new OrderItem
-        {
-            OrderId = input.OrderId, 
-            MenuItemId = input.MenuItemId,
-            Name = input.Name,
-            Price = input.Price,
-            Quantity = input.Quantity
-        };
-    }
-}
-
 public class OrderItemToDtoMapper : IMapper<OrderItem, OrderItemDto>
 {
     public OrderItemDto Map(OrderItem input)
@@ -33,21 +18,17 @@ public class OrderItemToDtoMapper : IMapper<OrderItem, OrderItemDto>
     }
 }
 
-public class CreateOrderDtoToEntityMapper : IMapper<CreateOrderDto, Order>
+public class CreateOrderItemDtoToEntityMapper : IMapper<CreateOrderItemDto, OrderItem>
 {
-    public Order Map(CreateOrderDto input)
+    public OrderItem Map(CreateOrderItemDto input)
     {
-        return new Order
+        return new OrderItem
         {
-            CustomerId = input.CustomerId,
-            RestaurantId = input.RestaurantId,
-            RestaurantLocationId = input.RestaurantLocationId,
-            Status = OrderStatus.Created,
-            IsPaid = false,
-            DeliveryAddress = input.DeliveryAddress,
-            CustomerComment = input.CustomerComment,
-            TotalAmount = 0,
-            Items = []
+            MenuItemId = input.MenuItemId,
+            Name = input.Name,
+            Price = input.Price,
+            Quantity = input.Quantity,
+            OrderId = Guid.Empty
         };
     }
 }
@@ -73,5 +54,25 @@ public class OrderToDtoMapper(IMapper<OrderItem, OrderItemDto> itemMapper)
             CreatedAt: input.CreatedAt,
             Items: input.Items?.Select(itemMapper.Map).ToList() ?? []
         );
+    }
+}
+
+public class CreateOrderDtoToEntityMapper(IMapper<CreateOrderItemDto, OrderItem> itemMapper)
+    : IMapper<CreateOrderDto, Order>
+{
+    public Order Map(CreateOrderDto input)
+    {
+        return new Order
+        {
+            CustomerId = input.CustomerId,
+            RestaurantId = input.RestaurantId,
+            RestaurantLocationId = input.RestaurantLocationId,
+            Status = OrderStatus.Created,
+            IsPaid = false,
+            DeliveryAddress = input.DeliveryAddress,
+            CustomerComment = input.CustomerComment,
+            Items = input.Items.Select(itemMapper.Map).ToList(),
+            TotalAmount = 0 
+        };
     }
 }

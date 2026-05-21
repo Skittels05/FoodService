@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using DeliveryService.BLL.Mappers.Interfaces;
-using RestaurantService.BLL.Common;
+using DeliveryService.BLL.Common;
 
 namespace DeliveryService.BLL.Mappers;
 

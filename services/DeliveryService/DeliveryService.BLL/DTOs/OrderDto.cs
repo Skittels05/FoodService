@@ -7,15 +7,21 @@ public record CreateOrderDto(
     Guid RestaurantId,
     Guid RestaurantLocationId,
     string DeliveryAddress,
-    string? CustomerComment
+    string? CustomerComment,
+    List<CreateOrderItemDto> Items
 );
 
-public record AddOrderItemDto(
-    Guid OrderId,
+public record CreateOrderItemDto(
     Guid MenuItemId,
     string Name,
     decimal Price,
     int Quantity
+);
+
+public record CancelOrderDto(
+    Guid OrderId,
+    OrderCancellationReason Reason,
+    string? Comment
 );
 
 public record OrderDto(
@@ -35,15 +41,3 @@ public record OrderDto(
     List<OrderItemDto> Items
 );
 
-public record OrderItemDto(
-    Guid MenuItemId,
-    string Name,
-    decimal Price,
-    int Quantity
-);
-
-public record CancelOrderDto(
-    Guid OrderId,
-    OrderCancellationReason Reason,
-    string? Comment
-);
