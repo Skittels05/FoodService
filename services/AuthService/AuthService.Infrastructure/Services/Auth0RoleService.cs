@@ -29,6 +29,17 @@ public class Auth0RoleService(IOptions<Auth0ManagementSettings> options) : IAuth
 
         await managementClient.Users.AssignRolesAsync(auth0UserId, request, cancellationToken);
     }
+    
+    public async Task SetInternalUserIdAsync(string auth0UserId, Guid internalUserId, CancellationToken cancellationToken = default)
+    {
+        var managementClient = await GetManagementApiClientAsync(cancellationToken);
+        var request = new UserUpdateRequest
+        {
+            AppMetadata = new { internal_user_id = internalUserId.ToString() }
+        };
+
+        await managementClient.Users.UpdateAsync(auth0UserId, request, cancellationToken);
+    }
 
     public async Task SetAsVerifiedAsync(string auth0UserId, CancellationToken cancellationToken = default)
     {

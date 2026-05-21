@@ -10,6 +10,7 @@ namespace AuthService.Application.CQRS.Users.Handlers;
 
 public class SyncAuth0UserCommandHandler(
     IUnitOfWork unitOfWork,
+    IAuth0RoleService auth0RoleService,
     ICurrentUserService currentUserService)
     : IRequestHandler<SyncAuth0UserCommand, Guid>
 {
@@ -29,6 +30,7 @@ public class SyncAuth0UserCommandHandler(
 
         var user = new User(auth0Id, email, userName, UserRole.None);
         await unitOfWork.UserRepository.AddAsync(user, cancellationToken);
+        await auth0RoleService.SetInternalUserIdAsync(auth0Id, user.Id, cancellationToken);
 
         return user.Id;
     }
