@@ -12,6 +12,11 @@ services:
       - postgres_auth_data:/var/lib/postgresql/data
     networks:
       - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   redis-auth:
     image: redis:7-alpine
@@ -23,6 +28,11 @@ services:
       - redis_auth_data:/data
     networks:
       - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $${AUTH_REDIS_PASSWORD} ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   rabbitmq-auth:
     image: rabbitmq:3-management-alpine
@@ -37,6 +47,11 @@ services:
       - rabbitmq_auth_data:/var/lib/rabbitmq
     networks:
       - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
   auth-service:
     image: auth-service:latest
@@ -55,9 +70,12 @@ services:
       - RabbitMQ__Password=${AUTH_RABBITMQ_PASSWORD}
       - Auth0Management__ClientSecret=${AUTH_AUTH0_CLIENT_SECRET}
     depends_on:
-      - postgres-auth
-      - redis-auth
-      - rabbitmq-auth
+      postgres-auth:
+        condition: service_healthy
+      redis-auth:
+        condition: service_healthy
+      rabbitmq-auth:
+        condition: service_healthy
     networks:
       - auth-network
 
