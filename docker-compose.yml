@@ -1,0 +1,71 @@
+services:
+  postgres-auth:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    environment:
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - auth-network
+
+  redis-auth:
+    image: redis:7-alpine
+    container_name: auth-redis
+    command: redis-server --requirepass ${AUTH_REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_auth_data:/data
+    networks:
+      - auth-network
+
+  rabbitmq-auth:
+    image: rabbitmq:3-management-alpine
+    container_name: auth-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${AUTH_RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${AUTH_RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_auth_data:/var/lib/rabbitmq
+    networks:
+      - auth-network
+
+  auth-service:
+    image: auth-service:latest
+    container_name: auth-service-api
+    build:
+      context: ./services/AuthService
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-auth;Port=5432;Database=${AUTH_DB_NAME};Username=${AUTH_DB_USER};Password=${AUTH_DB_PASSWORD};
+      - ConnectionStrings__Redis=${AUTH_CONNECTION_REDIS}
+      - RabbitMQ__Host=${AUTH_RABBITMQ_HOST}
+      - RabbitMQ__Username=${AUTH_RABBITMQ_USER}
+      - RabbitMQ__Password=${AUTH_RABBITMQ_PASSWORD}
+      - Auth0Management__ClientSecret=${AUTH_AUTH0_CLIENT_SECRET}
+    depends_on:
+      - postgres-auth
+      - redis-auth
+      - rabbitmq-auth
+    networks:
+      - auth-network
+
+volumes:
+  postgres_auth_data:
+  redis_auth_data:
+  rabbitmq_auth_data:
+
+networks:
+  auth-network:
+    driver: bridge
