@@ -27,6 +27,7 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
+            app.Services.ApplyMigrations();
             app.MapOpenApi();
             app.MapScalarApiReference(options =>
             {
@@ -35,8 +36,6 @@ public class Program
                     .WithTheme(ScalarTheme.Moon)
                     .WithDefaultHttpClient(ScalarTarget.CSharp, ScalarClient.HttpClient);
             });
-
-            
         }
         
         app.UseHttpsRedirection();

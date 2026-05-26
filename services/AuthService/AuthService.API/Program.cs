@@ -21,6 +21,7 @@ public class Program
 
         if (app.Environment.IsDevelopment())
         {
+            app.Services.ApplyMigrations();
             app.MapOpenApi();
             app.MapScalarApiReference(options =>
             {
