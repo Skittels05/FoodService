@@ -1,0 +1,157 @@
+services:
+  postgres-auth:
+    image: postgres:16-alpine
+    container_name: auth-postgres
+    environment:
+      POSTGRES_USER: ${AUTH_DB_USER}
+      POSTGRES_PASSWORD: ${AUTH_DB_PASSWORD}
+      POSTGRES_DB: ${AUTH_DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-auth:
+    image: redis:7-alpine
+    container_name: auth-redis
+    command: redis-server --requirepass ${AUTH_REDIS_PASSWORD}
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_auth_data:/data
+    networks:
+      - auth-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $${AUTH_REDIS_PASSWORD} ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq-auth:
+    image: rabbitmq:3-management-alpine
+    container_name: auth-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${AUTH_RABBITMQ_USER}
+      RABBITMQ_DEFAULT_PASS: ${AUTH_RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_auth_data:/var/lib/rabbitmq
+    networks:
+      - foodservice-network
+    healthcheck:
+      test: ["CMD-SHELL", "rabbitmq-diagnostics -q ping"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+  
+  postgres-restaurant:
+    image: postgres:16-alpine
+    container_name: restaurant-postgres
+    environment:
+      POSTGRES_USER: ${RESTAURANT_DB_USER}
+      POSTGRES_PASSWORD: ${RESTAURANT_DB_PASSWORD}
+      POSTGRES_DB: ${RESTAURANT_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_restaurant_data:/var/lib/postgresql/data
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis-restaurant:
+    image: redis:7-alpine
+    container_name: restaurant-redis
+    command: redis-server --requirepass ${RESTAURANT_REDIS_PASSWORD}
+    ports:
+      - "6380:6379"
+    volumes:
+      - redis_restaurant_data:/data
+    networks:
+      - restaurant-network
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $${RESTAURANT_REDIS_PASSWORD} ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    image: auth-service:latest
+    container_name: auth-service-api
+    build:
+      context: ./services/AuthService
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-auth;Port=5432;Database=${AUTH_DB_NAME};Username=${AUTH_DB_USER};Password=${AUTH_DB_PASSWORD};
+      - ConnectionStrings__Redis=${AUTH_CONNECTION_REDIS}
+      - RabbitMQ__Host=${AUTH_RABBITMQ_HOST}
+      - RabbitMQ__Username=${AUTH_RABBITMQ_USER}
+      - RabbitMQ__Password=${AUTH_RABBITMQ_PASSWORD}
+      - Auth0Management__ClientSecret=${AUTH_AUTH0_CLIENT_SECRET}
+    depends_on:
+      postgres-auth:
+        condition: service_healthy
+      redis-auth:
+        condition: service_healthy
+      rabbitmq-auth:
+        condition: service_healthy
+    networks:
+      - auth-network
+      - foodservice-network
+
+  restaurant-service:
+    image: restaurant-service:latest
+    container_name: restaurant-service-api
+    build:
+      context: ./services/RestaurantService
+      dockerfile: Dockerfile
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres-restaurant;Port=5432;Database=${RESTAURANT_DB_NAME};Username=${RESTAURANT_DB_USER};Password=${RESTAURANT_DB_PASSWORD};
+      - ConnectionStrings__Redis=${RESTAURANT_CONNECTION_REDIS}
+      - RabbitMQ__Host=rabbitmq-auth
+      - RabbitMQ__Username=${AUTH_RABBITMQ_USER}
+      - RabbitMQ__Password=${AUTH_RABBITMQ_PASSWORD}
+    depends_on:
+      postgres-restaurant:
+        condition: service_healthy
+      redis-restaurant:
+        condition: service_healthy
+      rabbitmq-auth:
+        condition: service_healthy
+    networks:
+      - restaurant-network
+      - foodservice-network
+
+volumes:
+  postgres_auth_data:
+  redis_auth_data:
+  rabbitmq_auth_data:
+  postgres_restaurant_data:
+  redis_restaurant_data:
+
+networks:
+  auth-network:
+    driver: bridge
+  restaurant-network:
+    driver: bridge
+  foodservice-network:
+    driver: bridge
