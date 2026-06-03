@@ -13,7 +13,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
   if (isLoading) {
     return (
       <div className="auth-screen">
-        <p className="auth-muted">Загрузка…</p>
+        <p className="auth-muted">Loading…</p>
       </div>
     )
   }

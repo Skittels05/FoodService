@@ -8,9 +8,9 @@ export function CallbackPage() {
     return (
       <div className="auth-screen">
         <div className="auth-card">
-          <p className="auth-error">Не удалось завершить вход.</p>
+          <p className="auth-error">Could not complete sign-in.</p>
           <Link className="auth-btn auth-btn-secondary" to="/">
-            На главную
+            Home
           </Link>
         </div>
       </div>
@@ -20,7 +20,7 @@ export function CallbackPage() {
   if (isLoading) {
     return (
       <div className="auth-screen">
-        <p className="auth-muted">Завершение входа…</p>
+        <p className="auth-muted">Completing sign-in…</p>
       </div>
     )
   }

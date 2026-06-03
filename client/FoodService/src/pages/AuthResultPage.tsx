@@ -19,14 +19,14 @@ export function AuthResultPage() {
       <div className="auth-screen">
         <div className="auth-card">
           <p className="auth-success">
-            Успешно: профиль синхронизирован с сервером.
+            Success: your profile has been synced with the server.
           </p>
           {data.userId ? (
-            <p className="auth-muted">Идентификатор: {data.userId}</p>
+            <p className="auth-muted">ID: {data.userId}</p>
           ) : null}
           <div className="auth-actions">
             <Link className="auth-btn auth-btn-secondary" to="/">
-              На главную
+              Home
             </Link>
             <button
               type="button"
@@ -37,7 +37,7 @@ export function AuthResultPage() {
                 })
               }
             >
-              Выйти
+              Sign out
             </button>
           </div>
         </div>
@@ -49,17 +49,17 @@ export function AuthResultPage() {
     <div className="auth-screen">
       <div className="auth-card">
         <p className="auth-error">
-          Не удалось синхронизировать профиль с сервером.
+          Could not sync your profile with the server.
         </p>
         {data.status != null ? (
-          <p className="auth-muted">Код ответа: {String(data.status)}</p>
+          <p className="auth-muted">Response code: {String(data.status)}</p>
         ) : null}
         <div className="auth-actions">
           <Link className="auth-btn auth-btn-primary" to="/post-auth">
-            Повторить
+            Try again
           </Link>
           <Link className="auth-btn auth-btn-secondary" to="/">
-            На главную
+            Home
           </Link>
         </div>
       </div>

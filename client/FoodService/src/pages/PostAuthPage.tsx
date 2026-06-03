@@ -9,7 +9,7 @@ export function PostAuthPage() {
   if (!ready) {
     return (
       <div className="auth-screen">
-        <p className="auth-muted">Проверка сессии…</p>
+        <p className="auth-muted">Checking session…</p>
       </div>
     )
   }
@@ -17,7 +17,7 @@ export function PostAuthPage() {
   return (
     <div className="auth-screen">
       <p className="auth-muted">
-        {syncLoading ? 'Синхронизация с сервером…' : 'Почти готово…'}
+        {syncLoading ? 'Syncing with server…' : 'Almost done…'}
       </p>
     </div>
   )

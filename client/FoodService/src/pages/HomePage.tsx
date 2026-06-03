@@ -6,7 +6,7 @@ export function HomePage() {
   if (isLoading) {
     return (
       <div className="auth-screen">
-        <p className="auth-muted">Загрузка…</p>
+        <p className="auth-muted">Loading…</p>
       </div>
     )
   }
@@ -26,7 +26,7 @@ export function HomePage() {
         className="auth-btn auth-btn-primary home-auth-btn"
         onClick={goAuth0}
       >
-        {isAuthenticated ? 'Продолжить' : 'Авторизация'}
+        {isAuthenticated ? 'Continue' : 'Sign in'}
       </button>
     </div>
   )
