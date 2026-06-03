@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { getAccessToken } from './tokenBridge'
 
-export const apiSlice = createApi({
+export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: import.meta.env.VITE_API_URL ?? '',
@@ -12,14 +12,5 @@ export const apiSlice = createApi({
     },
   }),
   tagTypes: ['User'],
-  endpoints: (build) => ({
-    syncUser: build.mutation<string, void>({
-      query: () => ({
-        url: '/api/users/sync',
-        method: 'POST',
-      }),
-    }),
-  }),
+  endpoints: () => ({}),
 })
-
-export const { useSyncUserMutation } = apiSlice

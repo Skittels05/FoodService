@@ -1,14 +1,15 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { apiSlice } from '../features/api/apiSlice'
+import { baseApi } from '../features/api/baseApi'
+import '../features/api/usersApi'
 
 const rootReducer = combineReducers({
-  [apiSlice.reducerPath]: apiSlice.reducer,
+  [baseApi.reducerPath]: baseApi.reducer,
 })
 
 export const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(apiSlice.middleware),
+    getDefaultMiddleware().concat(baseApi.middleware),
 })
 
 export type RootState = ReturnType<typeof store.getState>
