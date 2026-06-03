@@ -1,20 +1,17 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { useEffect } from 'react'
+import { accessTokenRequest } from '../features/auth/auth0Config'
 import { setAccessTokenResolver } from './tokenBridge'
 
 export function AuthTokenBridge() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setAccessTokenResolver(null)
-      return
-    }
-    setAccessTokenResolver(() => getAccessTokenSilently())
-    return () => {
-      setAccessTokenResolver(null)
-    }
-  }, [getAccessTokenSilently, isAuthenticated])
+  if (isAuthenticated) {
+    setAccessTokenResolver(() =>
+      getAccessTokenSilently(accessTokenRequest),
+    )
+  } else {
+    setAccessTokenResolver(null)
+  }
 
   return null
 }
