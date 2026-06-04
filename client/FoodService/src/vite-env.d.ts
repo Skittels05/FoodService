@@ -5,6 +5,9 @@ interface ImportMetaEnv {
   readonly VITE_AUTH0_CLIENT_ID: string
   readonly VITE_AUTH0_AUDIENCE: string
   readonly VITE_API_URL?: string
+  readonly VITE_API_DEPLOY_TARGET?: 'local' | 'container'
+  readonly VITE_API_URL_LOCAL?: string
+  readonly VITE_API_URL_CONTAINER?: string
 }
 
 interface ImportMeta {

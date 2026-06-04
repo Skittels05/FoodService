@@ -1,10 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { resolveApiBaseUrl } from './apiConfig'
 import { getAccessToken } from './tokenBridge'
 
 export const baseApi = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: import.meta.env.VITE_API_URL ?? '',
+    baseUrl: resolveApiBaseUrl(),
     prepareHeaders: async (headers) => {
       const token = await getAccessToken()
       if (token) headers.set('authorization', `Bearer ${token}`)
