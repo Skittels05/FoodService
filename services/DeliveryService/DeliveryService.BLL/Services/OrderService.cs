@@ -25,7 +25,7 @@ public class OrderService(
 
     public async Task UpdateStatusAsync(Guid orderId, OrderStatus newStatus, CancellationToken cancellationToken = default)
     {
-        var order = await orderRepository.GetByIdAsync(orderId, cancellationToken)
+        var order = await orderRepository.GetByIdAsync(orderId, cancellationToken, trackChanges:true)
             ?? throw new NotFoundException(nameof(Order), orderId);
 
         order.Status = newStatus;
@@ -35,7 +35,7 @@ public class OrderService(
 
     public async Task AssignCourierAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
     {
-        var order = await orderRepository.GetByIdAsync(orderId, cancellationToken)
+        var order = await orderRepository.GetByIdAsync(orderId, cancellationToken, trackChanges:true)
             ?? throw new NotFoundException(nameof(Order), orderId);
 
         order.CourierId = courierId;
@@ -66,7 +66,7 @@ public class OrderService(
 
         if (order.CourierId.HasValue)
         {
-            var courierState = await courierStateRepository.GetByIdAsync(order.CourierId.Value, cancellationToken);
+            var courierState = await courierStateRepository.GetByIdAsync(order.CourierId.Value, cancellationToken, trackChanges:true);
             if (courierState is not null)
             {
                 courierState.IsAvailable = true;
