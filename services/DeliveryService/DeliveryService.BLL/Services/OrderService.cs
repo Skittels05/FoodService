@@ -93,7 +93,6 @@ public class OrderService(
 
     public async Task CancelAsync(CancelOrderDto request, CancellationToken cancellationToken = default)
     {
-        // Нам больше не нужно подтягивать платежи через GetByIdWithPaymentsAsync!
         var order = await GetOrderOrThrowAsync(request.OrderId, cancellationToken);
     
         if (order.Status is OrderStatus.Delivered or OrderStatus.Cancelled)
