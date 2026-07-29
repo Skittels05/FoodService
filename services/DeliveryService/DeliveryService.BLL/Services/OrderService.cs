@@ -6,21 +6,27 @@ using DeliveryService.BLL.Exceptions;
 using DeliveryService.BLL.Mappers.Interfaces;
 using DeliveryService.BLL.Repositories.Interfaces;
 using DeliveryService.BLL.Services.Interfaces;
-using DispatchR;
-using DispatchR.Abstractions.Notification;
+using Wolverine;
 
 namespace DeliveryService.BLL.Services;
 
 public class OrderService(
     IOrderRepository orderRepository,
     IMappingService mappingService,
-    IMediator mediator) : IOrderService
+    IMessageBus bus) : IOrderService
 {
     public async Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default)
     {
         var order = mappingService.Map<CreateOrderDto, Order>(request);
         order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
         await orderRepository.AddAsync(order, cancellationToken);
+        
+        await bus.PublishAsync(new OrderCreatedEvent(
+            order.Id, 
+            order.CustomerId, 
+            order.RestaurantId, 
+            order.RestaurantLocationId, 
+            order.TotalAmount));
 
         return order.Id;
     }
@@ -156,13 +162,12 @@ public class OrderService(
         }
     }
 
-    private async Task UpdateAndPublishAsync(Order order, INotification? domainEvent, CancellationToken cancellationToken)
+    private async Task UpdateAndPublishAsync<TEvent>(
+        Order order, 
+        TEvent @event, 
+        CancellationToken cancellationToken) where TEvent:class
     {
         await orderRepository.UpdateAsync(order, cancellationToken);
-
-        if (domainEvent is not null)
-        {
-            await mediator.Publish(domainEvent, cancellationToken);
-        }
+        await bus.PublishAsync(@event);
     }
 }

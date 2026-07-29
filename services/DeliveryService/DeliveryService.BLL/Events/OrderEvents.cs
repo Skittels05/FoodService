@@ -1,18 +1,17 @@
 ﻿using DeliveryService.BLL.Enums;
-using DispatchR.Abstractions.Notification;
 
 namespace DeliveryService.BLL.Events;
 
-public record OrderCreatedEvent(Guid OrderId, Guid CustomerId, Guid RestaurantId, Guid RestaurantLocationId, decimal TotalAmount) : INotification;
+public record OrderCreatedEvent(Guid OrderId, Guid CustomerId, Guid RestaurantId, Guid RestaurantLocationId, decimal TotalAmount);
 
-public record OrderConfirmedEvent(Guid OrderId) : INotification;
+public record OrderConfirmedEvent(Guid OrderId);
 
-public record OrderPreparingEvent(Guid OrderId, Guid RestaurantLocationId) : INotification;
+public record OrderPreparingEvent(Guid OrderId, Guid RestaurantLocationId);
 
-public record OrderReadyForPickupEvent(Guid OrderId, Guid? CourierId) : INotification;
+public record OrderReadyForPickupEvent(Guid OrderId, Guid? CourierId);
 
-public record OrderDeliveringEvent(Guid OrderId, Guid CourierId) : INotification;
+public record OrderDeliveringEvent(Guid OrderId, Guid CourierId);
 
-public record OrderDeliveredEvent(Guid OrderId) : INotification;
+public record OrderDeliveredEvent(Guid OrderId);
 
-public record OrderCancelledEvent(Guid OrderId, OrderCancellationReason Reason, string? Comment) : INotification;
+public record OrderCancelledEvent(Guid OrderId, OrderCancellationReason Reason, string? Comment);

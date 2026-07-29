@@ -1,6 +1,4 @@
-﻿using DispatchR.Abstractions.Notification;
-
-namespace DeliveryService.BLL.Events;
+﻿namespace DeliveryService.BLL.Events;
 
 public record CourierLocationUpdatedEvent(
     Guid CourierId, 
@@ -8,4 +6,4 @@ public record CourierLocationUpdatedEvent(
     double Latitude, 
     double Longitude, 
     double? Speed, 
-    DateTime Timestamp) : INotification;
+    DateTime Timestamp);
