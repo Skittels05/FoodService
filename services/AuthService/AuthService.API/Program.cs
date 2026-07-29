@@ -3,7 +3,7 @@ using AuthService.Infrastructure;
 using Scalar.AspNetCore;
 using Serilog;
 
-namespace AuthService.API;
+namespace AuthService.API;  
 
 public class Program
 {
