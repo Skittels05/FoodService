@@ -1,7 +1,5 @@
-import { useAuth0 } from '@auth0/auth0-react'
 import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { accessTokenRequest } from '@/modules/auth'
 import { useSyncUserMutation } from '@/modules/user'
 
 type AuthResultState =
@@ -14,7 +12,6 @@ type Options = {
 
 export function useSyncUserAfterLogin({ enabled }: Options) {
   const navigate = useNavigate()
-  const { getAccessTokenSilently } = useAuth0()
   const [syncUser, { isLoading, isError, isSuccess }] = useSyncUserMutation()
   const startedRef = useRef(false)
 
@@ -24,8 +21,8 @@ export function useSyncUserAfterLogin({ enabled }: Options) {
 
     void (async () => {
       try {
-        await getAccessTokenSilently(accessTokenRequest)
         const userId = await syncUser().unwrap()
+
         navigate('/auth-result', {
           replace: true,
           state: { ok: true, userId } satisfies AuthResultState,
@@ -38,13 +35,14 @@ export function useSyncUserAfterLogin({ enabled }: Options) {
           typeof (err as { status: unknown }).status === 'number'
             ? (err as { status: number }).status
             : undefined
+
         navigate('/auth-result', {
           replace: true,
           state: { ok: false, status } satisfies AuthResultState,
         })
       }
     })()
-  }, [enabled, getAccessTokenSilently, syncUser, navigate])
+  }, [enabled, syncUser, navigate])
 
   return { isLoading, isError, isSuccess }
 }

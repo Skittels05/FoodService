@@ -1,4 +1,4 @@
-export { HomePage } from './HomePage'
-export { CallbackPage } from './CallbackPage'
-export { PostAuthPage } from './PostAuthPage'
-export { AuthResultPage } from './AuthResultPage'
+export { HomePage } from './HomePage/HomePage'
+export { CallbackPage } from './CallbackPage/CallbackPage'
+export { PostAuthPage } from './PostAuthPage/PostAuthPage'
+export { AuthResultPage } from './AuthResultPage/AuthResultPage'
