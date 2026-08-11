@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
+import { AuthLayout, Button, Card } from '@/shared/ui'
 
 type AuthResultState =
   | { ok: true; userId: string }
@@ -16,8 +17,8 @@ export function AuthResultPage() {
 
   if (data.ok) {
     return (
-      <div className="auth-screen">
-        <div className="auth-card">
+      <AuthLayout>
+        <Card>
           <p className="auth-success">
             Success: your profile has been synced with the server.
           </p>
@@ -28,9 +29,8 @@ export function AuthResultPage() {
             <Link className="auth-btn auth-btn-secondary" to="/">
               Home
             </Link>
-            <button
-              type="button"
-              className="auth-btn auth-btn-ghost"
+            <Button
+              variant="ghost"
               onClick={() =>
                 void logout({
                   logoutParams: { returnTo: window.location.origin },
@@ -38,16 +38,16 @@ export function AuthResultPage() {
               }
             >
               Sign out
-            </button>
+            </Button>
           </div>
-        </div>
-      </div>
+        </Card>
+      </AuthLayout>
     )
   }
 
   return (
-    <div className="auth-screen">
-      <div className="auth-card">
+    <AuthLayout>
+      <Card>
         <p className="auth-error">
           Could not sync your profile with the server.
         </p>
@@ -62,7 +62,7 @@ export function AuthResultPage() {
             Home
           </Link>
         </div>
-      </div>
-    </div>
+      </Card>
+    </AuthLayout>
   )
 }

@@ -1,8 +1,8 @@
 import { Auth0Provider } from '@auth0/auth0-react'
 import { Provider } from 'react-redux'
 import type { ReactNode } from 'react'
-import { auth0AuthorizationParams } from '../features/auth/auth0Config'
-import { store } from './store'
+import { auth0AuthorizationParams } from '@/modules/auth'
+import { store } from '../store'
 import { AuthTokenBridge } from './AuthTokenBridge'
 
 type AppProvidersProps = {
@@ -19,7 +19,7 @@ export function AppProviders({ children }: AppProvidersProps) {
       domain={domain}
       clientId={clientId}
       authorizationParams={auth0AuthorizationParams(redirectUri)}
-      cacheLocation="localstorage"
+      useRefreshTokens={true}
     >
       <Provider store={store}>
         <AuthTokenBridge />

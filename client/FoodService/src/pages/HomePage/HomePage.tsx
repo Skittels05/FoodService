@@ -1,13 +1,14 @@
 import { useAuth0 } from '@auth0/auth0-react'
+import { AuthLayout, Button } from '@/shared/ui'
 
 export function HomePage() {
   const { isAuthenticated, isLoading, loginWithRedirect } = useAuth0()
 
   if (isLoading) {
     return (
-      <div className="auth-screen">
+      <AuthLayout>
         <p className="auth-muted">Loading…</p>
-      </div>
+      </AuthLayout>
     )
   }
 
@@ -20,14 +21,14 @@ export function HomePage() {
     })
 
   return (
-    <div className="auth-screen home-screen">
-      <button
-        type="button"
-        className="auth-btn auth-btn-primary home-auth-btn"
+    <AuthLayout className="home-screen">
+      <Button
+        variant="primary"
+        className="home-auth-btn"
         onClick={goAuth0}
       >
         {isAuthenticated ? 'Continue' : 'Sign in'}
-      </button>
-    </div>
+      </Button>
+    </AuthLayout>
   )
 }

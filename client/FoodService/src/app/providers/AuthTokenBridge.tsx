@@ -1,6 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { accessTokenRequest } from '../features/auth/auth0Config'
-import { setAccessTokenResolver } from '../features/api/tokenBridge'
+import { accessTokenRequest } from '@/modules/auth'
+import { setAccessTokenResolver } from '@/shared/api'
 
 export function AuthTokenBridge() {
   const { getAccessTokenSilently, isAuthenticated } = useAuth0()

@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { useSyncUserAfterLogin } from '../features/auth/useSyncUserAfterLogin'
+import { AuthLayout } from '@/shared/ui'
+import { useSyncUserAfterLogin } from './hooks/useSyncUserAfterLogin'
 
 export function PostAuthPage() {
   const { isAuthenticated, isLoading: authLoading } = useAuth0()
@@ -8,17 +9,17 @@ export function PostAuthPage() {
 
   if (!ready) {
     return (
-      <div className="auth-screen">
+      <AuthLayout>
         <p className="auth-muted">Checking session…</p>
-      </div>
+      </AuthLayout>
     )
   }
 
   return (
-    <div className="auth-screen">
+    <AuthLayout>
       <p className="auth-muted">
         {syncLoading ? 'Syncing with server…' : 'Almost done…'}
       </p>
-    </div>
+    </AuthLayout>
   )
 }
