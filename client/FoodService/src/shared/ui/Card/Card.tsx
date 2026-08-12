@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import clsx from 'clsx'
 import './Card.css'
 
 type CardProps = {
@@ -6,6 +7,6 @@ type CardProps = {
   className?: string
 }
 
-export function Card({ children, className = '' }: CardProps) {
-  return <div className={`auth-card ${className}`}>{children}</div>
+export function Card({ children, className }: CardProps) {
+  return <div className={clsx('auth-card', className)}>{children}</div>
 }
