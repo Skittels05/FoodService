@@ -13,13 +13,15 @@ namespace DeliveryService.BLL.Services;
 public class OrderService(
     IOrderRepository orderRepository,
     IMappingService mappingService,
-    IMessageBus bus) : IOrderService
+    IMessageBus bus,
+    IUnitOfWork unitOfWork) : IOrderService
 {
     public async Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default)
     {
         var order = mappingService.Map<CreateOrderDto, Order>(request);
         order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
         await orderRepository.AddAsync(order, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         
         await bus.PublishAsync(new OrderCreatedEvent(
             order.Id, 
@@ -37,7 +39,7 @@ public class OrderService(
         EnsureStatus(order, OrderStatus.Created);
         order.Status = OrderStatus.Confirmed;
         
-        await UpdateAndPublishAsync(order, new OrderConfirmedEvent(order.Id), cancellationToken);
+        await UpdateAndPublishAsync(new OrderConfirmedEvent(order.Id), cancellationToken);
     }
 
     public async Task StartPreparingAsync(Guid orderId, CancellationToken cancellationToken = default)
@@ -46,7 +48,7 @@ public class OrderService(
         EnsureStatus(order, OrderStatus.Confirmed);
         order.Status = OrderStatus.Preparing;
         
-        await UpdateAndPublishAsync(order, new OrderPreparingEvent(order.Id, order.RestaurantLocationId), cancellationToken);
+        await UpdateAndPublishAsync(new OrderPreparingEvent(order.Id, order.RestaurantLocationId), cancellationToken);
     }
 
     public async Task MarkReadyForPickupAsync(Guid orderId, CancellationToken cancellationToken = default)
@@ -56,7 +58,7 @@ public class OrderService(
 
         order.Status = OrderStatus.ReadyForPickup;
 
-        await UpdateAndPublishAsync(order, new OrderReadyForPickupEvent(order.Id, order.CourierId), cancellationToken);
+        await UpdateAndPublishAsync(new OrderReadyForPickupEvent(order.Id, order.CourierId), cancellationToken);
     }
 
     public async Task AssignCourierAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
@@ -74,7 +76,7 @@ public class OrderService(
         }
 
         order.CourierId = courierId;
-        await orderRepository.UpdateAsync(order, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task StartDeliveringAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
@@ -84,7 +86,7 @@ public class OrderService(
         EnsureCourierMatches(order, courierId);
         order.Status = OrderStatus.Delivering;
         
-        await UpdateAndPublishAsync(order, new OrderDeliveringEvent(order.Id, courierId), cancellationToken);
+        await UpdateAndPublishAsync(new OrderDeliveringEvent(order.Id, courierId), cancellationToken);
     }
 
     public async Task CompleteAsync(Guid orderId, CancellationToken cancellationToken = default)
@@ -94,7 +96,7 @@ public class OrderService(
         order.Status = OrderStatus.Delivered;
         order.IsPaid = true;
 
-        await UpdateAndPublishAsync(order, new OrderDeliveredEvent(order.Id), cancellationToken);
+        await UpdateAndPublishAsync(new OrderDeliveredEvent(order.Id), cancellationToken);
     }
 
     public async Task CancelAsync(CancelOrderDto request, CancellationToken cancellationToken = default)
@@ -113,7 +115,7 @@ public class OrderService(
         {
             order.CancellationComment = request.Comment;
         }
-        await UpdateAndPublishAsync(order, new OrderCancelledEvent(order.Id, request.Reason, request.Comment), cancellationToken);
+        await UpdateAndPublishAsync(new OrderCancelledEvent(order.Id, request.Reason, request.Comment), cancellationToken);
     }
 
     public async Task<OrderDto?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default)
@@ -163,11 +165,10 @@ public class OrderService(
     }
 
     private async Task UpdateAndPublishAsync<TEvent>(
-        Order order, 
         TEvent @event, 
         CancellationToken cancellationToken) where TEvent:class
     {
-        await orderRepository.UpdateAsync(order, cancellationToken);
+        await unitOfWork.SaveChangesAsync(cancellationToken);
         await bus.PublishAsync(@event);
     }
 }

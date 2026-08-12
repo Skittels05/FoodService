@@ -1,9 +1,9 @@
-﻿namespace DeliveryService.DAL.Persistence.Configurations;
-    
-using DeliveryService.BLL.Constants;
+﻿using DeliveryService.BLL.Constants;
 using DeliveryService.BLL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace DeliveryService.DAL.Persistence.Configurations;
 
 public class PaymentConfiguration : IEntityTypeConfiguration<Payment>
 {

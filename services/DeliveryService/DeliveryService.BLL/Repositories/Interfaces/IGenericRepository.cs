@@ -8,5 +8,4 @@ public interface IGenericRepository<TEntity> where TEntity : BaseModel
     Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool trackChanges = false);
     Task<PagedList<TEntity>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false);
     Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
 }

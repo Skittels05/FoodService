@@ -1,8 +1,8 @@
-﻿namespace DeliveryService.DAL.Persistence.Configurations;
-
-using DeliveryService.BLL.Models;
+﻿using DeliveryService.BLL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace DeliveryService.DAL.Persistence.Configurations;
 
 public class CourierStateConfiguration : IEntityTypeConfiguration<CourierState>
 {

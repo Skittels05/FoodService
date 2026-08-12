@@ -1,7 +1,7 @@
-﻿namespace DeliveryService.DAL.Persistence;
-
-using DeliveryService.BLL.Models;
+﻿using DeliveryService.BLL.Models;
 using Microsoft.EntityFrameworkCore;
+
+namespace DeliveryService.DAL.Persistence;
 
 public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
 {
