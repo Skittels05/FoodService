@@ -120,7 +120,7 @@ public class OrderService(
 
     public async Task<OrderDto?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        var order = await orderRepository.GetByIdAsync(orderId, cancellationToken);
+        var order = await orderRepository.GetByIdAsync(orderId, trackChanges:false, cancellationToken);
         return order is null ? null : mappingService.Map<Order, OrderDto>(order);
     }
 
@@ -144,7 +144,7 @@ public class OrderService(
 
     private async Task<Order> GetOrderOrThrowAsync(Guid orderId, CancellationToken cancellationToken)
     {
-        return await orderRepository.GetByIdAsync(orderId, cancellationToken, trackChanges: true)
+        return await orderRepository.GetByIdAsync(orderId, trackChanges: true, cancellationToken )
             ?? throw new NotFoundException(nameof(Order), orderId);
     }
 

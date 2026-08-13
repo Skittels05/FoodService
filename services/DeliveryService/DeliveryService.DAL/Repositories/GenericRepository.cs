@@ -13,16 +13,17 @@ public class GenericRepository<TEntity>(ApplicationDbContext dbContext)
     protected readonly ApplicationDbContext DbContext = dbContext;
     protected readonly DbSet<TEntity> DbSet = dbContext.Set<TEntity>();
 
-    public async Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool trackChanges = false)
+    public async Task<TEntity?> GetByIdAsync(Guid id, bool trackChanges = false, CancellationToken cancellationToken = default)
     {
         var query = trackChanges ? DbSet : DbSet.AsNoTracking();
         return await query.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
     }
 
-    public async Task<PagedList<TEntity>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false)
+    public async Task<PagedList<TEntity>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
-        var query = trackChanges ? DbSet : DbSet.AsNoTracking();
-        return await query.ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
+        return await DbSet
+            .AsNoTracking()
+            .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 
     public void Add(TEntity entity)
