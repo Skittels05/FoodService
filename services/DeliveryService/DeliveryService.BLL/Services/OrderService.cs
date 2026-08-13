@@ -20,7 +20,7 @@ public class OrderService(
     {
         var order = mappingService.Map<CreateOrderDto, Order>(request);
         order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
-        await orderRepository.AddAsync(order, cancellationToken);
+        orderRepository.Add(order);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
         await bus.PublishAsync(new OrderCreatedEvent(

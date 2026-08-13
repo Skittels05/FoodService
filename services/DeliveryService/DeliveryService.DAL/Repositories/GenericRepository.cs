@@ -25,8 +25,8 @@ public class GenericRepository<TEntity>(ApplicationDbContext dbContext)
         return await query.ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 
-    public async Task AddAsync(TEntity entity, CancellationToken cancellationToken = default)
+    public void Add(TEntity entity)
     {
-        await DbSet.AddAsync(entity, cancellationToken);
+        DbSet.Add(entity);
     }
 }
