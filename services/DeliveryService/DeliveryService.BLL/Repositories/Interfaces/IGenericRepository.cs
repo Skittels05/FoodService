@@ -5,8 +5,7 @@ namespace DeliveryService.BLL.Repositories.Interfaces;
 
 public interface IGenericRepository<TEntity> where TEntity : BaseModel
 {
-    Task<TEntity?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool trackChanges = false);
-    Task<PagedList<TEntity>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false);
-    Task AddAsync(TEntity entity, CancellationToken cancellationToken = default);
-    Task UpdateAsync(TEntity entity, CancellationToken cancellationToken = default);
+    Task<TEntity?> GetByIdAsync(Guid id, bool trackChanges = false, CancellationToken cancellationToken = default);
+    Task<PagedList<TEntity>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default);
+    void Add(TEntity entity);
 }
