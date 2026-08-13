@@ -130,15 +130,15 @@ public class OrderService(
         return mappingService.MapPagedList<Order, OrderDto>(orders);
     }
 
-    public async Task<PagedList<OrderDto>> GetByCustomerAsync(Guid userId, PageRequest request, CancellationToken cancellationToken = default)
+    public async Task<PagedList<OrderDto>> GetByCustomerIdAsync(Guid userId, PageRequest request, CancellationToken cancellationToken = default)
     {
-        var orders = await orderRepository.GetByCustomerAsync(userId, request, cancellationToken);
+        var orders = await orderRepository.GetByCustomerIdAsync(userId, request, cancellationToken);
         return mappingService.MapPagedList<Order, OrderDto>(orders);
     }
 
-    public async Task<PagedList<OrderDto>> GetByCourierAsync(Guid courierId, PageRequest request, CancellationToken cancellationToken = default)
+    public async Task<PagedList<OrderDto>> GetByCourierIdAsync(Guid courierId, PageRequest request, CancellationToken cancellationToken = default)
     {
-        var orders = await orderRepository.GetByCourierAsync(courierId, request, cancellationToken);
+        var orders = await orderRepository.GetByCourierIdAsync(courierId, request, cancellationToken);
         return mappingService.MapPagedList<Order, OrderDto>(orders);
     }
 

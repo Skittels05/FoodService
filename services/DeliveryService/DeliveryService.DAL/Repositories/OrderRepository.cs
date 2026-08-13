@@ -18,7 +18,7 @@ public class OrderRepository(ApplicationDbContext dbContext)
             .FirstOrDefaultAsync(o => o.Id == orderId, cancellationToken);
     }
 
-    public async Task<PagedList<Order>> GetByCustomerAsync(Guid userId, PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false)
+    public async Task<PagedList<Order>> GetByCustomerIdAsync(Guid userId, PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false)
     {
         var query = trackChanges ? DbSet : DbSet.AsNoTracking();
 
@@ -27,7 +27,7 @@ public class OrderRepository(ApplicationDbContext dbContext)
             .ToPagedListAsync(request.PageNumber, request.PageSize, cancellationToken);
     }
 
-    public async Task<PagedList<Order>> GetByCourierAsync(Guid courierId, PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false)
+    public async Task<PagedList<Order>> GetByCourierIdAsync(Guid courierId, PageRequest request, CancellationToken cancellationToken = default, bool trackChanges = false)
     {
         var query = trackChanges ? DbSet : DbSet.AsNoTracking();
 
