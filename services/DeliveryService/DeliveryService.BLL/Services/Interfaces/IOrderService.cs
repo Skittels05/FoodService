@@ -3,10 +3,9 @@ using DeliveryService.BLL.DTOs;
 
 namespace DeliveryService.BLL.Services.Interfaces;
 
-public interface IOrderService
+public interface IOrderService:IBaseService<OrderDto>
 {
     Task<PagedList<OrderDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default);
-    Task<OrderDto?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default);
     Task<PagedList<OrderDto>> GetByCustomerIdAsync(Guid userId, PageRequest request, CancellationToken cancellationToken = default);
     Task<PagedList<OrderDto>> GetByCourierIdAsync(Guid courierId, PageRequest request, CancellationToken cancellationToken = default);
     Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default);

@@ -14,56 +14,58 @@ public class OrderService(
     IOrderRepository orderRepository,
     IMappingService mappingService,
     IMessageBus bus,
-    IUnitOfWork unitOfWork) : IOrderService
+    IUnitOfWork unitOfWork) 
+    : BaseService<Order, OrderDto>(orderRepository, mappingService, unitOfWork, bus), IOrderService
 {
+    
     public async Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default)
     {
         var order = mappingService.Map<CreateOrderDto, Order>(request);
         order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
-        orderRepository.Add(order);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
         
-        await bus.PublishAsync(new OrderCreatedEvent(
+        orderRepository.Add(order);
+        
+        await SaveAndPublishAsync(new OrderCreatedEvent(
             order.Id, 
             order.CustomerId, 
             order.RestaurantId, 
             order.RestaurantLocationId, 
-            order.TotalAmount));
+            order.TotalAmount), cancellationToken);
 
         return order.Id;
     }
 
     public async Task ConfirmAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(orderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(orderId, trackChanges: true, cancellationToken);
         EnsureStatus(order, OrderStatus.Created);
         order.Status = OrderStatus.Confirmed;
         
-        await UpdateAndPublishAsync(new OrderConfirmedEvent(order.Id), cancellationToken);
+        await SaveAndPublishAsync(new OrderConfirmedEvent(order.Id), cancellationToken);
     }
 
     public async Task StartPreparingAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(orderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(orderId, trackChanges: true, cancellationToken);
         EnsureStatus(order, OrderStatus.Confirmed);
         order.Status = OrderStatus.Preparing;
         
-        await UpdateAndPublishAsync(new OrderPreparingEvent(order.Id, order.RestaurantLocationId), cancellationToken);
+        await SaveAndPublishAsync(new OrderPreparingEvent(order.Id, order.RestaurantLocationId), cancellationToken);
     }
 
     public async Task MarkReadyForPickupAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(orderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(orderId, trackChanges: true, cancellationToken);
         EnsureStatus(order, OrderStatus.Preparing);
 
         order.Status = OrderStatus.ReadyForPickup;
 
-        await UpdateAndPublishAsync(new OrderReadyForPickupEvent(order.Id, order.CourierId), cancellationToken);
+        await SaveAndPublishAsync(new OrderReadyForPickupEvent(order.Id, order.CourierId), cancellationToken);
     }
 
     public async Task AssignCourierAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(orderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(orderId, trackChanges: true, cancellationToken);
 
         if (order.Status is OrderStatus.Delivered or OrderStatus.Cancelled)
         {
@@ -81,27 +83,27 @@ public class OrderService(
 
     public async Task StartDeliveringAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(orderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(orderId, trackChanges: true, cancellationToken);
         EnsureStatus(order, OrderStatus.ReadyForPickup);
         EnsureCourierMatches(order, courierId);
         order.Status = OrderStatus.Delivering;
         
-        await UpdateAndPublishAsync(new OrderDeliveringEvent(order.Id, courierId), cancellationToken);
+        await SaveAndPublishAsync(new OrderDeliveringEvent(order.Id, courierId), cancellationToken);
     }
 
     public async Task CompleteAsync(Guid orderId, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(orderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(orderId, trackChanges: true, cancellationToken);
         EnsureStatus(order, OrderStatus.Delivering);
         order.Status = OrderStatus.Delivered;
         order.IsPaid = true;
 
-        await UpdateAndPublishAsync(new OrderDeliveredEvent(order.Id), cancellationToken);
+        await SaveAndPublishAsync(new OrderDeliveredEvent(order.Id), cancellationToken);
     }
 
     public async Task CancelAsync(CancelOrderDto request, CancellationToken cancellationToken = default)
     {
-        var order = await GetOrderOrThrowAsync(request.OrderId, cancellationToken);
+        var order = await GetEntityOrThrowAsync(request.OrderId, trackChanges: true, cancellationToken);
     
         if (order.Status is OrderStatus.Delivered or OrderStatus.Cancelled)
         {
@@ -115,13 +117,8 @@ public class OrderService(
         {
             order.CancellationComment = request.Comment;
         }
-        await UpdateAndPublishAsync(new OrderCancelledEvent(order.Id, request.Reason, request.Comment), cancellationToken);
-    }
 
-    public async Task<OrderDto?> GetByIdAsync(Guid orderId, CancellationToken cancellationToken = default)
-    {
-        var order = await orderRepository.GetByIdAsync(orderId, trackChanges:false, cancellationToken);
-        return order is null ? null : mappingService.Map<Order, OrderDto>(order);
+        await SaveAndPublishAsync(new OrderCancelledEvent(order.Id, request.Reason, request.Comment), cancellationToken);
     }
 
     public async Task<PagedList<OrderDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
@@ -142,12 +139,6 @@ public class OrderService(
         return mappingService.MapPagedList<Order, OrderDto>(orders);
     }
 
-    private async Task<Order> GetOrderOrThrowAsync(Guid orderId, CancellationToken cancellationToken)
-    {
-        return await orderRepository.GetByIdAsync(orderId, trackChanges: true, cancellationToken )
-            ?? throw new NotFoundException(nameof(Order), orderId);
-    }
-
     private static void EnsureStatus(Order order, OrderStatus expectedStatus)
     {
         if (order.Status != expectedStatus)
@@ -162,13 +153,5 @@ public class OrderService(
         {
             throw new OrderCourierMismatchException(order.Id);
         }
-    }
-
-    private async Task UpdateAndPublishAsync<TEvent>(
-        TEvent @event, 
-        CancellationToken cancellationToken) where TEvent:class
-    {
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-        await bus.PublishAsync(@event);
     }
 }
