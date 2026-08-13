@@ -29,9 +29,8 @@ public class OrderStatusHistoryInterceptor : SaveChangesInterceptor
 
         var orderEntries = context.ChangeTracker
             .Entries<Order>()
-            .Where(e => e.State == EntityState.Added || 
-                        (e.State == EntityState.Modified && e.Property(o => o.Status).IsModified))
-            .ToList();
+            .Where(e => e.State == EntityState.Added ||
+                        (e.State == EntityState.Modified && e.Property(o => o.Status).IsModified));
 
         foreach (var entry in orderEntries)
         {
