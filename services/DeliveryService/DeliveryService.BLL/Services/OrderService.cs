@@ -1,29 +1,29 @@
-﻿using DeliveryService.BLL.Common;
+﻿namespace DeliveryService.BLL.Services;
+
+using DeliveryService.BLL.Common;
 using DeliveryService.BLL.DTOs;
 using DeliveryService.BLL.Enums;
 using DeliveryService.BLL.Events;
 using DeliveryService.BLL.Exceptions;
 using DeliveryService.BLL.Mappers.Interfaces;
+using DeliveryService.BLL.Models;
 using DeliveryService.BLL.Repositories.Interfaces;
 using DeliveryService.BLL.Services.Interfaces;
 using Wolverine;
 
-namespace DeliveryService.BLL.Services;
-
 public class OrderService(
     IOrderRepository orderRepository,
     IMappingService mappingService,
-    IMessageBus bus,
-    IUnitOfWork unitOfWork) 
+    IUnitOfWork unitOfWork,
+    IMessageBus bus) 
     : BaseService<Order, OrderDto>(orderRepository, mappingService, unitOfWork, bus), IOrderService
 {
-    
     public async Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default)
     {
-        var order = mappingService.Map<CreateOrderDto, Order>(request);
+        var order = MappingService.Map<CreateOrderDto, Order>(request);
         order.TotalAmount = order.Items.Sum(item => item.Price * item.Quantity);
         
-        orderRepository.Add(order);
+        Repository.Add(order);
         
         await SaveAndPublishAsync(new OrderCreatedEvent(
             order.Id, 
@@ -78,7 +78,7 @@ public class OrderService(
         }
 
         order.CourierId = courierId;
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+        await UnitOfWork.SaveChangesAsync(cancellationToken);
     }
 
     public async Task StartDeliveringAsync(Guid orderId, Guid courierId, CancellationToken cancellationToken = default)
@@ -124,19 +124,19 @@ public class OrderService(
     public async Task<PagedList<OrderDto>> GetAllAsync(PageRequest request, CancellationToken cancellationToken = default)
     {
         var orders = await orderRepository.GetAllAsync(request, cancellationToken);
-        return mappingService.MapPagedList<Order, OrderDto>(orders);
+        return MappingService.MapPagedList<Order, OrderDto>(orders);
     }
 
     public async Task<PagedList<OrderDto>> GetByCustomerIdAsync(Guid userId, PageRequest request, CancellationToken cancellationToken = default)
     {
         var orders = await orderRepository.GetByCustomerIdAsync(userId, request, cancellationToken);
-        return mappingService.MapPagedList<Order, OrderDto>(orders);
+        return MappingService.MapPagedList<Order, OrderDto>(orders);
     }
 
     public async Task<PagedList<OrderDto>> GetByCourierIdAsync(Guid courierId, PageRequest request, CancellationToken cancellationToken = default)
     {
         var orders = await orderRepository.GetByCourierIdAsync(courierId, request, cancellationToken);
-        return mappingService.MapPagedList<Order, OrderDto>(orders);
+        return MappingService.MapPagedList<Order, OrderDto>(orders);
     }
 
     private static void EnsureStatus(Order order, OrderStatus expectedStatus)
