@@ -1,9 +1,6 @@
 import { Navigate, Route, Routes } from 'react-router-dom'
-import { RequireAuth } from '../components/RequireAuth.tsx'
-import { AuthResultPage } from '../pages/AuthResultPage.tsx'
-import { CallbackPage } from '../pages/CallbackPage.tsx'
-import { HomePage } from '../pages/HomePage.tsx'
-import { PostAuthPage } from '../pages/PostAuthPage.tsx'
+import { RequireAuth } from '@/modules/auth'
+import { AuthResultPage, CallbackPage, HomePage, PostAuthPage } from '@/pages'
 
 export default function App() {
   return (

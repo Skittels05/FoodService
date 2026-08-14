@@ -1,0 +1,45 @@
+.auth-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 650;
+  color: #0f172a;
+}
+
+.auth-muted {
+  margin: 0 0 1.25rem;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.auth-strong {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.auth-footer {
+  margin: 1.25rem 0 0;
+  color: #64748b;
+  font-size: 0.95rem;
+}
+
+.auth-link {
+  color: #2563eb;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}
+
+.auth-error {
+  margin: 0 0 1rem;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.auth-success {
+  margin: 0 0 1rem;
+  color: #15803d;
+  font-weight: 600;
+}

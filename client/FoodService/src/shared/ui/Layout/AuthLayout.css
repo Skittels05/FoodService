@@ -1,0 +1,26 @@
+.auth-screen {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: radial-gradient(
+      circle at 20% 20%,
+      #e8f1ff,
+      transparent 45%
+    ),
+    radial-gradient(circle at 80% 0%, #ffe8ef, transparent 40%),
+    #f6f7fb;
+}
+
+.auth-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.auth-actions .auth-btn {
+  width: auto;
+  flex: 1 1 160px;
+}
