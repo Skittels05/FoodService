@@ -9,14 +9,13 @@ using DeliveryService.BLL.Mappers.Interfaces;
 using DeliveryService.BLL.Models;
 using DeliveryService.BLL.Repositories.Interfaces;
 using DeliveryService.BLL.Services.Interfaces;
-using Wolverine;
 
 public class OrderService(
     IOrderRepository orderRepository,
     IMappingService mappingService,
     IUnitOfWork unitOfWork,
-    IMessageBus bus) 
-    : BaseService<Order, OrderDto>(orderRepository, mappingService, unitOfWork, bus), IOrderService
+    IOutboxWriter outboxWriter) 
+    : BaseService<Order, OrderDto>(orderRepository, mappingService, unitOfWork, outboxWriter), IOrderService
 {
     public async Task<Guid> CreateAsync(CreateOrderDto request, CancellationToken cancellationToken = default)
     {
