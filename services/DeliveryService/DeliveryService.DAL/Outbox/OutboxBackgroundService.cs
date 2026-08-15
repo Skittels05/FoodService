@@ -92,7 +92,7 @@ public class OutboxBackgroundService(
             if (message.RetryCount >= _options.MaxRetryCount)
             {
                 MarkAsPermanentFailed(message, ex);
-                logger.LogCritical(ex, "OutboxMessage {MessageId} reached max retry limit and was moved to Dead Letter.", message.Id);
+                logger.LogCritical(ex, "OutboxMessage {MessageId} reached max retry limit and was marked as permanently failed.", message.Id);
             }
             else
             {
