@@ -12,8 +12,8 @@ public static class OutboxQueries
         return dbSet.FromSqlRaw(@"
             SELECT * 
             FROM ""OutboxMessages"" 
-            WHERE ""ProcessedOnUtc"" IS NULL
-            ORDER BY ""OccurredOnUtc"", ""Id""
+            WHERE ""ProcessedOn"" IS NULL
+            ORDER BY ""OccurredOn"", ""Id""
             LIMIT {0}
             FOR UPDATE SKIP LOCKED", 
             batchSize);

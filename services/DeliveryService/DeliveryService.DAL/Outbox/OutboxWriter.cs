@@ -1,4 +1,6 @@
-﻿namespace DeliveryService.DAL.Outbox;
+﻿using Microsoft.Extensions.DependencyInjection;
+
+namespace DeliveryService.DAL.Outbox;
 
 using System.Text.Json;
 using DeliveryService.BLL.Models;
@@ -7,10 +9,9 @@ using DeliveryService.DAL.Persistence;
 
 public class OutboxWriter(
     ApplicationDbContext dbContext,
-    TimeProvider timeProvider) : IOutboxWriter
+    TimeProvider timeProvider,
+    [FromKeyedServices(OutboxOptions.JsonOptionsKey)] JsonSerializerOptions jsonOptions) : IOutboxWriter
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
-
     public void Write<TEvent>(TEvent @event) where TEvent : class
     {
         var outboxMessage = new OutboxMessage
@@ -18,7 +19,7 @@ public class OutboxWriter(
             Id = Guid.NewGuid(),
             OccurredOn = timeProvider.GetUtcNow(),
             Type = @event.GetType().AssemblyQualifiedName!,
-            Content = JsonSerializer.Serialize(@event, JsonOptions)
+            Content = JsonSerializer.Serialize(@event, jsonOptions)
         };
 
         dbContext.Add(outboxMessage);
