@@ -78,7 +78,7 @@ public class OutboxBackgroundService(
             deliveryOptions.WithHeader("EventId", message.Id.ToString());
             
             await messageBus.PublishAsync(deserializedEvent, deliveryOptions);
-            message.ProcessedOnUtc = timeProvider.GetUtcNow().UtcDateTime;
+            message.ProcessedOn = timeProvider.GetUtcNow();
             message.Error = null;
         }
         catch (OutboxException ex)
@@ -106,6 +106,6 @@ public class OutboxBackgroundService(
     {
         logger.LogError(ex, "Permanent error processing OutboxMessage {MessageId}", message.Id);
         message.Error = ex.Message;
-        message.ProcessedOnUtc = timeProvider.GetUtcNow().UtcDateTime;
+        message.ProcessedOn = timeProvider.GetUtcNow();
     }
 }

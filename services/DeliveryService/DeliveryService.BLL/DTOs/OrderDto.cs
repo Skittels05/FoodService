@@ -37,7 +37,6 @@ public record OrderDto(
     string? CustomerComment,
     OrderCancellationReason? CancellationReason,
     string? CancellationComment,
-    DateTime CreatedAt,
+    DateTimeOffset CreatedAt,
     List<OrderItemDto> Items
 );
-

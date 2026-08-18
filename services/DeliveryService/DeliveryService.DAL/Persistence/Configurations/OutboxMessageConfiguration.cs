@@ -17,8 +17,8 @@ public class OutboxMessageConfiguration : IEntityTypeConfiguration<OutboxMessage
             .HasColumnType("jsonb")
             .IsRequired();
 
-        builder.HasIndex(m => new {m.OccurredOnUtc, m.Id})
-            .HasFilter(@"""ProcessedOnUtc"" IS NULL")
+        builder.HasIndex(m => new { OccurredOn = m.OccurredOn, m.Id})
+            .HasFilter(@"""ProcessedOn"" IS NULL")
             .HasDatabaseName("IX_OutboxMessages_Unprocessed");
     }
 }

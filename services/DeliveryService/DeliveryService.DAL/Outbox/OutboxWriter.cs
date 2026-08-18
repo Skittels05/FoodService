@@ -16,7 +16,7 @@ public class OutboxWriter(
         var outboxMessage = new OutboxMessage
         {
             Id = Guid.NewGuid(),
-            OccurredOnUtc = timeProvider.GetUtcNow().UtcDateTime,
+            OccurredOn = timeProvider.GetUtcNow(),
             Type = @event.GetType().AssemblyQualifiedName!,
             Content = JsonSerializer.Serialize(@event, JsonOptions)
         };
