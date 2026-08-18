@@ -15,11 +15,11 @@ public class OutboxBackgroundService(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> options,
     ILogger<OutboxBackgroundService> logger,
-    TimeProvider timeProvider) 
+    TimeProvider timeProvider,
+    [FromKeyedServices(OutboxOptions.JsonOptionsKey)] JsonSerializerOptions jsonOptions) 
     : BackgroundService
 {
     private readonly OutboxOptions _options = options.Value;
-    private readonly JsonSerializerOptions _jsonOptions = new(JsonSerializerDefaults.Web);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -71,7 +71,7 @@ public class OutboxBackgroundService(
             var type = Type.GetType(message.Type)
                 ?? throw new OutboxTypeNotFoundException(message.Type);
 
-            var deserializedEvent = JsonSerializer.Deserialize(message.Content, type, _jsonOptions)
+            var deserializedEvent = JsonSerializer.Deserialize(message.Content, type, jsonOptions)
                 ?? throw new OutboxDeserializationException(message.Id, message.Type);
 
             var deliveryOptions = new DeliveryOptions();
