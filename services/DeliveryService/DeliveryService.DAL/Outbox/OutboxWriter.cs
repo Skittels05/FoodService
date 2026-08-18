@@ -5,7 +5,9 @@ using DeliveryService.BLL.Models;
 using DeliveryService.BLL.Services.Interfaces;
 using DeliveryService.DAL.Persistence;
 
-public class OutboxWriter(ApplicationDbContext dbContext) : IOutboxWriter
+public class OutboxWriter(
+    ApplicationDbContext dbContext,
+    TimeProvider timeProvider) : IOutboxWriter
 {
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -14,7 +16,7 @@ public class OutboxWriter(ApplicationDbContext dbContext) : IOutboxWriter
         var outboxMessage = new OutboxMessage
         {
             Id = Guid.NewGuid(),
-            OccurredOnUtc = DateTime.UtcNow,
+            OccurredOnUtc = timeProvider.GetUtcNow().UtcDateTime,
             Type = @event.GetType().AssemblyQualifiedName!,
             Content = JsonSerializer.Serialize(@event, JsonOptions)
         };

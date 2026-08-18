@@ -14,7 +14,8 @@ namespace DeliveryService.DAL.Outbox;
 public class OutboxBackgroundService(
     IServiceScopeFactory scopeFactory,
     IOptions<OutboxOptions> options,
-    ILogger<OutboxBackgroundService> logger) 
+    ILogger<OutboxBackgroundService> logger,
+    TimeProvider timeProvider) 
     : BackgroundService
 {
     private readonly OutboxOptions _options = options.Value;
@@ -77,7 +78,7 @@ public class OutboxBackgroundService(
             deliveryOptions.WithHeader("EventId", message.Id.ToString());
             
             await messageBus.PublishAsync(deserializedEvent, deliveryOptions);
-            message.ProcessedOnUtc = DateTime.UtcNow;
+            message.ProcessedOnUtc = timeProvider.GetUtcNow().UtcDateTime;
             message.Error = null;
         }
         catch (OutboxException ex)
@@ -105,7 +106,6 @@ public class OutboxBackgroundService(
     {
         logger.LogError(ex, "Permanent error processing OutboxMessage {MessageId}", message.Id);
         message.Error = ex.Message;
-        message.RetryCount = _options.MaxRetryCount;
-        message.ProcessedOnUtc = DateTime.UtcNow;
+        message.ProcessedOnUtc = timeProvider.GetUtcNow().UtcDateTime;
     }
 }
