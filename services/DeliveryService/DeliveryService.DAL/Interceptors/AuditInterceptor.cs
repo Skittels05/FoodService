@@ -4,7 +4,7 @@ using DeliveryService.BLL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
-public class AuditInterceptor : SaveChangesInterceptor
+public class AuditInterceptor(TimeProvider timeProvider) : SaveChangesInterceptor
 {
     public override ValueTask<InterceptionResult<int>> SavingChangesAsync(
         DbContextEventData eventData,
@@ -23,12 +23,12 @@ public class AuditInterceptor : SaveChangesInterceptor
         return base.SavingChanges(eventData, result);
     }
 
-    private static void UpdateTimestamps(DbContext? context)
+    private void UpdateTimestamps(DbContext? context)
     {
         if (context is null) return;
 
         var entries = context.ChangeTracker.Entries<BaseModel>();
-        var utcNow = DateTime.UtcNow;
+        var utcNow = timeProvider.GetUtcNow();
 
         foreach (var entry in entries)
         {

@@ -3,7 +3,6 @@
 public abstract class BaseModel
 {
     public Guid Id { get; init; }
-    public DateTime CreatedAt { get; init; }
-    public DateTime UpdatedAt { get; set; }
+    public DateTimeOffset CreatedAt { get; init; }
+    public DateTimeOffset UpdatedAt { get; set; }
 }
-
