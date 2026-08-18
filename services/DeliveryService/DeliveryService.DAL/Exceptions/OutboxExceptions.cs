@@ -1,8 +1,8 @@
 ﻿namespace DeliveryService.DAL.Exceptions;
 
-public class OutboxException : Exception
+public abstract class OutboxException : Exception
 {
-    public OutboxException(string message, Exception? innerException = null) 
+    protected OutboxException(string message, Exception? innerException = null) 
         : base(message, innerException)
     {
     }
