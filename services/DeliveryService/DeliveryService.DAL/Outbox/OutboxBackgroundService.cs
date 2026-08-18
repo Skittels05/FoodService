@@ -107,5 +107,6 @@ public class OutboxBackgroundService(
         logger.LogError(ex, "Permanent error processing OutboxMessage {MessageId}", message.Id);
         message.Error = ex.Message;
         message.ProcessedOn = timeProvider.GetUtcNow();
+        message.RetryCount = _options.MaxRetryCount;
     }
 }
