@@ -58,9 +58,9 @@ public class OutboxBackgroundService(
         foreach (var message in messages)
         {
             await ProcessMessageAsync(message, messageBus);
-            await dbContext.SaveChangesAsync(cancellationToken);
         }
 
+        await dbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }
 
