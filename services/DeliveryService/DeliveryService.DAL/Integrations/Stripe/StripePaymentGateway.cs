@@ -23,6 +23,12 @@ public class StripePaymentGateway(
     private const string IdempotencyKeyHeader = "Idempotency-Key";
     private const int MinorUnitsPerUnit = 100;
 
+    private static readonly HashSet<string> ZeroDecimalCurrencies = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "bif", "clp", "djf", "gnf", "jpy", "kmf", "krw", "mga",
+        "pyg", "rwf", "ugx", "vnd", "vuv", "xaf", "xof", "xpf"
+    };
+
     private readonly StripeOptions _options = options.Value;
 
     public async Task<PaymentGatewayResult> CreatePaymentAsync(
@@ -31,7 +37,7 @@ public class StripePaymentGateway(
     {
         using var httpRequest = BuildRequest(request);
 
-        var response = await httpClient.SendAsync(httpRequest, cancellationToken);
+        using var response = await httpClient.SendAsync(httpRequest, cancellationToken);
 
         if (response.IsSuccessStatusCode)
         {
@@ -53,6 +59,8 @@ public class StripePaymentGateway(
             ["amount"] = ToMinorUnits(request.Amount).ToString(CultureInfo.InvariantCulture),
             ["currency"] = _options.Currency,
             ["payment_method_types[]"] = "card",
+            ["payment_method"] = _options.PaymentMethodId,
+            ["confirm"] = "true",
             ["metadata[order_id]"] = request.OrderId.ToString(),
             ["metadata[payment_id]"] = request.PaymentId.ToString()
         };
@@ -121,8 +129,12 @@ public class StripePaymentGateway(
         }
     }
 
-    private static bool IsPaid(string? status) => status is "succeeded" or "requires_capture";
+    private static bool IsPaid(string? status) => status is "succeeded";
 
-    private static long ToMinorUnits(decimal amount) =>
-        (long)decimal.Round(amount * MinorUnitsPerUnit, 0, MidpointRounding.AwayFromZero);
+    private long ToMinorUnits(decimal amount)
+    {
+        var factor = ZeroDecimalCurrencies.Contains(_options.Currency) ? 1 : MinorUnitsPerUnit;
+
+        return (long)decimal.Round(amount * factor, 0, MidpointRounding.AwayFromZero);
+    }
 }

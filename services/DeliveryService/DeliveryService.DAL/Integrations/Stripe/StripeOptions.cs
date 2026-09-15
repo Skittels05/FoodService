@@ -15,8 +15,11 @@ public class StripeOptions
     public string SecretKey { get; set; } = null!;
 
     [Required]
-    [RegularExpression("^[a-z]{3}$", ErrorMessage = "Currency must be a lowercase ISO 4217 code, e.g. 'usd'.")]
+    [RegularExpression("^[a-z]{3}$", ErrorMessage = "Currency must be a lowercase ISO 4217 code.")]
     public string Currency { get; set; } = null!;
+
+    [Required(ErrorMessage = "PaymentMethodId must be provided.")]
+    public string PaymentMethodId { get; set; } = null!;
 
     [Required]
     [Range(1, 60, ErrorMessage = "AttemptTimeoutInSeconds must be between 1 and 60.")]
