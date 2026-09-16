@@ -11,7 +11,7 @@ using Microsoft.Extensions.Options;
 
 namespace DeliveryService.DAL.Integrations.Stripe;
 
-public class StripePaymentGateway(
+public sealed class StripePaymentGateway(
     HttpClient httpClient,
     IOptions<StripeOptions> options,
     [FromKeyedServices(StripeOptions.JsonOptionsKey)] JsonSerializerOptions jsonOptions,
@@ -82,7 +82,7 @@ public class StripePaymentGateway(
     {
         var intent = await ReadAsync<StripePaymentIntentResponse>(response, cancellationToken);
 
-        if (intent is null || string.IsNullOrWhiteSpace(intent.Id))
+        if (string.IsNullOrWhiteSpace(intent?.Id))
         {
             throw new PaymentGatewayException(ProviderName, "returned a payment intent without an id.");
         }
