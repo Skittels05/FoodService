@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Globalization;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -23,11 +24,11 @@ public sealed class StripePaymentGateway(
     private const string IdempotencyKeyHeader = "Idempotency-Key";
     private const int MinorUnitsPerUnit = 100;
 
-    private static readonly HashSet<string> ZeroDecimalCurrencies = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly FrozenSet<string> ZeroDecimalCurrencies = new[]
     {
         "bif", "clp", "djf", "gnf", "jpy", "kmf", "krw", "mga",
         "pyg", "rwf", "ugx", "vnd", "vuv", "xaf", "xof", "xpf"
-    };
+    }.ToFrozenSet(StringComparer.OrdinalIgnoreCase);
 
     private readonly StripeOptions _options = options.Value;
 
