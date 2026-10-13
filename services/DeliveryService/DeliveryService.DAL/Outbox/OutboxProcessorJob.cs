@@ -4,46 +4,41 @@ using DeliveryService.DAL.Exceptions;
 using DeliveryService.DAL.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Quartz;
 using Wolverine;
 
 namespace DeliveryService.DAL.Outbox;
 
-public class OutboxBackgroundService(
-    IServiceScopeFactory scopeFactory,
+[DisallowConcurrentExecution]
+public class OutboxProcessorJob(
+    ApplicationDbContext dbContext,
+    IMessageBus messageBus,
     IOptions<OutboxOptions> options,
-    ILogger<OutboxBackgroundService> logger,
+    ILogger<OutboxProcessorJob> logger,
     TimeProvider timeProvider,
-    [FromKeyedServices(OutboxOptions.JsonOptionsKey)] JsonSerializerOptions jsonOptions) 
-    : BackgroundService
+    [FromKeyedServices(OutboxOptions.JsonOptionsKey)] JsonSerializerOptions jsonOptions)
+    : IJob
 {
+    public static readonly JobKey Key = new(nameof(OutboxProcessorJob));
+
     private readonly OutboxOptions _options = options.Value;
 
-    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    public async ValueTask Execute(IJobExecutionContext context, CancellationToken cancellationToken)
     {
-        using var timer = new PeriodicTimer(TimeSpan.FromSeconds(_options.IntervalInSeconds));
-
-        while (await timer.WaitForNextTickAsync(stoppingToken))
+        try
         {
-            try
-            {
-                await ProcessOutboxMessagesAsync(stoppingToken);
-            }
-            catch (Exception ex)
-            {
-                logger.LogError(ex, "An unhandled exception occurred during Outbox processing cycle.");
-            }
+            await ProcessOutboxMessagesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "An unhandled exception occurred during Outbox processing cycle.");
         }
     }
 
     private async Task ProcessOutboxMessagesAsync(CancellationToken cancellationToken)
     {
-        using var scope = scopeFactory.CreateScope();
-        var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        var messageBus = scope.ServiceProvider.GetRequiredService<IMessageBus>();
-
         await using var transaction = await dbContext.Database.BeginTransactionAsync(cancellationToken);
 
         var messages = await dbContext.Set<OutboxMessage>()
@@ -52,19 +47,19 @@ public class OutboxBackgroundService(
 
         if (messages.Count == 0)
         {
-            return; 
+            return;
         }
 
         foreach (var message in messages)
         {
-            await ProcessMessageAsync(message, messageBus);
+            await ProcessMessageAsync(message);
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
         await transaction.CommitAsync(cancellationToken);
     }
 
-    private async Task ProcessMessageAsync(OutboxMessage message, IMessageBus messageBus)
+    private async Task ProcessMessageAsync(OutboxMessage message)
     {
         try
         {
@@ -76,7 +71,7 @@ public class OutboxBackgroundService(
 
             var deliveryOptions = new DeliveryOptions();
             deliveryOptions.WithHeader("EventId", message.Id.ToString());
-            
+
             await messageBus.PublishAsync(deserializedEvent, deliveryOptions);
             message.ProcessedOn = timeProvider.GetUtcNow();
             message.Error = null;
