@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Collections.Frozen;
+using System.Globalization;
 using DeliveryService.BLL.Enums;
 using DeliveryService.BLL.Models;
 using DeliveryService.BLL.Services.Interfaces;
@@ -9,6 +10,7 @@ namespace DeliveryService.DAL.Integrations.Redis;
 public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : ICourierLocationStore
 {
     private static readonly RedisKey AvailableKey = "{couriers}:available";
+    private static readonly RedisKey OfferedKey = "{couriers}:offered";
     private static readonly RedisKey DeliveringKey = "{couriers}:delivering";
     private const string StateKeyPrefix = "{couriers}:state:";
 
@@ -16,8 +18,16 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
     private const string LastSeenField = "lastSeen";
 
     private static readonly RedisValue AvailableStatus = CourierStatus.Available.ToString();
+    private static readonly RedisValue OfferedStatus = CourierStatus.Offered.ToString();
     private static readonly RedisValue DeliveringStatus = CourierStatus.Delivering.ToString();
     private static readonly RedisValue OfflineStatus = CourierStatus.Offline.ToString();
+
+    private static readonly FrozenDictionary<RedisValue, RedisKey> LocationKeys = new Dictionary<RedisValue, RedisKey>
+    {
+        [AvailableStatus] = AvailableKey,
+        [OfferedStatus] = OfferedKey,
+        [DeliveringStatus] = DeliveringKey
+    }.ToFrozenDictionary();
 
     private readonly IDatabase _db = redis.GetDatabase();
 
@@ -27,6 +37,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         {
             stateKey = StateKey(courierId),
             availableKey = AvailableKey,
+            offeredKey = OfferedKey,
             deliveringKey = DeliveringKey,
             member = Member(courierId),
             longitude = location.Longitude,
@@ -44,6 +55,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
             {
                 stateKey = StateKey(courierId),
                 availableKey = AvailableKey,
+                offeredKey = OfferedKey,
                 deliveringKey = DeliveringKey,
                 member = Member(courierId),
                 status = DeliveringStatus
@@ -56,6 +68,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         {
             stateKey = StateKey(courierId),
             availableKey = AvailableKey,
+            offeredKey = OfferedKey,
             deliveringKey = DeliveringKey,
             member = Member(courierId),
             longitude = location.Longitude,
@@ -71,6 +84,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         {
             stateKey = StateKey(courierId),
             availableKey = AvailableKey,
+            offeredKey = OfferedKey,
             deliveringKey = DeliveringKey,
             member = Member(courierId),
             status = OfflineStatus
@@ -83,12 +97,14 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         {
             stateKey = StateKey(courierId),
             availableKey = AvailableKey,
+            offeredKey = OfferedKey,
             deliveringKey = DeliveringKey,
             member = Member(courierId),
             longitude = location.Longitude,
             latitude = location.Latitude,
             timestamp = location.Timestamp.ToUnixTimeMilliseconds(),
             availableStatus = AvailableStatus,
+            offeredStatus = OfferedStatus,
             deliveringStatus = DeliveringStatus
         });
 
@@ -106,12 +122,11 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         var status = state[0];
         var lastSeen = state[1];
 
-        if (lastSeen.IsNull || (status != AvailableStatus && status != DeliveringStatus))
+        if (lastSeen.IsNull || !LocationKeys.TryGetValue(status, out var key))
         {
             return null;
         }
 
-        var key = status == AvailableStatus ? AvailableKey : DeliveringKey;
         var position = await _db.GeoPositionAsync(key, Member(courierId));
 
         if (position is null)
