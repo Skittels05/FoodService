@@ -9,24 +9,14 @@ namespace DeliveryService.DAL.Integrations.Redis;
 
 public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : ICourierLocationStore
 {
-    private static readonly RedisKey AvailableKey = "{couriers}:available";
-    private static readonly RedisKey OfferedKey = "{couriers}:offered";
-    private static readonly RedisKey DeliveringKey = "{couriers}:delivering";
-    private const string StateKeyPrefix = "{couriers}:state:";
-
     private const string StatusField = "status";
     private const string LastSeenField = "lastSeen";
 
-    private static readonly RedisValue AvailableStatus = CourierStatus.Available.ToString();
-    private static readonly RedisValue OfferedStatus = CourierStatus.Offered.ToString();
-    private static readonly RedisValue DeliveringStatus = CourierStatus.Delivering.ToString();
-    private static readonly RedisValue OfflineStatus = CourierStatus.Offline.ToString();
-
     private static readonly FrozenDictionary<RedisValue, RedisKey> LocationKeys = new Dictionary<RedisValue, RedisKey>
     {
-        [AvailableStatus] = AvailableKey,
-        [OfferedStatus] = OfferedKey,
-        [DeliveringStatus] = DeliveringKey
+        [CourierRedisKeys.AvailableStatus] = CourierRedisKeys.Available,
+        [CourierRedisKeys.OfferedStatus] = CourierRedisKeys.Offered,
+        [CourierRedisKeys.DeliveringStatus] = CourierRedisKeys.Delivering
     }.ToFrozenDictionary();
 
     private readonly IDatabase _db = redis.GetDatabase();
@@ -35,15 +25,15 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
     {
         await _db.ScriptEvaluateAsync(CourierLocationScripts.SetAvailable, new
         {
-            stateKey = StateKey(courierId),
-            availableKey = AvailableKey,
-            offeredKey = OfferedKey,
-            deliveringKey = DeliveringKey,
-            member = Member(courierId),
+            stateKey = CourierRedisKeys.State(courierId),
+            availableKey = CourierRedisKeys.Available,
+            offeredKey = CourierRedisKeys.Offered,
+            deliveringKey = CourierRedisKeys.Delivering,
+            member = CourierRedisKeys.Member(courierId),
             longitude = location.Longitude,
             latitude = location.Latitude,
             timestamp = location.Timestamp.ToUnixTimeMilliseconds(),
-            status = AvailableStatus
+            status = CourierRedisKeys.AvailableStatus
         });
     }
 
@@ -53,12 +43,12 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         {
             await _db.ScriptEvaluateAsync(CourierLocationScripts.MoveToDelivering, new
             {
-                stateKey = StateKey(courierId),
-                availableKey = AvailableKey,
-                offeredKey = OfferedKey,
-                deliveringKey = DeliveringKey,
-                member = Member(courierId),
-                status = DeliveringStatus
+                stateKey = CourierRedisKeys.State(courierId),
+                availableKey = CourierRedisKeys.Available,
+                offeredKey = CourierRedisKeys.Offered,
+                deliveringKey = CourierRedisKeys.Delivering,
+                member = CourierRedisKeys.Member(courierId),
+                status = CourierRedisKeys.DeliveringStatus
             });
 
             return;
@@ -66,15 +56,15 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
 
         await _db.ScriptEvaluateAsync(CourierLocationScripts.SetDelivering, new
         {
-            stateKey = StateKey(courierId),
-            availableKey = AvailableKey,
-            offeredKey = OfferedKey,
-            deliveringKey = DeliveringKey,
-            member = Member(courierId),
+            stateKey = CourierRedisKeys.State(courierId),
+            availableKey = CourierRedisKeys.Available,
+            offeredKey = CourierRedisKeys.Offered,
+            deliveringKey = CourierRedisKeys.Delivering,
+            member = CourierRedisKeys.Member(courierId),
             longitude = location.Longitude,
             latitude = location.Latitude,
             timestamp = location.Timestamp.ToUnixTimeMilliseconds(),
-            status = DeliveringStatus
+            status = CourierRedisKeys.DeliveringStatus
         });
     }
 
@@ -82,12 +72,12 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
     {
         await _db.ScriptEvaluateAsync(CourierLocationScripts.SetOffline, new
         {
-            stateKey = StateKey(courierId),
-            availableKey = AvailableKey,
-            offeredKey = OfferedKey,
-            deliveringKey = DeliveringKey,
-            member = Member(courierId),
-            status = OfflineStatus
+            stateKey = CourierRedisKeys.State(courierId),
+            availableKey = CourierRedisKeys.Available,
+            offeredKey = CourierRedisKeys.Offered,
+            deliveringKey = CourierRedisKeys.Delivering,
+            member = CourierRedisKeys.Member(courierId),
+            status = CourierRedisKeys.OfflineStatus
         });
     }
 
@@ -95,17 +85,17 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
     {
         var result = await _db.ScriptEvaluateAsync(CourierLocationScripts.UpdateLocation, new
         {
-            stateKey = StateKey(courierId),
-            availableKey = AvailableKey,
-            offeredKey = OfferedKey,
-            deliveringKey = DeliveringKey,
-            member = Member(courierId),
+            stateKey = CourierRedisKeys.State(courierId),
+            availableKey = CourierRedisKeys.Available,
+            offeredKey = CourierRedisKeys.Offered,
+            deliveringKey = CourierRedisKeys.Delivering,
+            member = CourierRedisKeys.Member(courierId),
             longitude = location.Longitude,
             latitude = location.Latitude,
             timestamp = location.Timestamp.ToUnixTimeMilliseconds(),
-            availableStatus = AvailableStatus,
-            offeredStatus = OfferedStatus,
-            deliveringStatus = DeliveringStatus
+            availableStatus = CourierRedisKeys.AvailableStatus,
+            offeredStatus = CourierRedisKeys.OfferedStatus,
+            deliveringStatus = CourierRedisKeys.DeliveringStatus
         });
 
         return (int)result switch
@@ -118,7 +108,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
 
     public async Task<CourierLocation?> GetLocationAsync(Guid courierId, CancellationToken cancellationToken = default)
     {
-        var state = await _db.HashGetAsync(StateKey(courierId), [StatusField, LastSeenField]);
+        var state = await _db.HashGetAsync(CourierRedisKeys.State(courierId), [StatusField, LastSeenField]);
         var status = state[0];
         var lastSeen = state[1];
 
@@ -127,7 +117,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
             return null;
         }
 
-        var position = await _db.GeoPositionAsync(key, Member(courierId));
+        var position = await _db.GeoPositionAsync(key, CourierRedisKeys.Member(courierId));
 
         if (position is null)
         {
@@ -148,7 +138,7 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
         CancellationToken cancellationToken = default)
     {
         var results = await _db.GeoSearchAsync(
-            key: AvailableKey,
+            key: CourierRedisKeys.Available,
             longitude: longitude,
             latitude: latitude,
             shape: new GeoSearchCircle(radiusKm, GeoUnit.Kilometers),
@@ -160,8 +150,4 @@ public sealed class RedisCourierLocationStore(IConnectionMultiplexer redis) : IC
             .Select(r => new NearbyCourier(Guid.Parse(r.Member.ToString()), r.Distance ?? 0))
             .ToList();
     }
-
-    private static RedisKey StateKey(Guid courierId) => StateKeyPrefix + courierId;
-
-    private static RedisValue Member(Guid courierId) => courierId.ToString();
 }

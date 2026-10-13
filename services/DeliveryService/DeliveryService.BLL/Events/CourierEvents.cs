@@ -1,6 +1,6 @@
 ﻿namespace DeliveryService.BLL.Events;
 
-public record CourierInvitedEvent(Guid OrderId, Guid CourierId, DateTime ExpiresAt);
+public record CourierOfferedEvent(Guid OrderId, Guid CourierId, DateTimeOffset ExpiresAt);
 
 public record CourierAcceptedOrderEvent(Guid OrderId, Guid CourierId);
 

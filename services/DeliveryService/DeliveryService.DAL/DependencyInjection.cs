@@ -47,6 +47,7 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<ICourierLocationStore, RedisCourierLocationStore>();
+        services.AddSingleton<ICourierOfferStore, RedisCourierOfferStore>();
 
         return services;
     }
