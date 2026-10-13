@@ -13,6 +13,8 @@ internal static class CourierLocationScripts
         local key
         if status == @availableStatus then
             key = @availableKey
+        elseif status == @offeredStatus then
+            key = @offeredKey
         elseif status == @deliveringStatus then
             key = @deliveringKey
         else
@@ -30,6 +32,7 @@ internal static class CourierLocationScripts
         """);
 
     public static readonly LuaScript SetAvailable = LuaScript.Prepare("""
+        redis.call('ZREM', @offeredKey, @member)
         redis.call('ZREM', @deliveringKey, @member)
         redis.call('GEOADD', @availableKey, @longitude, @latitude, @member)
         redis.call('HSET', @stateKey, 'status', @status, 'lastSeen', @timestamp)
@@ -37,7 +40,8 @@ internal static class CourierLocationScripts
         """);
 
     public static readonly LuaScript MoveToDelivering = LuaScript.Prepare("""
-        local score = redis.call('ZSCORE', @availableKey, @member)
+        local score = redis.call('ZSCORE', @offeredKey, @member) or redis.call('ZSCORE', @availableKey, @member)
+        redis.call('ZREM', @offeredKey, @member)
         redis.call('ZREM', @availableKey, @member)
         if score then
             redis.call('ZADD', @deliveringKey, score, @member)
@@ -47,6 +51,7 @@ internal static class CourierLocationScripts
         """);
 
     public static readonly LuaScript SetDelivering = LuaScript.Prepare("""
+        redis.call('ZREM', @offeredKey, @member)
         redis.call('ZREM', @availableKey, @member)
         redis.call('GEOADD', @deliveringKey, @longitude, @latitude, @member)
         redis.call('HSET', @stateKey, 'status', @status, 'lastSeen', @timestamp)
@@ -55,6 +60,7 @@ internal static class CourierLocationScripts
 
     public static readonly LuaScript SetOffline = LuaScript.Prepare("""
         redis.call('ZREM', @availableKey, @member)
+        redis.call('ZREM', @offeredKey, @member)
         redis.call('ZREM', @deliveringKey, @member)
         redis.call('HSET', @stateKey, 'status', @status)
         return 1

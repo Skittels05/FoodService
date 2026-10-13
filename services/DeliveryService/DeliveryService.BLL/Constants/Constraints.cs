@@ -2,7 +2,7 @@
 
 public class Constraints
 {
-    public const int OrderDeliveryAddressMaxLength = 250;
+    public const int AddressMaxLength = 250;
     public const int OrderCustomerCommentMaxLength = 500;
     public const int OrderCancellationCommentMaxLength = 500;
     public const int OrderStatusMaxLength = 50;
@@ -25,4 +25,7 @@ public class Constraints
     public const double LongitudeMax = 180.0;
     public const int CourierLocationMaxAgeInSeconds = 60;
     public const int CourierLocationFutureToleranceInSeconds = 30;
+    public const int CourierOfferTimeToLiveInSeconds = 10;
+    public const int CourierSearchRetryDelayInSeconds = 30;
+    public const int CourierSearchCandidatesCount = 10;
 }

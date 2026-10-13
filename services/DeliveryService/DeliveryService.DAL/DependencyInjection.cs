@@ -3,10 +3,12 @@ using DeliveryService.BLL.Services.Interfaces;
 using DeliveryService.DAL.Integrations.Redis;
 using DeliveryService.DAL.Integrations.Stripe;
 using DeliveryService.DAL.Outbox;
+using DeliveryService.DAL.Scheduling;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using Polly;
+using Quartz;
 using StackExchange.Redis;
 
 namespace DeliveryService.DAL;
@@ -27,6 +29,7 @@ public static class DependencyInjection
 
         services.AddStripePaymentGateway();
         services.AddRedisCourierLocationStore();
+        services.AddScheduling();
 
         return services;
     }
@@ -45,6 +48,7 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<ICourierLocationStore, RedisCourierLocationStore>();
+        services.AddSingleton<ICourierOfferStore, RedisCourierOfferStore>();
 
         return services;
     }
@@ -88,6 +92,37 @@ public static class DependencyInjection
                 options.CircuitBreaker.SamplingDuration =
                     TimeSpan.FromSeconds(stripeOptions.CircuitBreakerSamplingDurationInSeconds);
             });
+
+        return services;
+    }
+    
+    public static IServiceCollection AddScheduling(this IServiceCollection services)
+    {
+        services.AddQuartz(quartz =>
+        {
+            quartz.AddJob<OutboxProcessorJob>(job => job.WithIdentity(OutboxProcessorJob.Key));
+
+            quartz.AddJob<CourierSearchJob>(job => job
+                .WithIdentity(CourierSearchJob.Key)
+                .StoreDurably());
+
+            quartz.AddTrigger((serviceProvider, trigger) =>
+            {
+                var outboxOptions = serviceProvider.GetRequiredService<IOptions<OutboxOptions>>().Value;
+
+                trigger
+                    .ForJob(OutboxProcessorJob.Key)
+                    .StartNow()
+                    .WithSimpleSchedule(schedule => schedule
+                        .WithInterval(TimeSpan.FromSeconds(outboxOptions.IntervalInSeconds))
+                        .RepeatForever()
+                        .WithMisfireInstruction(SimpleTriggerMisfireInstruction.NextWithRemainingCount));
+            });
+        });
+
+        services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+        services.AddSingleton<ICourierSearchScheduler, QuartzCourierSearchScheduler>();
 
         return services;
     }
