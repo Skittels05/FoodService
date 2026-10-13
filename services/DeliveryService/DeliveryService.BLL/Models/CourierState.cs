@@ -6,5 +6,5 @@ public class CourierState
 {
     public required Guid CourierId { get; set; } 
     public required CourierStatus Status { get; set; }
-    public DateTimeOffset? LastSeen { get; set; }
+    public DateTimeOffset? LastSeenAt { get; set; }
 }

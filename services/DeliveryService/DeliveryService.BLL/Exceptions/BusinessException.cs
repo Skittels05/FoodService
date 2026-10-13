@@ -21,3 +21,9 @@ public class OrderFinalizedException(Guid orderId, OrderStatus currentStatus)
 
 public class OrderCannotBeCancelledException(Guid orderId, OrderStatus currentStatus)
     : BusinessException($"Order {orderId} in status '{currentStatus}' cannot be cancelled.");
+
+public class CourierBusyException(Guid courierId)
+    : BusinessException($"Courier {courierId} has an active delivery and cannot go offline.");
+
+public class StaleCourierLocationException(Guid courierId)
+    : BusinessException($"Location for courier {courierId} is too old to be used as a starting position.");
