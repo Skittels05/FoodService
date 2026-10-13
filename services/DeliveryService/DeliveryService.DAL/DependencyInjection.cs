@@ -1,11 +1,13 @@
 using System.Text.Json;
 using DeliveryService.BLL.Services.Interfaces;
+using DeliveryService.DAL.Integrations.Redis;
 using DeliveryService.DAL.Integrations.Stripe;
 using DeliveryService.DAL.Outbox;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
 using Polly;
+using StackExchange.Redis;
 
 namespace DeliveryService.DAL;
 
@@ -24,6 +26,25 @@ public static class DependencyInjection
             new JsonSerializerOptions(JsonSerializerDefaults.Web));
 
         services.AddStripePaymentGateway();
+        services.AddRedisCourierLocationStore();
+
+        return services;
+    }
+
+    public static IServiceCollection AddRedisCourierLocationStore(this IServiceCollection services)
+    {
+        services.AddOptions<RedisOptions>()
+            .BindConfiguration(RedisOptions.SectionName)
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.AddSingleton<IConnectionMultiplexer>(serviceProvider =>
+        {
+            var options = serviceProvider.GetRequiredService<IOptions<RedisOptions>>().Value;
+            return ConnectionMultiplexer.Connect(options.ConnectionString);
+        });
+
+        services.AddSingleton<ICourierLocationStore, RedisCourierLocationStore>();
 
         return services;
     }

@@ -32,7 +32,7 @@ public class CourierService(
         }
         else if (state.Status == CourierStatus.Delivering)
         {
-            await courierLocationStore.UpdateLocationAsync(courierId, location, cancellationToken);
+            await UpdateLocationAsync(courierId, location, cancellationToken);
             return;
         }
 
@@ -66,7 +66,31 @@ public class CourierService(
             return false;
         }
 
-        return await courierLocationStore.UpdateLocationAsync(courierId, location, cancellationToken);
+        var result = await courierLocationStore.UpdateLocationAsync(courierId, location, cancellationToken);
+
+        return result switch
+        {
+            LocationUpdateResult.Accepted => true,
+            LocationUpdateResult.CourierNotTracked => await RestoreTrackingAsync(courierId, location, cancellationToken),
+            _ => false
+        };
+    }
+
+    private async Task<bool> RestoreTrackingAsync(Guid courierId, CourierLocation location, CancellationToken cancellationToken)
+    {
+        var state = await courierStateRepository.GetByIdAsync(courierId, cancellationToken: cancellationToken);
+
+        switch (state?.Status)
+        {
+            case CourierStatus.Available:
+                await courierLocationStore.SetAvailableAsync(courierId, location, cancellationToken);
+                return true;
+            case CourierStatus.Delivering:
+                await courierLocationStore.SetDeliveringAsync(courierId, location, cancellationToken);
+                return true;
+            default:
+                return false;
+        }
     }
 
     private bool IsStale(CourierLocation location)

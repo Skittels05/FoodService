@@ -1,4 +1,5 @@
-﻿using DeliveryService.BLL.Models;
+﻿using DeliveryService.BLL.Constants;
+using DeliveryService.BLL.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,5 +10,9 @@ public class CourierStateConfiguration : IEntityTypeConfiguration<CourierState>
     public void Configure(EntityTypeBuilder<CourierState> builder)
     {
         builder.HasKey(c => c.CourierId);
+
+        builder.Property(c => c.Status)
+            .HasConversion<string>()
+            .HasMaxLength(Constraints.CourierStatusMaxLength);
     }
 }
