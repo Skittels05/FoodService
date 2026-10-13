@@ -14,9 +14,19 @@ public class OrderConfiguration : IEntityTypeConfiguration<Order>
         builder.Property(o => o.TotalAmount)
             .HasPrecision(18, 2);
 
-        builder.Property(o => o.DeliveryAddress)
-            .HasMaxLength(Constraints.OrderDeliveryAddressMaxLength)
-            .IsRequired();
+        builder.ComplexProperty(o => o.Delivery, address =>
+        {
+            address.Property(a => a.Address)
+                .HasMaxLength(Constraints.AddressMaxLength)
+                .IsRequired();
+        });
+
+        builder.ComplexProperty(o => o.Pickup, address =>
+        {
+            address.Property(a => a.Address)
+                .HasMaxLength(Constraints.AddressMaxLength)
+                .IsRequired();
+        });
 
         builder.Property(o => o.CustomerComment)
             .HasMaxLength(Constraints.OrderCustomerCommentMaxLength);

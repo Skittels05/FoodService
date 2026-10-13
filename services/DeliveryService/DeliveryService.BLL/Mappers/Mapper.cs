@@ -47,7 +47,8 @@ public class OrderToDtoMapper(IMapper<OrderItem, OrderItemDto> itemMapper)
             Status: input.Status,
             IsPaid: input.IsPaid,
             TotalAmount: input.TotalAmount,
-            DeliveryAddress: input.DeliveryAddress,
+            Delivery: ToDto(input.Delivery),
+            Pickup: ToDto(input.Pickup),
             CustomerComment: input.CustomerComment,
             CancellationReason: input.CancellationReason,
             CancellationComment: input.CancellationComment,
@@ -55,6 +56,9 @@ public class OrderToDtoMapper(IMapper<OrderItem, OrderItemDto> itemMapper)
             Items: input.Items?.Select(itemMapper.Map).ToList() ?? []
         );
     }
+
+    private static GeoAddressDto ToDto(GeoAddress address) =>
+        new(address.Address, address.Latitude, address.Longitude);
 }
 
 public class CreateOrderDtoToEntityMapper(IMapper<CreateOrderItemDto, OrderItem> itemMapper)
@@ -69,7 +73,7 @@ public class CreateOrderDtoToEntityMapper(IMapper<CreateOrderItemDto, OrderItem>
             RestaurantLocationId = input.RestaurantLocationId,
             Status = OrderStatus.Created,
             IsPaid = false,
-            DeliveryAddress = input.DeliveryAddress,
+            Delivery = new GeoAddress(input.Delivery.Address, input.Delivery.Latitude, input.Delivery.Longitude),
             CustomerComment = input.CustomerComment,
             Items = input.Items.Select(itemMapper.Map).ToList(),
             TotalAmount = 0 

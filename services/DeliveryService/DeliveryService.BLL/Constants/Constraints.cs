@@ -2,7 +2,7 @@
 
 public class Constraints
 {
-    public const int OrderDeliveryAddressMaxLength = 250;
+    public const int AddressMaxLength = 250;
     public const int OrderCustomerCommentMaxLength = 500;
     public const int OrderCancellationCommentMaxLength = 500;
     public const int OrderStatusMaxLength = 50;

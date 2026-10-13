@@ -6,7 +6,7 @@ public record CreateOrderDto(
     Guid CustomerId, 
     Guid RestaurantId,
     Guid RestaurantLocationId,
-    string DeliveryAddress,
+    GeoAddressDto Delivery,
     string? CustomerComment,
     List<CreateOrderItemDto> Items
 );
@@ -33,7 +33,8 @@ public record OrderDto(
     OrderStatus Status,
     bool IsPaid,
     decimal TotalAmount,
-    string DeliveryAddress,
+    GeoAddressDto Delivery,
+    GeoAddressDto Pickup,
     string? CustomerComment,
     OrderCancellationReason? CancellationReason,
     string? CancellationComment,

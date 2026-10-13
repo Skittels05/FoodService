@@ -10,7 +10,8 @@ public class Order : BaseModel
     public required OrderStatus Status { get; set; }
     public required bool IsPaid { get; set; } 
     public required decimal TotalAmount { get; set; }
-    public required string DeliveryAddress { get; set; } = string.Empty;
+    public required GeoAddress Delivery { get; set; }
+    public GeoAddress Pickup { get; set; } = null!;
     public string? CustomerComment { get; set; }
     public OrderCancellationReason? CancellationReason { get; set; }
     public string? CancellationComment { get; set; }
