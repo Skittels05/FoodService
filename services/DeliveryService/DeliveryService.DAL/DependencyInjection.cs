@@ -3,6 +3,7 @@ using DeliveryService.BLL.Services.Interfaces;
 using DeliveryService.DAL.Integrations.Redis;
 using DeliveryService.DAL.Integrations.Stripe;
 using DeliveryService.DAL.Outbox;
+using DeliveryService.DAL.Scheduling;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Http.Resilience;
 using Microsoft.Extensions.Options;
@@ -101,6 +102,10 @@ public static class DependencyInjection
         {
             quartz.AddJob<OutboxProcessorJob>(job => job.WithIdentity(OutboxProcessorJob.Key));
 
+            quartz.AddJob<CourierSearchJob>(job => job
+                .WithIdentity(CourierSearchJob.Key)
+                .StoreDurably());
+
             quartz.AddTrigger((serviceProvider, trigger) =>
             {
                 var outboxOptions = serviceProvider.GetRequiredService<IOptions<OutboxOptions>>().Value;
@@ -116,6 +121,8 @@ public static class DependencyInjection
         });
 
         services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
+
+        services.AddSingleton<ICourierSearchScheduler, QuartzCourierSearchScheduler>();
 
         return services;
     }
